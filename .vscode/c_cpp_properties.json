@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/**",
+                "/home/kgriffin/Learning/RayTracing/Code/external/glm/**",
+                "/home/kgriffin/Learning/RayTracing/Code/external/stb_image/**",
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
