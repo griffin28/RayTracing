@@ -7,7 +7,8 @@
                 "${workspaceFolder}/**",
                 "/home/kgriffin/Learning/RayTracing/Code/external/glm/**",
                 "/home/kgriffin/Learning/RayTracing/Code/external/stb_image/**",
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/external/glm"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
