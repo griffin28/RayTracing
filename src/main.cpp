@@ -20,8 +20,8 @@ int main()
             auto g = static_cast<float>(j) / (image_height-1);
             auto b = 0.25f;
 
-            auto pixel_color = Color3f(r,g,b);
-            write_color3f(std::cout, pixel_color);
+            auto pixel_color = raytracer::Color3f(r,g,b);
+            raytracer::write_color3f(std::cout, pixel_color);
         }
     }
 
