@@ -1,4 +1,4 @@
-set (CORE_SRCS ray.h)
+set (CORE_SRCS Ray.h)
 
 add_library(core OBJECT ${CORE_SRCS})
 

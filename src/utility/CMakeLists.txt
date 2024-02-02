@@ -1,4 +1,4 @@
-set (UTILITY_SRCS color.h)
+set (UTILITY_SRCS Color.h)
 
 add_library(utility OBJECT ${UTILITY_SRCS})
 

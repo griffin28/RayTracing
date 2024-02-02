@@ -12,7 +12,7 @@ namespace raytracer
 
     /// @brief Write a single pixel's color to the output stream.
     /// @param out the output stream
-    /// @param pixel_color the color of the pixel (r,g,b)
+    /// @param pixel_color the color of the pixel (r,g,b) ranging from 0.0 to 1.0
     void write_color3f(std::ostream& out, Color3f pixel_color)
     {
         // Write the translated [0,255] value of each color component.
@@ -23,7 +23,8 @@ namespace raytracer
 
     /// @brief write a single pixel's color to the output stream.
     /// @param out the output stream
-    /// @param pixel_color the color of the pixel (r,g,b,a)
+    /// @param pixel_color the color of the pixel (r,g,b,a) ranging
+    ///                    from 0.0 to 1.0
     void write_color4f(std::ostream& out, Color4f pixel_color)
     {
         // Write the translated [0,255] value of each color component and alpha.
