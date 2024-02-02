@@ -9,10 +9,53 @@ using Color3f = raytracer::Color3f;
 using Ray = raytracer::Ray;
 using PerspectiveCamera = raytracer::PerspectiveCamera;
 
-Color3f ray_color(Ray * const r)
+bool hit_sphere(const glm::vec3 &center, const float radius, Ray * const ray)
 {
-    auto rayDirection = r->direction();
-    float a = 0.5f * (rayDirection.y + 1.0f);
+    auto l = center - ray->origin();
+    auto tca = glm::dot(l, ray->direction());
+    if(tca < 0)
+    {
+        return false;
+    }
+    auto d2 = glm::dot(l, l) - tca * tca;
+    if(d2 > radius * radius)
+    {
+        return false;
+    }
+    float thc = sqrt(radius * radius - d2);
+    float t0 = tca - thc;
+    float t1 = tca + thc;
+
+    if(t0 > t1)
+    {
+        std::swap(t0, t1);
+    }
+
+    if(t0 < 0)
+    {
+        t0 = t1;
+        if(t0 < 0)
+        {
+            return false;
+        }
+    }
+
+    if(ray->tMin() < t0 && t0 < ray->tMax())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+Color3f ray_color(Ray * const ray)
+{
+    if(hit_sphere(glm::vec3(0, 0, -50), 10, ray))
+    {
+        return Color3f(1, 0, 0);
+    }
+
+    float a = 0.5f * (ray->direction().y + 1.0f);
     return (1.0f - a) * Color3f(1.0f, 1.0f, 1.0f) + a * Color3f(0.5f, 0.7f, 1.0f);
 }
 
