@@ -1,9 +1,14 @@
 #include "PerspectiveCamera.h"
-
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 
 namespace raytracer
 {
+//----------------------------------------------------------------------------------
+PerspectiveCamera::PerspectiveCamera()
+    : PerspectiveCamera(800, 600)
+{
+}
+
 //----------------------------------------------------------------------------------
 PerspectiveCamera::PerspectiveCamera(int width,
                                      int height,
@@ -35,6 +40,25 @@ void PerspectiveCamera::reset()
     m_fovy = 45.0f;
     m_near = 0.1f;
     m_far = 1000.0f;
+}
+
+//----------------------------------------------------------------------------------
+void PerspectiveCamera::render(const HittableList &world, std::ostream &out)
+{
+    out << "P3\n" << m_width << ' ' << m_height << "\n255\n";
+
+    for(int j=0; j < m_height; ++j)
+    {
+        std::clog << "\rScanlines remaining: " << m_height - j << ' ' << std::flush;
+        for(int i=0; i < m_width; ++i)
+        {
+            std::unique_ptr<Ray> ray(this->generateRay(glm::vec2(i, j)));
+            auto pixelColor = this->rayColor(ray.get(), world);
+            this->writeColor3f(out, pixelColor);
+        }
+    }
+
+    std::clog << "\nDone.\n";
 }
 
 //----------------------------------------------------------------------------------
@@ -156,5 +180,27 @@ PerspectiveCamera::copy(ProjectionCamera * const camera)
     {
         this->reset();
     }
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 PerspectiveCamera::rayColor(Ray * const ray, const HittableList &world)
+{
+    HitRecord record;
+    if(world.hit(*ray, record))
+    {
+        return 0.5f * glm::vec3(record.normal.x + 1, record.normal.y + 1, record.normal.z + 1);
+    }
+
+    float a = 0.5f * (ray->direction().y + 1.0f);
+    return (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+}
+
+//----------------------------------------------------------------------------------
+void PerspectiveCamera::writeColor3f(std::ostream& out, glm::vec3 pixelColor)
+{
+    // Write the translated [0,255] value of each color component.
+    out << static_cast<int>(255.999 * pixelColor.x) << ' '
+        << static_cast<int>(255.999 * pixelColor.y) << ' '
+        << static_cast<int>(255.999 * pixelColor.z) << '\n';
 }
 } // namespace raytracer

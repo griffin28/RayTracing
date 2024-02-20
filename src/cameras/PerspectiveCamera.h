@@ -2,9 +2,11 @@
 #define INCLUDED_PERSPECTIVE_CAMERA_H
 
 #include "ProjectionCamera.h"
+#include "HittableList.h"
 
 namespace raytracer
 {
+
 /// @class PerspectiveCamera
 /// @brief Represents a projection camera for perspective projections
 ///
@@ -16,6 +18,9 @@ namespace raytracer
 class PerspectiveCamera : public ProjectionCamera
 {
 public:
+    /// Default constructor.
+    PerspectiveCamera();
+
     /// @brief Constructor
     /// @param width screen width
     /// @param height screen height
@@ -35,11 +40,16 @@ public:
     /// @see Camera::reset
     void reset() override;
 
+    /// @brief Renders the scene to the specified output stream.
+    /// @param world the hittable list representing the scene
+    /// @param out the output stream to write the rendered image to (default is std::cout)
+    void render(const HittableList &world, std::ostream &out=std::cout);
+
     /// @brief Creates a ray in world space from a screen pixel location. Caller is responsible
     ///        for managing the memory allocated for this object.
     ///        Implementation based on: https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
     /// @param p the x- and y-coordinates of the pixel in raster space
-    /// @return
+    /// @return the generated ray
     Ray *generateRay(const glm::vec2 &p) override;
 
     /// @brief Change the view angle by the specified factor
@@ -78,6 +88,16 @@ public:
     void copy(ProjectionCamera * const camera) override;
 
 private:
+    /// @brief Compute the color of a ray.
+    /// @param ray the ray to compute the color for
+    /// @param world the hittable list representing the scene
+    glm::vec3 rayColor(Ray * const ray, const HittableList &world);
+
+    /// @brief Write a single pixel's color to the output stream.
+    /// @param out the output stream
+    /// @param pixelColor the color of the pixel (r,g,b) ranging from 0.0 to 1.0
+    void writeColor3f(std::ostream& out, glm::vec3 pixelColor);
+
     int m_width;
     int m_height;
     float m_zoomFactor;
