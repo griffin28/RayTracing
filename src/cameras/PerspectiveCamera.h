@@ -43,7 +43,7 @@ public:
     /// @brief Renders the scene to the specified output stream.
     /// @param world the hittable list representing the scene
     /// @param out the output stream to write the rendered image to (default is std::cout)
-    void render(const HittableList &world, std::ostream &out=std::cout);
+    void render(const HittableList &world, int samplesPerPixel=1, std::ostream &out=std::cout);
 
     /// @brief Creates a ray in world space from a screen pixel location. Caller is responsible
     ///        for managing the memory allocated for this object.
@@ -96,7 +96,8 @@ private:
     /// @brief Write a single pixel's color to the output stream.
     /// @param out the output stream
     /// @param pixelColor the color of the pixel (r,g,b) ranging from 0.0 to 1.0
-    void writeColor3f(std::ostream& out, glm::vec3 pixelColor);
+    /// @param samplesPerPixel the number of samples per pixel
+    void writeColor3f(std::ostream& out, glm::vec3 pixelColor, const int samplesPerPixel=1);
 
     int m_width;
     int m_height;

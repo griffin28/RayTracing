@@ -1,4 +1,5 @@
 #include "PerspectiveCamera.h"
+#include "Utility.h"
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 
 namespace raytracer
@@ -43,7 +44,7 @@ void PerspectiveCamera::reset()
 }
 
 //----------------------------------------------------------------------------------
-void PerspectiveCamera::render(const HittableList &world, std::ostream &out)
+void PerspectiveCamera::render(const HittableList &world, int samplesPerPixel, std::ostream &out)
 {
     out << "P3\n" << m_width << ' ' << m_height << "\n255\n";
 
@@ -52,9 +53,14 @@ void PerspectiveCamera::render(const HittableList &world, std::ostream &out)
         std::clog << "\rScanlines remaining: " << m_height - j << ' ' << std::flush;
         for(int i=0; i < m_width; ++i)
         {
-            std::unique_ptr<Ray> ray(this->generateRay(glm::vec2(i, j)));
-            auto pixelColor = this->rayColor(ray.get(), world);
-            this->writeColor3f(out, pixelColor);
+            glm::vec3 pixelColor(0.0f);
+            for(int spp=0; spp < samplesPerPixel; ++spp)
+            {
+                std::unique_ptr<Ray> ray(this->generateRay(glm::vec2(i, j)));
+                pixelColor += this->rayColor(ray.get(), world);
+            }
+
+            this->writeColor3f(out, pixelColor, samplesPerPixel);
         }
     }
 
@@ -117,8 +123,9 @@ PerspectiveCamera::generateRay(const glm::vec2 &pixel)
     const float scale = tan(glm::radians(m_fovy * 0.5f));
 
     // Raster Space -> Normalized Device Coordinate Space
-    float pxNDC = (pixel.x + 0.5f) / static_cast<float>(m_width);
-    float pyNDC = (pixel.y + 0.5f) / static_cast<float>(m_height);
+    // TODO: look at NVIDIA's Raytracing Gems book for a better way to do this
+    float pxNDC = (pixel.x - 0.5f + randomFloat()) / static_cast<float>(m_width);
+    float pyNDC = (pixel.y - 0.5f + randomFloat()) / static_cast<float>(m_height);
 
     // NDC Space -> Screen Space
     float pxScreen = 2 * pxNDC - 1;
@@ -196,11 +203,14 @@ glm::vec3 PerspectiveCamera::rayColor(Ray * const ray, const HittableList &world
 }
 
 //----------------------------------------------------------------------------------
-void PerspectiveCamera::writeColor3f(std::ostream& out, glm::vec3 pixelColor)
+void PerspectiveCamera::writeColor3f(std::ostream& out, glm::vec3 pixelColor, const int samplesPerPixel)
 {
+    const float scale = 1.0f / static_cast<float>(samplesPerPixel);
+    pixelColor *= scale;
+
     // Write the translated [0,255] value of each color component.
-    out << static_cast<int>(255.999 * pixelColor.x) << ' '
-        << static_cast<int>(255.999 * pixelColor.y) << ' '
-        << static_cast<int>(255.999 * pixelColor.z) << '\n';
+    out << static_cast<int>(256.f * clamp(pixelColor.x, 0.000f, 0.999f)) << ' '
+        << static_cast<int>(256.f * clamp(pixelColor.y, 0.000f, 0.999f)) << ' '
+        << static_cast<int>(256.f * clamp(pixelColor.z, 0.000f, 0.999f)) << '\n';
 }
 } // namespace raytracer

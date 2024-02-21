@@ -15,7 +15,7 @@ int main()
 
     // Camera
     PerspectiveCamera camera;
-    camera.render(world);
+    camera.render(world, 6);
 
     return 0;
 }
