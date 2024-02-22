@@ -24,12 +24,14 @@ public:
     /// @brief Constructor
     /// @param width screen width
     /// @param height screen height
+    /// @param maxDepth the maximum number of ray bounces into the scene
     /// @param fovy the view angle in degrees
     /// @param near the distance to the near clipping plane along the forward axis
     /// @param far the distance to the far clipping plane along the forward axis
     /// @throw std::invalid_argument if the screen size is invalid
     PerspectiveCamera(int width,
                       int height,
+                      int maxDepth=10,
                       float fovy=45.f,
                       float near=0.1f,
                       float far=1000.f);
@@ -90,8 +92,9 @@ public:
 private:
     /// @brief Compute the color of a ray.
     /// @param ray the ray to compute the color for
+    /// @param depth the maximum number of ray bounces into the scene
     /// @param world the hittable list representing the scene
-    glm::vec3 rayColor(Ray * const ray, const HittableList &world);
+    glm::vec3 rayColor(Ray * const ray, int depth, const HittableList &world);
 
     /// @brief Write a single pixel's color to the output stream.
     /// @param out the output stream
@@ -101,6 +104,8 @@ private:
 
     int m_width;
     int m_height;
+    int m_maxDepth;
+
     float m_zoomFactor;
 
     float m_fovy;

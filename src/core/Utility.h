@@ -1,6 +1,8 @@
 #pragma once
 
 #include <random>
+#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 
 namespace raytracer
 {
@@ -49,5 +51,61 @@ namespace raytracer
             return max;
         }
         return value;
+    }
+
+    /// @brief Convert a linear color to gamma-corrected color.
+    /// @param color the linear color
+    /// @return the gamma-corrected color
+    inline glm::vec3 gammaCorrect(const glm::vec3 &color)
+    {
+        return glm::vec3(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
+    }
+
+    /// @brief Generate a random vector in the range [0,1).
+    /// @return a random vector in the range [0,1)
+    inline glm::vec3 randomVector()
+    {
+        return glm::vec3(randomFloat(), randomFloat(), randomFloat());
+    }
+
+    /// @brief Generate a random vector in the range [min,max).
+    /// @param min the minimum value of the range
+    inline glm::vec3 randomVector(float min, float max)
+    {
+        return glm::vec3(randomFloat(min, max), randomFloat(min, max), randomFloat(min, max));
+    }
+
+    /// @brief Generate a random vector in the unit sphere.
+    /// This function uses rejection sampling to generate a random vector in the unit sphere.
+    /// The algorithm works by generating a random vector in the unit cube and rejecting it if it
+    /// is not in the unit sphere. This process is repeated until a vector in the unit sphere is
+    /// found.
+    /// @return a random vector in the unit sphere
+    inline glm::vec3 randomInUnitSphere()
+    {
+        while (true)
+        {
+            glm::vec3 p = randomVector(-1, 1);
+            if (glm::length(p) >= 1)
+            {
+                continue;
+            }
+            return p;
+        }
+    }
+
+    /// @brief Generate a random vector on the unit hemisphere.
+    /// This function uses rejection sampling to generate a random vector on the unit hemisphere.
+    /// @param normal the normal of the hemisphere
+    /// @return a random vector on the unit hemisphere
+    inline glm::vec3 randomOnHemisphere(const glm::vec3 &normal)
+    {
+        glm::vec3 onUnitSphere = glm::normalize(randomInUnitSphere());
+
+        if (glm::dot(onUnitSphere, normal) > 0.0f)
+        {
+            return onUnitSphere;
+        }
+        return -onUnitSphere;
     }
 } // namespace raytracer

@@ -14,4 +14,5 @@ target_include_directories(core
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     PRIVATE
-        ${GLM_INCLUDE_DIRS})
+        ${GLM_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../materials)

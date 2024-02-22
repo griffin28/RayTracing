@@ -38,9 +38,9 @@ bool Sphere::hit(const Ray &ray, HitRecord &record) const
     {
         record.t = t0;
         record.point = ray(t0);
-        record.normal = glm::normalize(record.point - m_center);
-        record.setFaceNormal(ray, record.normal);
-
+        auto outwardNormal = glm::normalize(record.point - m_center);
+        record.setFaceNormal(ray, outwardNormal);
+        record.material = m_material;
         return true;
     }
 

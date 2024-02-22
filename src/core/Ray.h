@@ -22,7 +22,7 @@ public:
     /// @param tMax maximum t-value to count as a hit
     Ray(const glm::vec3 &origin,
         const glm::vec3 &direction,
-        float tMin = 0.f,
+        float tMin = 0.01f,
         float tMax = std::numeric_limits<float>::infinity()) : m_origin(origin),
                                                                m_direction(direction),
                                                                m_tMin(tMin),

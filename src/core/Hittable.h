@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Ray.h"
+#include "Material.h"
 
 #include <glm/glm.hpp>
+
+#include <memory>
 
 namespace raytracer
 {
@@ -16,6 +19,7 @@ namespace raytracer
     {
         glm::vec3 point;
         glm::vec3 normal;
+        std::shared_ptr<Material> material;
         float t;
         bool frontFace;
 

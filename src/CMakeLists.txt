@@ -13,6 +13,9 @@ add_subdirectory(cameras)
 # Shapes (spheres)
 add_subdirectory(shapes)
 
+# Materials
+add_subdirectory(materials)
+
 add_executable(${CMAKE_PROJECT_NAME} ${SRCS})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
@@ -21,4 +24,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         core
         cameras
         shapes
+        materials
         stb_image glm::glm utility)

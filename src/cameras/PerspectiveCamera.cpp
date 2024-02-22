@@ -13,11 +13,13 @@ PerspectiveCamera::PerspectiveCamera()
 //----------------------------------------------------------------------------------
 PerspectiveCamera::PerspectiveCamera(int width,
                                      int height,
+                                     int maxDepth,
                                      float fovy,
                                      float near,
                                      float far) :
     m_width(width),
     m_height(height),
+    m_maxDepth(maxDepth),
     m_zoomFactor(1.0f),
     m_fovy(fovy),
     m_near(near),
@@ -57,7 +59,7 @@ void PerspectiveCamera::render(const HittableList &world, int samplesPerPixel, s
             for(int spp=0; spp < samplesPerPixel; ++spp)
             {
                 std::unique_ptr<Ray> ray(this->generateRay(glm::vec2(i, j)));
-                pixelColor += this->rayColor(ray.get(), world);
+                pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
             }
 
             this->writeColor3f(out, pixelColor, samplesPerPixel);
@@ -190,15 +192,33 @@ PerspectiveCamera::copy(ProjectionCamera * const camera)
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 PerspectiveCamera::rayColor(Ray * const ray, const HittableList &world)
+glm::vec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const HittableList &world)
 {
     HitRecord record;
-    if(world.hit(*ray, record))
+
+    if(depth <= 0)
     {
-        return 0.5f * glm::vec3(record.normal.x + 1, record.normal.y + 1, record.normal.z + 1);
+        return glm::vec3(0.0f);
     }
 
-    float a = 0.5f * (ray->direction().y + 1.0f);
+    if(world.hit(*ray, record))
+    {
+        Ray scattered;
+        glm::vec3 attenuation(1.f);
+
+        if(record.material->scatter(*ray, record, attenuation, scattered))
+        {
+            return attenuation * rayColor(&scattered, depth-1, world);
+        }
+
+        return glm::vec3(0.0f);
+        // auto direction = record.normal + randomInUnitSphere(); // randomOnHemisphere(record.normal);
+        // return gammaCorrect(.1f * rayColor(new Ray(record.point, direction), depth-1, world));
+        // return 0.5f * glm::vec3(record.normal.x + 1, record.normal.y + 1, record.normal.z + 1);
+    }
+
+    auto unitDirection = glm::normalize(ray->direction());
+    float a = 0.5f * (unitDirection.y + 1.0f);
     return (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
 }
 

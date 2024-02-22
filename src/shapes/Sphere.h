@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Hittable.h"
+#include "Material.h"
 
 #include <glm/vec3.hpp>
 
@@ -16,9 +17,10 @@ public:
     /// @brief a constructor to create a sphere with a center and radius.
     /// @param center the center of the sphere
     /// @param radius the radius of the sphere
-    Sphere(const glm::vec3 &center, const float radius)
+    Sphere(const glm::vec3 &center, const float radius, std::shared_ptr<Material> material)
         : m_center(center)
-        , m_radius(radius) {}
+        , m_radius(radius)
+        , m_material(material) {}
 
     /// @brief Determines if the ray intersects the sphere.
     /// @see Hittable::hit
@@ -27,5 +29,6 @@ public:
 private:
     glm::vec3 m_center;
     float m_radius;
+    std::shared_ptr<Material> m_material;
 };
 } // namespace raytracer

@@ -8,4 +8,5 @@ target_include_directories(shapes
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     PRIVATE
         ${GLM_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../core)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../core
+        ${CMAKE_CURRENT_SOURCE_DIR}/../materials)
