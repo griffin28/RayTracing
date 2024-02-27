@@ -61,7 +61,9 @@ public:
     /// @return the projection matrix
     virtual glm::mat4 getProjectionMatrix() const = 0;
 
-    virtual void copy(ProjectionCamera * const camera) = 0;
+    /// Copy the camera's state to this camera
+    /// @param camera the camera to copy from
+    virtual void copy(const ProjectionCamera * const camera) = 0;
 };
 } // namespace raytracer
 

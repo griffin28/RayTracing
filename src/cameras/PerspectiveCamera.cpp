@@ -165,7 +165,7 @@ PerspectiveCamera::generateRay(const glm::vec2 &pixel)
 
 //----------------------------------------------------------------------------------
 void
-PerspectiveCamera::copy(ProjectionCamera * const camera)
+PerspectiveCamera::copy(const ProjectionCamera * const camera)
 {
     if(camera != nullptr)
     {
@@ -208,18 +208,17 @@ glm::vec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const Hittable
 
         if(record.material->scatter(*ray, record, attenuation, scattered))
         {
-            return attenuation * rayColor(&scattered, depth-1, world);
+            // return attenuation * rayColor(&scattered, depth-1, world);
+            return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
         }
 
         return glm::vec3(0.0f);
-        // auto direction = record.normal + randomInUnitSphere(); // randomOnHemisphere(record.normal);
-        // return gammaCorrect(.1f * rayColor(new Ray(record.point, direction), depth-1, world));
-        // return 0.5f * glm::vec3(record.normal.x + 1, record.normal.y + 1, record.normal.z + 1);
     }
 
     auto unitDirection = glm::normalize(ray->direction());
     float a = 0.5f * (unitDirection.y + 1.0f);
-    return (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+    return gammaCorrect((1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f));
+    // return (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
 }
 
 //----------------------------------------------------------------------------------

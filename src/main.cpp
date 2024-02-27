@@ -2,6 +2,7 @@
 #include "Sphere.h"
 #include "Lambertian.h"
 #include "Metal.h"
+#include "Dielectric.h"
 
 #include <iostream>
 #include <memory>
@@ -13,7 +14,7 @@ int main()
     // Materials
     auto materialGround = std::make_shared<raytracer::Lambertian>(glm::vec3(0.8, 0.8, 0.0));
     auto materialCenter = std::make_shared<raytracer::Lambertian>(glm::vec3(0.7, 0.3, 0.3));
-    auto materialLeft = std::make_shared<raytracer::Metal>(glm::vec3(0.8, 0.8, 0.8));
+    auto materialLeft = std::make_shared<raytracer::Dielectric>(glm::vec3(0.8, 0.8, 0.8), 1.5f);
     auto materialRight = std::make_shared<raytracer::Metal>(glm::vec3(0.8, 0.6, 0.2));
 
     // World

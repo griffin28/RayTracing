@@ -76,7 +76,9 @@ public:
     float getFOVDistance() const { return m_fovDistance; }
     //@}
 
-    void copy(ProjectionCamera * const camera) override;
+    /// Copy the camera's state to this camera
+    /// @see ProjectionCamera::copy
+    void copy(const ProjectionCamera * const camera) override;
 
 private:
     int m_width;

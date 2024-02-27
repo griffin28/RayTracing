@@ -87,7 +87,9 @@ public:
     /// @return the projection matrix
     glm::mat4 getProjectionMatrix() const override { return m_perspectiveMatrix; }
 
-    void copy(ProjectionCamera * const camera) override;
+    /// @brief Copy the camera's state to this camera.
+    /// @see ProjectionCamera::copy
+    void copy(const ProjectionCamera * const camera) override;
 
 private:
     /// @brief Compute the color of a ray.

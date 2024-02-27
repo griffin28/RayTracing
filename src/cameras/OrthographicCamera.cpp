@@ -125,7 +125,7 @@ OrthographicCamera::generateRay(const glm::vec2 &pixel)
 
 //----------------------------------------------------------------------------------
 void
-OrthographicCamera::copy(ProjectionCamera * const camera)
+OrthographicCamera::copy(const ProjectionCamera * const camera)
 {
     if(camera != nullptr)
     {
