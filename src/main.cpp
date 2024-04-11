@@ -19,14 +19,20 @@ int main()
 
     // World
     raytracer::HittableList world;
-    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0,0,-50), 5, materialCenter));
-    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(10,0,-50), 5, materialLeft));
-    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(-10,0,-50), 5, materialRight));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0,0,-50), 10, materialCenter));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(20,0,-50), 10, materialLeft));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(-20,0,-50), 10, materialRight));
     world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0,-150.5,-1), 5000, materialGround));
 
     // Camera
-    PerspectiveCamera camera(400, 300, 50);
-    camera.render(world, 10);
+    PerspectiveCamera camera(400, 300, 50, 45.f);
+    // camera.dolly(30);
+    // camera.boom(-50);
+    // camera.tilt(-70);
+
+    camera.setAperatureRadius(1.f);
+
+    camera.render(world, 5);
 
     return 0;
 }

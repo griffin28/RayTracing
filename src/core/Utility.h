@@ -6,24 +6,24 @@
 
 namespace raytracer
 {
-    /// @brief Generate a random float in the range [0,1).
-    /// @return a random float in the range [0,1)
-    inline float randomFloat()
+    /// @brief Generate a random double in the range [0,1).
+    /// @return a random double in the range [0,1)
+    inline double randomDouble()
     {
-        static std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+        static std::uniform_real_distribution<double> distribution(0.0, 1.0);
         static std::mt19937 generator;
         static std::random_device device;
         generator.seed(device());
         return distribution(generator);
     }
 
-    /// @brief Generate a random float in the range [min,max).
+    /// @brief Generate a random double in the range [min,max).
     /// @param min the minimum value of the range
     /// @param max the maximum value of the range
-    /// @return a random float in the range [min,max)
-    inline float randomFloat(float min, float max)
+    /// @return a random double in the range [min,max)
+    inline float randomDouble(const double min, const double max)
     {
-        return min + (max - min) * randomFloat();
+        return min + (max - min) * randomDouble();
     }
 
     /// @brief Generate a random integer in the range [min,max].
@@ -32,7 +32,7 @@ namespace raytracer
     /// @return a random integer in the range [min,max]
     inline int randomInt(int min, int max)
     {
-        return static_cast<int>(randomFloat(min, max + 1));
+        return static_cast<int>(randomDouble(min, max + 1));
     }
 
     /// @brief Clamp a value to the range [min,max].
@@ -40,7 +40,25 @@ namespace raytracer
     /// @param min the minimum value of the range
     /// @param max the maximum value of the range
     /// @return the clamped value
-    inline float clamp(float value, float min, float max)
+    inline double clamp(double value, double min, double max)
+    {
+        if (value < min)
+        {
+            return min;
+        }
+        if (value > max)
+        {
+            return max;
+        }
+        return value;
+    }
+
+    /// @brief Clamp a value to the range [min,max].
+    /// @param value the value to clamp
+    /// @param min the minimum value of the range
+    /// @param max the maximum value of the range
+    /// @return the clamped value
+    inline float clampf(float value, float min, float max)
     {
         if (value < min)
         {
@@ -56,23 +74,23 @@ namespace raytracer
     /// @brief Convert a linear color to gamma-corrected color.
     /// @param color the linear color
     /// @return the gamma-corrected color
-    inline glm::vec3 gammaCorrect(const glm::vec3 &color)
+    inline glm::dvec3 gammaCorrect(const glm::dvec3 &color)
     {
-        return glm::vec3(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
+        return glm::dvec3(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
     }
 
     /// @brief Generate a random vector in the range [0,1).
     /// @return a random vector in the range [0,1)
-    inline glm::vec3 randomVector()
+    inline glm::dvec3 randomVector()
     {
-        return glm::vec3(randomFloat(), randomFloat(), randomFloat());
+        return glm::dvec3(randomDouble(), randomDouble(), randomDouble());
     }
 
     /// @brief Generate a random vector in the range [min,max).
     /// @param min the minimum value of the range
-    inline glm::vec3 randomVector(float min, float max)
+    inline glm::dvec3 randomVector(const double min, const double max)
     {
-        return glm::vec3(randomFloat(min, max), randomFloat(min, max), randomFloat(min, max));
+        return glm::dvec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
     }
 
     /// @brief Generate a random vector in the unit sphere.
@@ -81,16 +99,34 @@ namespace raytracer
     /// is not in the unit sphere. This process is repeated until a vector in the unit sphere is
     /// found.
     /// @return a random vector in the unit sphere
-    inline glm::vec3 randomInUnitSphere()
+    inline glm::dvec3 randomInUnitSphere()
     {
         while (true)
         {
-            glm::vec3 p = randomVector(-1, 1);
-            if (glm::length(p) >= 1)
+            glm::dvec3 p = randomVector(-1, 1);
+
+            if (glm::length(p) < 1)
             {
-                continue;
+                return p;
             }
-            return p;
+        }
+    }
+
+    /// @brief Generate a random vector in the unit disk.
+    /// This function uses rejection sampling to generate a random vector in the unit disk.
+    /// The algorithm works by generating a random vector in the unit square and rejecting it if it
+    /// is not in the unit disk. This process is repeated until a vector in the unit disk is found.
+    /// @return a random vector in the unit disk
+    inline glm::dvec3 randomInUnitDisk()
+    {
+        while (true)
+        {
+            glm::dvec3 p(randomDouble(-1, 1), randomDouble(-1, 1), 0);
+
+            if (glm::length(p) < 1)
+            {
+                return p;
+            }
         }
     }
 
@@ -98,9 +134,9 @@ namespace raytracer
     /// This function uses rejection sampling to generate a random vector on the unit hemisphere.
     /// @param normal the normal of the hemisphere
     /// @return a random vector on the unit hemisphere
-    inline glm::vec3 randomOnHemisphere(const glm::vec3 &normal)
+    inline glm::dvec3 randomOnHemisphere(const glm::dvec3 &normal)
     {
-        glm::vec3 onUnitSphere = glm::normalize(randomInUnitSphere());
+        glm::dvec3 onUnitSphere = glm::normalize(randomInUnitSphere());
 
         if (glm::dot(onUnitSphere, normal) > 0.0f)
         {

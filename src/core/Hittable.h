@@ -17,16 +17,16 @@ namespace raytracer
     /// to the point of intersection.
     struct HitRecord
     {
-        glm::vec3 point;
-        glm::vec3 normal;
+        glm::dvec3 point;
+        glm::dvec3 normal;
         std::shared_ptr<Material> material;
-        float t;
+        double t;
         bool frontFace;
 
         /// @brief Sets the normal and front face flag based on the ray and outward normal.
         /// @param ray the ray that intersected the object
         /// @param outwardNormal the normal at the point of intersection
-        void setFaceNormal(const Ray& ray, const glm::vec3& outwardNormal)
+        void setFaceNormal(const Ray& ray, const glm::dvec3& outwardNormal)
         {
             frontFace = glm::dot(ray.direction(), outwardNormal) < 0;
             normal = frontFace ? outwardNormal : -outwardNormal;

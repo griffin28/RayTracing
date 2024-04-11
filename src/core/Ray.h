@@ -13,51 +13,53 @@ class Ray
 {
 public:
     /// @brief Default Ray constructor.
-    Ray() : m_origin(), m_direction(), m_tMin(0.f), m_tMax(std::numeric_limits<float>::infinity()) {}
+    Ray() : m_origin(), m_direction(), m_tMin(0.0), m_tMax(std::numeric_limits<double>::infinity()) {}
 
     /// @brief Ray constructor
     /// @param origin ray origin
     /// @param direction ray direction
     /// @param tMin minimum t-value to count as a hit
     /// @param tMax maximum t-value to count as a hit
-    Ray(const glm::vec3 &origin,
-        const glm::vec3 &direction,
-        float tMin = 0.01f,
-        float tMax = std::numeric_limits<float>::infinity()) : m_origin(origin),
-                                                               m_direction(direction),
-                                                               m_tMin(tMin),
-                                                               m_tMax(tMax) {}
+    Ray(const glm::dvec3 &origin,
+        const glm::dvec3 &direction,
+        double tMin = 0.01,
+        double tMax = std::numeric_limits<double>::infinity())
+            : m_origin(origin)
+            , m_direction(direction)
+            , m_tMin(tMin)
+            , m_tMax(tMax) {}
 
     /// @brief Ray copy constructor
     /// @param other the ray to copy
-    Ray(const Ray &other) : m_origin(other.m_origin),
-                            m_direction(other.m_direction),
-                            m_tMin(other.m_tMin),
-                            m_tMax(other.m_tMax) {}
+    Ray(const Ray &other)
+        : m_origin(other.m_origin)
+        , m_direction(other.m_direction)
+        , m_tMin(other.m_tMin)
+        , m_tMax(other.m_tMax) {}
 
     /// @brief Ray destructor
     ~Ray() = default;
 
     /// @brief Get the ray origin
     /// @return the ray origin
-    glm::vec3 origin() const { return m_origin; }
+    glm::dvec3 origin() const { return m_origin; }
 
     /// @brief Get the ray direction
     /// @return the ray direction
-    glm::vec3 direction() const { return m_direction; }
+    glm::dvec3 direction() const { return m_direction; }
 
     /// @brief Get the minimum t-value to count as a hit
     /// @return the minimum t-value to count as a hit
-    float tMin() const { return m_tMin; }
+    double tMin() const { return m_tMin; }
 
     /// @brief Get the maximum t-value to count as a hit
     /// @return the maximum t-value to count as a hit
-    float tMax() const { return m_tMax; }
+    double tMax() const { return m_tMax; }
 
     /// @brief The ray parametric equation
     /// @param t the distance between the ray origin and the returned point
     /// @return the point at distance t from the ray origin
-    glm::vec3 operator()(const float t) const { return m_origin + m_direction * t; }
+    glm::dvec3 operator()(const double t) const { return m_origin + m_direction * t; }
 
     /// @brief Ray assignment operator
     /// @param other the ray to assign to this
@@ -83,9 +85,9 @@ public:
     }
 
 private:
-    glm::vec3 m_origin;
-    glm::vec3 m_direction;
-    mutable float m_tMin;   // abs(near) / m_direction.z
-    mutable float m_tMax;   // abs(zFar) / m_direction.z
+    glm::dvec3 m_origin;
+    glm::dvec3 m_direction;
+    mutable double m_tMin;   // abs(near) / m_direction.z
+    mutable double m_tMax;   // abs(zFar) / m_direction.z
 };
 } // namespace raytracer

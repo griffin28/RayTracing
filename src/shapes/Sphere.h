@@ -17,7 +17,7 @@ public:
     /// @brief a constructor to create a sphere with a center and radius.
     /// @param center the center of the sphere
     /// @param radius the radius of the sphere
-    Sphere(const glm::vec3 &center, const float radius, std::shared_ptr<Material> material)
+    Sphere(const glm::dvec3 &center, const double radius, std::shared_ptr<Material> material)
         : m_center(center)
         , m_radius(radius)
         , m_material(material) {}
@@ -27,8 +27,8 @@ public:
     bool hit(const Ray &ray, HitRecord &record) const override;
 
 private:
-    glm::vec3 m_center;
-    float m_radius;
+    glm::dvec3 m_center;
+    double m_radius;
     std::shared_ptr<Material> m_material;
 };
 } // namespace raytracer

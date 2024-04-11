@@ -16,9 +16,9 @@ bool Sphere::hit(const Ray &ray, HitRecord &record) const
     {
         return false;
     }
-    float thc = sqrt(m_radius * m_radius - d2);
-    float t0 = tca - thc;
-    float t1 = tca + thc;
+    double thc = sqrt(m_radius * m_radius - d2);
+    double t0 = tca - thc;
+    double t1 = tca + thc;
 
     if(t0 > t1)
     {

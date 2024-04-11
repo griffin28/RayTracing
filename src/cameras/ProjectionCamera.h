@@ -21,22 +21,22 @@ public:
     /// managing the memory allocated for this object.
     /// @param pixel the x- and y-coordinates of the pixel in raster space
     /// @return camera ray
-    virtual Ray *generateRay(const glm::vec2 &pixel) = 0;
+    virtual Ray *generateRay(const glm::dvec2 &pixel) = 0;
 
     //@{
     /// Change the zoom level. For a perspective camera this will change the view angle by
     /// the specified factor. For an orthographic camera this will change the parallel scale
     /// by the specified factor.
     /// @param factor A value greater than 1 is a zoom-in, a value less than 1 is a zoom-out.
-    virtual void zoom(const float factor) = 0;
-    virtual float getZoomFactor() const = 0;
+    virtual void zoom(const double factor) = 0;
+    virtual double getZoomFactor() const = 0;
     //@}
 
     //@{
     /// Set the camera view angle.
     /// @param angle angular height of the camera view measured in degrees
-    virtual void setViewAngle(const float angle) = 0;
-    virtual float getViewAngle() const = 0;
+    virtual void setViewAngle(const double angle) = 0;
+    virtual double getViewAngle() const = 0;
     //@}
 
     //@{
@@ -45,8 +45,8 @@ public:
     /// measured in world coordinates.
     /// @param  near the near clipping plane along the forward axis
     /// @param  far  the far clipping plane along the forward axis
-    virtual void setClippingRange(const float near, const float far) = 0;
-    virtual glm::vec2 getClippingRange() const = 0;
+    virtual void setClippingRange(const double near, const double far) = 0;
+    virtual glm::dvec2 getClippingRange() const = 0;
     //@}
 
     //@{
@@ -54,12 +54,12 @@ public:
     /// @param width screen width
     /// @param height screen height
     virtual void setScreenSize(const int width, const int height) = 0;
-    virtual glm::vec2 getScreenSize() const = 0;
+    virtual glm::dvec2 getScreenSize() const = 0;
     //@}
 
     /// Get the projection matrix
     /// @return the projection matrix
-    virtual glm::mat4 getProjectionMatrix() const = 0;
+    virtual glm::dmat4 getProjectionMatrix() const = 0;
 
     /// Copy the camera's state to this camera
     /// @param camera the camera to copy from
