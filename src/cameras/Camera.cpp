@@ -6,11 +6,11 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
-Camera::Camera() : m_position(glm::dvec3(0.f, 0.f, 0.f)),
-                   m_focalPoint(glm::dvec3(0.f, 0.f, -1.f)),
-                   m_viewUp(glm::dvec3(0.0f, 1.0f, 0.0f)),
-                   m_aperatureRadius(0.0f),
-                   m_modelMatrix(glm::dmat4(1.0f))
+Camera::Camera() : m_position(glm::dvec3(0.0, 0.0, 0.0)),
+                   m_focalPoint(glm::dvec3(0.0, 0.0, -1.0)),
+                   m_viewUp(glm::dvec3(0.0, 1.0, 0.0)),
+                   m_aperatureRadius(0.0),
+                   m_modelMatrix(glm::dmat4(1.0))
 {
     this->updateViewMatrix();
 }
@@ -18,10 +18,10 @@ Camera::Camera() : m_position(glm::dvec3(0.f, 0.f, 0.f)),
 //----------------------------------------------------------------------------------
 void Camera::reset()
 {
-    m_position = glm::dvec3(0.0f, 0.0f, 0.0f);
-    m_focalPoint = glm::dvec3(0.f, 0.f, -1.f);
-    m_viewUp = glm::dvec3(0.0f, 1.0f, 0.0f);
-    m_modelMatrix = glm::dmat4(1.0f);
+    m_position = glm::dvec3(0.0, 0.0, 0.0);
+    m_focalPoint = glm::dvec3(0.0, 0.0, -1.0);
+    m_viewUp = glm::dvec3(0.0, 1.0, 0.0);
+    m_modelMatrix = glm::dmat4(1.0);
 
     this->updateViewMatrix();
 }
@@ -58,7 +58,7 @@ void Camera::dolly(const double value)
 {
     double distance = glm::distance(m_focalPoint, m_position);
     double d = distance + value;
-    d = (d <= 0.0f) ? 0.1f : d;
+    d = (d <= 0.0) ? 0.1 : d;
 
     auto forwardAxis = this->getForwardAxis();
     auto delta = forwardAxis * d;
@@ -127,16 +127,16 @@ void Camera::setCameraToWorldMatrix(const glm::dmat4 &matrix)
 //----------------------------------------------------------------------------------
 void Camera::updateViewMatrix()
 {
-    auto position = m_modelMatrix * glm::vec4(m_position, 1.0f);
-    auto viewUp = m_modelMatrix * glm::vec4(m_viewUp, 1.0f);
+    auto position = m_modelMatrix * glm::dvec4(m_position, 1.0);
+    auto viewUp = m_modelMatrix * glm::dvec4(m_viewUp, 1.0);
 
     auto pos = glm::dvec3(position[0]/position[3],
-                         position[1]/position[3],
-                         position[2]/position[3]);
+                          position[1]/position[3],
+                          position[2]/position[3]);
 
     auto up = glm::normalize(glm::dvec3(viewUp[0]/viewUp[3],
-                                       viewUp[1]/viewUp[3],
-                                       viewUp[2]/viewUp[3]));
+                                        viewUp[1]/viewUp[3],
+                                        viewUp[2]/viewUp[3]));
 
     m_viewMatrix = glm::lookAt(pos, m_focalPoint, up);
 }
@@ -147,8 +147,8 @@ void Camera::generateHaltonSequence(const int N, const int b, double *out)
     for (int i = 0; i < N; ++i)
     {
         int index = i;
-        double f = 1.0f;
-        double r = 0.0f;
+        double f = 1.0;
+        double r = 0.0;
 
         while (index > 0)
         {

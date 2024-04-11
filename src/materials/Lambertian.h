@@ -8,11 +8,11 @@ class Lambertian : public Material
 {
 public:
     Lambertian();
-    Lambertian(const glm::vec3 &albedo);
+    Lambertian(const glm::dvec3 &albedo);
 
-    bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const override;
+    bool scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const override;
 
 private:
-    glm::vec3 m_albedo;
+    glm::dvec3 m_albedo;
 };
 } // namespace raytracer

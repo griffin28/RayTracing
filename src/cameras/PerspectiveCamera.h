@@ -32,9 +32,9 @@ public:
     PerspectiveCamera(int width,
                       int height,
                       int maxDepth=10,
-                      double fovy=45.f,
-                      double near=0.1f,
-                      double far=1000.f);
+                      double fovy=45.0,
+                      double near=0.1,
+                      double far=1000.0);
 
     /// Default destructor.
     ~PerspectiveCamera() = default;
@@ -98,12 +98,12 @@ public:
     /// @see ProjectionCamera::copy
     void copy(const ProjectionCamera * const camera) override;
 
-private:
+// private:
     /// @brief Compute the color of a ray.
     /// @param ray the ray to compute the color for
     /// @param depth the maximum number of ray bounces into the scene
     /// @param world the hittable list representing the scene
-    glm::vec3 rayColor(Ray * const ray, int depth, const HittableList &world);
+    glm::dvec3 rayColor(Ray * const ray, int depth, const HittableList &world);
 
     /// @brief Write a single pixel's color to the output stream.
     /// @param out the output stream

@@ -21,12 +21,12 @@ public:
     /// @param attenuation the color attenuation
     /// @param scattered the scattered ray if the ray scatters
     /// @return true if the ray scatters, false otherwise
-    virtual bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const = 0;
+    virtual bool scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const = 0;
 
     /// @brief Determines if the vector is close to zero in all dimensions.
     /// @param vec the vector to test
     /// @return true if the vector is close to zero in all dimensions, false otherwise
-    bool nearZero(const glm::vec3 &vec) const
+    bool nearZero(const glm::dvec3 &vec) const
     {
         // Return true if the vector is close to zero in all dimensions.
         const float s = 1e-8;
@@ -37,7 +37,7 @@ public:
     /// @param vec the vector to reflect
     /// @param normal the normal to reflect about
     /// @return the reflected vector
-    glm::vec3 reflect(const glm::vec3 &vec, const glm::vec3 &normal) const
+    glm::vec3 reflect(const glm::dvec3 &vec, const glm::dvec3 &normal) const
     {
         return vec - 2.0f * glm::dot(vec, normal) * normal;
     }

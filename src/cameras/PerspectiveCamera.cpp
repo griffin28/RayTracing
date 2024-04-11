@@ -20,7 +20,7 @@ PerspectiveCamera::PerspectiveCamera(int width,
     m_width(width),
     m_height(height),
     m_maxDepth(maxDepth),
-    m_zoomFactor(1.0f),
+    m_zoomFactor(1.0),
     m_fovy(fovy),
     m_near(near),
     m_far(far)
@@ -40,9 +40,9 @@ void PerspectiveCamera::reset()
     // TODO: save original values to reset to previous values
     this->Camera::reset();
 
-    m_fovy = 45.0f;
-    m_near = 0.1f;
-    m_far = 1000.0f;
+    m_fovy = 45.0;
+    m_near = 0.1;
+    m_far = 1000.0;
 }
 
 //----------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void PerspectiveCamera::render(const HittableList &world, const int samplesPerPi
         std::clog << "\rScanlines remaining: " << m_height - j << ' ' << std::flush;
         for(int i=0; i < m_width; ++i)
         {
-            glm::dvec3 pixelColor(0.0f);
+            glm::dvec3 pixelColor(0.0);
             double xOffsets[samplesPerPixel];
             double yOffsets[samplesPerPixel];
 
@@ -64,13 +64,13 @@ void PerspectiveCamera::render(const HittableList &world, const int samplesPerPi
 
             for(int k=0; k < samplesPerPixel; ++k)
             {
-                auto pixel = glm::dvec2(i + xOffsets[k] - 0.5f, j + yOffsets[k] - 0.5f);
-                // std::unique_ptr<Ray> ray(this->generateRay(pixel));
-                std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
+                auto pixel = glm::dvec2(i + xOffsets[k] - 0.5, j + yOffsets[k] - 0.5);
+                std::unique_ptr<Ray> ray(this->generateRay(pixel));
+                // std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
                 pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
             }
 
-            this->writeColor3f(out, pixelColor, samplesPerPixel);
+            this->writeColor3(out, pixelColor, samplesPerPixel);
         }
     }
 
@@ -89,8 +89,8 @@ void PerspectiveCamera::setViewAngle(const double angle)
 {
     if(m_fovy != angle)
     {
-        double min = 0.00000001f;
-        double max = 179.0f;
+        double min = 0.00000001;
+        double max = 179.0;
 
         m_fovy = (angle < min ? min : (angle > max ? max : angle));
         double aspect = static_cast<double>(m_width) / static_cast<double>(m_height);
@@ -133,7 +133,7 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
     Ray *pinholeRay = this->generateRay(pixel);
     const double aperatureRadius = this->getAperatureRadius();
 
-    if(aperatureRadius <= 0.0f)
+    if(aperatureRadius <= 0.0)
     {
         return pinholeRay;
     }
@@ -141,15 +141,15 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
     glm::dvec2 lensOffset = glm::dvec2(randomInUnitDisk());
 
     const double focalDistance = glm::distance(this->getPosition(), this->getFocalPoint());
-    const double fstop = focalDistance / (aperatureRadius * 2.f);
+    const double fstop = focalDistance / (aperatureRadius * 2.0);
 
-    double theta = lensOffset.x * aperatureRadius * 2.f * M_PI;
+    double theta = lensOffset.x * aperatureRadius * 2.0 * M_PI;
     double radius = lensOffset.y * aperatureRadius;
 
-    glm::dvec3 lensOffsetWorld = glm::sqrt(radius) * glm::dvec3(cos(theta), sin(theta), 0.f);
+    glm::dvec3 lensOffsetWorld = glm::sqrt(radius) * glm::dvec3(cos(theta), sin(theta), 0.0);
     glm::dvec3 focusPoint = pinholeRay->direction() * (focalDistance / glm::dot(pinholeRay->direction(), this->getFocalPoint()));
 
-    const double circleOfConfusion = focalDistance / (2.f * fstop);
+    const double circleOfConfusion = focalDistance / (2.0 * fstop);
 
     // glm::dvec3 origin = this->getPosition() + (lensOffsetWorld * circleOfConfusion);
     glm::dvec3 origin = this->getPosition() + lensOffsetWorld;
@@ -166,7 +166,7 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
 Ray *
 PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
 {
-    const double scale = tan(glm::radians(m_fovy * 0.5f));
+    const double scale = tan(glm::radians(m_fovy * 0.5));
 
     // Raster Space -> Normalized Device Coordinate Space
     // TODO: look at NVIDIA's Raytracing Gems book for a better way to do this
@@ -242,13 +242,13 @@ glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const Hittabl
 
     if(depth <= 0)
     {
-        return glm::dvec3(0.0f);
+        return glm::dvec3(0.0);
     }
 
     if(world.hit(*ray, record))
     {
         Ray scattered;
-        glm::dvec3 attenuation(1.f);
+        glm::dvec3 attenuation(1.0);
 
         if(record.material->scatter(*ray, record, attenuation, scattered))
         {
@@ -256,13 +256,14 @@ glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const Hittabl
             // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
         }
 
-        return glm::dvec3(0.0f);
+        return glm::dvec3(0.0);
     }
 
-    auto unitDirection = glm::normalize(ray->direction());
-    double a = 0.5f * (unitDirection.y + 1.0f);
-    // return gammaCorrect((1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f));
-    return (1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f);
+    // auto unitDirection = glm::normalize(ray->direction());
+    // double a = 0.5 * (unitDirection.y + 1.0);
+    // // return gammaCorrect((1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f));
+    // return (1.0 - a) * glm::dvec3(1.0, 1.0, 1.0) + a * glm::dvec3(0.5, 0.7, 1.0);
+    return glm::dvec3(0.0);
 }
 
 //----------------------------------------------------------------------------------
@@ -272,8 +273,8 @@ void PerspectiveCamera::writeColor3(std::ostream& out, glm::dvec3 pixelColor, co
     pixelColor *= scale;
 
     // Write the translated [0,255] value of each color component.
-    out << static_cast<int>(256.f * clamp(pixelColor.x, 0.000f, 0.999f)) << ' '
-        << static_cast<int>(256.f * clamp(pixelColor.y, 0.000f, 0.999f)) << ' '
-        << static_cast<int>(256.f * clamp(pixelColor.z, 0.000f, 0.999f)) << '\n';
+    out << static_cast<int>(255.0 * clamp(pixelColor.x, 0.0, 1.0)) << ' '
+        << static_cast<int>(255.0 * clamp(pixelColor.y, 0.0, 1.0)) << ' '
+        << static_cast<int>(255.0 * clamp(pixelColor.z, 0.0, 1.0)) << '\n';
 }
 } // namespace raytracer
