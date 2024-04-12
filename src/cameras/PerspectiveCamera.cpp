@@ -238,12 +238,12 @@ PerspectiveCamera::copy(const ProjectionCamera * const camera)
 //----------------------------------------------------------------------------------
 glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const HittableList &world)
 {
-    HitRecord record;
-
     if(depth <= 0)
     {
         return glm::dvec3(0.0);
     }
+
+    HitRecord record;
 
     if(world.hit(*ray, record))
     {
@@ -263,7 +263,7 @@ glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const Hittabl
     // double a = 0.5 * (unitDirection.y + 1.0);
     // // return gammaCorrect((1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f));
     // return (1.0 - a) * glm::dvec3(1.0, 1.0, 1.0) + a * glm::dvec3(0.5, 0.7, 1.0);
-    return glm::dvec3(0.0);
+    return glm::dvec3(0.678, 0.847, 0.902);
 }
 
 //----------------------------------------------------------------------------------

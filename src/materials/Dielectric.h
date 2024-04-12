@@ -7,14 +7,12 @@ namespace raytracer
 class Dielectric : public Material
 {
 public:
-    /// @brief a constructor to create a metal material with an albedo and roughness.
+    /// @brief a constructor to create a glass material.
     Dielectric();
 
-    /// @brief a constructor to create a metal material with an albedo and roughness.
-    /// @param albedo the albedo of the metal
-    /// @param eta the index of refraction
-    /// @param roughness the roughness of the metal
-    Dielectric(const glm::dvec3 &albedo, double eta = 1.0, double roughness = 0.0);
+    /// @brief a constructor to create a glass material with an index of refraction.
+    /// @param indexOfRefraction the index of refraction
+    Dielectric(double indexOfRefraction);
 
     /// @brief Determines if the ray scatters when it hits the object.
     /// @see Material::scatter
@@ -26,9 +24,12 @@ public:
     /// @param etai_over_etat the ratio of the indices of refraction
     /// @return the refracted vector
     glm::dvec3 refract(const glm::dvec3 &uv, const glm::dvec3 &n, double etai_over_etat) const;
+
+    /// @brief  Use schlick's approximation for reflectance.
+    /// @param cosine the cosine of the angle
+    /// @param ref_idx the index of refraction
+    double reflectance(double cosine, double ref_idx) const;
 private:
-    glm::dvec3 m_albedo;
-    double m_roughness;
-    double m_eta;
+    double m_ir;
 };
 } // namespace raytracer

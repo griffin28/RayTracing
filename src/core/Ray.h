@@ -22,7 +22,7 @@ public:
     /// @param tMax maximum t-value to count as a hit
     Ray(const glm::dvec3 &origin,
         const glm::dvec3 &direction,
-        double tMin = 0.01,
+        double tMin = 0.0,
         double tMax = std::numeric_limits<double>::infinity())
             : m_origin(origin)
             , m_direction(direction)

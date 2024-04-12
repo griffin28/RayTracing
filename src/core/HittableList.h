@@ -29,13 +29,14 @@ public:
     {
         HitRecord tempRecord;
         bool hitAnything = false;
-        float closestSoFar = std::numeric_limits<float>::max();
+        auto closestSoFar = ray.tMax();
 
         for (const auto &object : m_objects)
         {
             if (object->hit(ray, tempRecord))
             {
                 hitAnything = true;
+
                 if (tempRecord.t < closestSoFar)
                 {
                     closestSoFar = tempRecord.t;

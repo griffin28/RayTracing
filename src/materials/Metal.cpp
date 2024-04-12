@@ -17,7 +17,7 @@ Metal::Metal()
 //----------------------------------------------------------------------------------
 Metal::Metal(const glm::dvec3 &albedo, double roughness)
     : m_albedo(albedo)
-    , m_roughness(roughness < 1.0f ? roughness : 1.0f)
+    , m_roughness(roughness < 1.0 ? roughness : 1.0)
 {
 }
 
