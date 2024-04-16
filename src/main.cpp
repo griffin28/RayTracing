@@ -48,8 +48,9 @@ glm::dvec3 rayColor(Ray * const ray, int depth, const HittableList &world)
 
 int main()
 {
-    const int IMAGE_WIDTH = 600;
-    const int IMAGE_HEIGHT = 400;
+    const int IMAGE_WIDTH = 400;
+    const int IMAGE_HEIGHT = 200;
+
     // Materials
     auto materialGround = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.0, 0.8, 0.0));
     auto materialCenter = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.7, 0.3, 0.3));
@@ -60,36 +61,35 @@ int main()
     raytracer::HittableList world;
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,0,-50), 9, materialCenter));
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(20,0,-50), 9, materialLeft));
+    // world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(20,0,-50), -8, materialLeft));
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-20,0,-50), 9, materialRight));
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-550.5,-200), 550, materialGround));
-    // HittableList world;
-    // world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,0,-5), 1.0));
-    // world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-400.0,-50), 400));
 
     // // Camera
-    PerspectiveCamera camera(600, 400);
+    PerspectiveCamera camera(400, 200);
     // // camera.dolly(30);
     // // camera.boom(-50);
     // // camera.tilt(-70);
 
-    // camera.setAperatureRadius(0.0);
+    camera.setFocalPoint(glm::dvec3(0,0,-41));
+    camera.setAperatureRadius(0.1);
 
-    // camera.render(world, 5);
+    camera.render(world, 4);
 
-    std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
+    // std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
-    for(int j=0; j < IMAGE_HEIGHT; ++j)
-    {
-        std::clog << "\rScanlines remaining: " << IMAGE_HEIGHT - j << ' ' << std::flush;
+    // for(int j=0; j < IMAGE_HEIGHT; ++j)
+    // {
+    //     std::clog << "\rScanlines remaining: " << IMAGE_HEIGHT - j << ' ' << std::flush;
 
-        for(int i=0; i < IMAGE_WIDTH; ++i)
-        {
-            std::unique_ptr<Ray> ray(camera.generateRay(glm::dvec2(i, j)));
-            auto pixelColor = rayColor(ray.get(), 10, world);
-            camera.writeColor3(std::cout, pixelColor, 1);
-        }
-    }
+    //     for(int i=0; i < IMAGE_WIDTH; ++i)
+    //     {
+    //         std::unique_ptr<Ray> ray(camera.generateRay(glm::dvec2(i, j)));
+    //         auto pixelColor = rayColor(ray.get(), 10, world);
+    //         camera.writeColor3(std::cout, pixelColor, 1);
+    //     }
+    // }
 
-    std::clog << "\nDone.\n";
+    // std::clog << "\nDone.\n";
     return 0;
 }

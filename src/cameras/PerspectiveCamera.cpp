@@ -56,17 +56,18 @@ void PerspectiveCamera::render(const HittableList &world, const int samplesPerPi
         for(int i=0; i < m_width; ++i)
         {
             glm::dvec3 pixelColor(0.0);
-            double xOffsets[samplesPerPixel];
-            double yOffsets[samplesPerPixel];
+            // double xOffsets[samplesPerPixel];
+            // double yOffsets[samplesPerPixel];
 
-            Camera::generateHaltonSequence(samplesPerPixel, 2, xOffsets);
-            Camera::generateHaltonSequence(samplesPerPixel, 3, yOffsets);
+            // Camera::generateHaltonSequence(samplesPerPixel, 2, xOffsets);
+            // Camera::generateHaltonSequence(samplesPerPixel, 3, yOffsets);
 
             for(int k=0; k < samplesPerPixel; ++k)
             {
-                auto pixel = glm::dvec2(i + xOffsets[k] - 0.5, j + yOffsets[k] - 0.5);
-                std::unique_ptr<Ray> ray(this->generateRay(pixel));
-                // std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
+                // auto pixel = glm::dvec2(i + xOffsets[k] - 0.5, j + yOffsets[k] - 0.5);
+                auto pixel = glm::dvec2(i + raytracer::randomDouble() - 0.5, j + raytracer::randomDouble() - 0.5);
+                // std::unique_ptr<Ray> ray(this->generateRay(pixel));
+                std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
                 pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
             }
 
@@ -138,22 +139,16 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
         return pinholeRay;
     }
 
+    auto u = this->getHorizontalAxis();
+    auto v = this->getVerticalAxis();
+
+    auto defocusDiskU = u * aperatureRadius;
+    auto defocusDiskV = v * aperatureRadius;
+
     glm::dvec2 lensOffset = glm::dvec2(randomInUnitDisk());
 
-    const double focalDistance = glm::distance(this->getPosition(), this->getFocalPoint());
-    const double fstop = focalDistance / (aperatureRadius * 2.0);
-
-    double theta = lensOffset.x * aperatureRadius * 2.0 * M_PI;
-    double radius = lensOffset.y * aperatureRadius;
-
-    glm::dvec3 lensOffsetWorld = glm::sqrt(radius) * glm::dvec3(cos(theta), sin(theta), 0.0);
-    glm::dvec3 focusPoint = pinholeRay->direction() * (focalDistance / glm::dot(pinholeRay->direction(), this->getFocalPoint()));
-
-    const double circleOfConfusion = focalDistance / (2.0 * fstop);
-
-    // glm::dvec3 origin = this->getPosition() + (lensOffsetWorld * circleOfConfusion);
-    glm::dvec3 origin = this->getPosition() + lensOffsetWorld;
-    glm::dvec3 direction = glm::normalize(focusPoint - origin);
+    auto origin = this->getPosition() + (lensOffset[0] * defocusDiskU) + (lensOffset[1] * defocusDiskV);
+    glm::dvec3 direction = glm::normalize(pinholeRay->direction() - origin);
 
     // Clean-up
     delete pinholeRay;
@@ -161,6 +156,42 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
     Ray *lensRay = new Ray(origin, direction);
     return lensRay;
 }
+
+//----------------------------------------------------------------------------------
+// Ray *
+// PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
+// {
+//     Ray *pinholeRay = this->generateRay(pixel);
+//     const double aperatureRadius = this->getAperatureRadius();
+
+//     if(aperatureRadius <= 0.0)
+//     {
+//         return pinholeRay;
+//     }
+
+//     glm::dvec2 lensOffset = glm::dvec2(randomInUnitDisk());
+
+//     const double focalDistance = glm::distance(this->getPosition(), this->getFocalPoint());
+//     const double fstop = focalDistance / (aperatureRadius * 2.0);
+
+//     double theta = lensOffset.x * aperatureRadius * 2.0 * M_PI;
+//     double radius = lensOffset.y * aperatureRadius;
+
+//     glm::dvec3 lensOffsetWorld = glm::sqrt(radius) * glm::dvec3(cos(theta), sin(theta), 0.0);
+//     glm::dvec3 focusPoint = pinholeRay->direction() * (focalDistance / glm::dot(pinholeRay->direction(), this->getFocalPoint()));
+
+//     const double circleOfConfusion = focalDistance / (2.0 * fstop);
+
+//     // glm::dvec3 origin = this->getPosition() + (lensOffsetWorld * circleOfConfusion);
+//     glm::dvec3 origin = this->getPosition() + lensOffsetWorld;
+//     glm::dvec3 direction = glm::normalize(focusPoint - origin);
+
+//     // Clean-up
+//     delete pinholeRay;
+
+//     Ray *lensRay = new Ray(origin, direction);
+//     return lensRay;
+// }
 
 //----------------------------------------------------------------------------------
 Ray *
@@ -252,8 +283,8 @@ glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const Hittabl
 
         if(record.material->scatter(*ray, record, attenuation, scattered))
         {
-            return attenuation * rayColor(&scattered, depth-1, world);
-            // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
+            // return attenuation * rayColor(&scattered, depth-1, world);
+            return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
         }
 
         return glm::dvec3(0.0);

@@ -31,7 +31,7 @@ public:
     /// @throw std::invalid_argument if the screen size is invalid
     PerspectiveCamera(int width,
                       int height,
-                      int maxDepth=1000,
+                      int maxDepth=10,
                       double fovy=45.0,
                       double near=0.1,
                       double far=1000.0);
