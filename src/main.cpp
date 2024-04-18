@@ -100,7 +100,7 @@ int main()
 
     PerspectiveCamera camera(1200, 675, 20, 20.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
-    camera.setPosition(glm::dvec3(0, 0.1, 10));
+    camera.setPosition(glm::dvec3(0, 2, 3));
     // camera.setPosition(glm::dvec3(13, -2, 3));
     camera.setFocalPoint(glm::dvec3(0, 0, 0));
     camera.setAperatureRadius(0);
