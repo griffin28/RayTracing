@@ -23,6 +23,15 @@ namespace raytracer
         double t;
         bool frontFace;
 
+        HitRecord()
+            : point()
+            , normal()
+            , material(nullptr)
+            , t(-1.0)
+            , frontFace(false)
+        {
+        }
+
         /// @brief Sets the normal and front face flag based on the ray and outward normal.
         /// @param ray the ray that intersected the object
         /// @param outwardNormal the normal at the point of intersection

@@ -29,7 +29,7 @@ public:
     {
         HitRecord tempRecord;
         bool hitAnything = false;
-        auto closestSoFar = ray.tMax();
+        auto closestSoFar = std::numeric_limits<double>::infinity();
 
         for (const auto &object : m_objects)
         {
