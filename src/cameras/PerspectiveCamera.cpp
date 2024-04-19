@@ -171,7 +171,7 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
 
     glm::dvec2 lensOffset = glm::dvec2(randomInUnitDisk());
 
-    const double focalDistance = 10; // glm::distance(this->getPosition(), this->getFocalPoint());
+    const double focalDistance = 8; // glm::distance(this->getPosition(), this->getFocalPoint());
     const double fstop = focalDistance / (aperatureRadius * 2.0);
 
     double theta = lensOffset.x * aperatureRadius * 2.0 * M_PI;

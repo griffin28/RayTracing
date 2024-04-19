@@ -98,14 +98,14 @@ int main()
     auto material3 = std::make_shared<raytracer::Metal>(glm::dvec3(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(4, 1, -2), 1.0, material3));
 
-    PerspectiveCamera camera(1200, 675, 40, 45.0);
+    PerspectiveCamera camera(1200, 675, 40, 60.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
-    camera.setPosition(glm::dvec3(0, 0, 6));
+    camera.setPosition(glm::dvec3(0, 0.3, 6));
     // camera.setPosition(glm::dvec3(13, -2, 3));
-    camera.setFocalPoint(glm::dvec3(0, 0.2, 0.0));
-    camera.setAperatureRadius(0);
+    camera.setFocalPoint(glm::dvec3(0, 0.5, -1.0));
+    camera.setAperatureRadius(0.1);
 
-    camera.render(world, 200);
+    camera.render(world, 300);
 
     return 0;
 }
