@@ -90,19 +90,19 @@ int main()
     }
 
     auto material1 = std::make_shared<raytracer::Dielectric>(1.5);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 1, -1), 1.0, material1));
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 1, -2), 1.0, material1));
 
     auto material2 = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.4, 0.2, 0.1));
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-4, 1, -1), 1.0, material2));
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-4, 1, -2), 1.0, material2));
 
     auto material3 = std::make_shared<raytracer::Metal>(glm::dvec3(0.7, 0.6, 0.5), 0.0);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(4, 1, -1), 1.0, material3));
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(4, 1, -2), 1.0, material3));
 
-    PerspectiveCamera camera(1200, 675, 50, 20.0);
+    PerspectiveCamera camera(1200, 675, 40, 45.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
-    camera.setPosition(glm::dvec3(0, 0.1, 6));
+    camera.setPosition(glm::dvec3(0, 0, 6));
     // camera.setPosition(glm::dvec3(13, -2, 3));
-    camera.setFocalPoint(glm::dvec3(0, 0, 0));
+    camera.setFocalPoint(glm::dvec3(0, 0.2, 0.0));
     camera.setAperatureRadius(0);
 
     camera.render(world, 200);

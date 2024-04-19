@@ -33,7 +33,7 @@ public:
                       int height,
                       int maxDepth=10,
                       double fovy=45.0,
-                      double near=0.1,
+                      double near=0.0,
                       double far=1000.0);
 
     /// Default destructor.
