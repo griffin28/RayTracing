@@ -187,10 +187,12 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
     glm::dvec3 origin = this->getPosition() + (u * circleOfConfusionRadius * this->getHorizontalAxis()) + (v * circleOfConfusionRadius * this->getVerticalAxis());
     glm::dvec3 direction = glm::normalize(focusPoint - origin);
 
+    const double time = randomDouble();
+
     // Clean-up
     delete pinholeRay;
 
-    Ray *lensRay = new Ray(origin, direction);
+    Ray *lensRay = new Ray(origin, direction, time);
     return lensRay;
 }
 

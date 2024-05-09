@@ -13,19 +13,27 @@ class Ray
 {
 public:
     /// @brief Default Ray constructor.
-    Ray() : m_origin(), m_direction(), m_tMin(0.0), m_tMax(std::numeric_limits<double>::infinity()) {}
+    Ray()
+        : m_origin()
+        , m_direction()
+        , m_time(0.0)
+        , m_tMin(0.0)
+        , m_tMax(std::numeric_limits<double>::infinity()) {}
 
     /// @brief Ray constructor
     /// @param origin ray origin
     /// @param direction ray direction
+    /// @param time time of the ray
     /// @param tMin minimum t-value to count as a hit
     /// @param tMax maximum t-value to count as a hit
     Ray(const glm::dvec3 &origin,
         const glm::dvec3 &direction,
+        double time = 0.0,
         double tMin = 0.0,
         double tMax = std::numeric_limits<double>::infinity())
             : m_origin(origin)
             , m_direction(direction)
+            , m_time(time)
             , m_tMin(tMin)
             , m_tMax(tMax) {}
 
@@ -34,6 +42,7 @@ public:
     Ray(const Ray &other)
         : m_origin(other.m_origin)
         , m_direction(other.m_direction)
+        , m_time(other.m_time)
         , m_tMin(other.m_tMin)
         , m_tMax(other.m_tMax) {}
 
@@ -56,6 +65,10 @@ public:
     /// @return the maximum t-value to count as a hit
     double tMax() const { return m_tMax; }
 
+    /// @brief Get the time of the ray
+    /// @return the time of the ray
+    double time() const { return m_time; }
+
     /// @brief The ray parametric equation
     /// @param t the distance between the ray origin and the returned point
     /// @return the point at distance t from the ray origin
@@ -72,6 +85,7 @@ public:
             m_direction = other.m_direction;
             m_tMin = other.m_tMin;
             m_tMax = other.m_tMax;
+            m_time = other.m_time;
         }
         return *this;
     }
@@ -80,13 +94,15 @@ public:
     {
         os << "[o=" << r.m_origin.x << "," << r.m_origin.y << "," << r.m_origin.z
            << ", d=" << r.m_direction.x << "," << r.m_direction.y << "," << r.m_direction.z
-           << ", tMin=" << r.m_tMin << ", " << "tMax=" << r.m_tMax << "]";
+           << ", tMin=" << r.m_tMin << ", " << "tMax=" << r.m_tMax << "]"
+           << ", time=" << r.m_time << "]";
         return os;
     }
 
 private:
     glm::dvec3 m_origin;
     glm::dvec3 m_direction;
+    mutable double m_time;   // time of the ray
     mutable double m_tMin;   // abs(near) / m_direction.z
     mutable double m_tMax;   // abs(zFar) / m_direction.z
 };
