@@ -105,7 +105,7 @@ int main()
     camera.setFocalPoint(glm::dvec3(0, 0.5, -1.0));
     camera.setAperatureRadius(0.1);
 
-    camera.render(world, 300);
+    camera.render(world, 100);
 
     return 0;
 }

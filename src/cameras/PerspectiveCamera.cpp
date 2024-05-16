@@ -1,6 +1,10 @@
 #include "PerspectiveCamera.h"
 #include "Utility.h"
+
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
+
+#include <thread>
+#include <functional> // std::bind
 
 namespace raytracer
 {
@@ -48,33 +52,52 @@ void PerspectiveCamera::reset()
 //----------------------------------------------------------------------------------
 void PerspectiveCamera::render(const HittableList &world, const int samplesPerPixel, std::ostream &out)
 {
-    out << "P3\n" << m_width << ' ' << m_height << "\n255\n";
+    std::unique_ptr<uint8_t[]> image(new uint8_t[m_width * m_height * 3]);
+    auto numThreads = std::thread::hardware_concurrency();
+    numThreads = numThreads > m_height ? m_height : numThreads;
+    std::clog << "Using " << numThreads << " threads\n";
+    std::vector<std::thread> threads(numThreads);
 
-    for(int j=0; j < m_height; ++j)
+    for(int t=0; t<numThreads; t++)
     {
-        std::clog << "\rScanlines remaining: " << m_height - j << ' ' << std::flush;
-        for(int i=0; i < m_width; ++i)
+        // std::bind is used to pass the parameters to the lambda function
+        threads[t] = std::thread(std::bind([&](int start, int end, int t)
         {
-            glm::dvec3 pixelColor(0.0);
-            // double xOffsets[samplesPerPixel];
-            // double yOffsets[samplesPerPixel];
-
-            // Camera::generateHaltonSequence(samplesPerPixel, 2, xOffsets);
-            // Camera::generateHaltonSequence(samplesPerPixel, 3, yOffsets);
-
-            for(int k=0; k < samplesPerPixel; ++k)
+            for(int j=start; j < end; ++j)
             {
-                // auto pixel = glm::dvec2(i + xOffsets[k] - 0.5, j + yOffsets[k] - 0.5);
-                auto pixel = glm::dvec2(i + raytracer::randomDouble() - 0.5, j + raytracer::randomDouble() - 0.5);
-                // std::unique_ptr<Ray> ray(this->generateRay(pixel));
-                std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
-                pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
-            }
+                if(t == static_cast<int>((numThreads / 2)))
+                {
+                    std::clog << "\rScanlines remaining: " << end - j << ' ' << std::flush;
+                }
 
-            this->writeColor3(out, pixelColor, samplesPerPixel);
-        }
+                for(int i=0; i < m_width; ++i)
+                {
+                    glm::dvec3 pixelColor(0.0);
+
+                    for(int k=0; k < samplesPerPixel; ++k)
+                    {
+                        auto pixel = glm::dvec2(i + raytracer::randomDouble() - 0.5, j + raytracer::randomDouble() - 0.5);
+                        std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
+                        pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
+                    }
+
+                    pixelColor *= 1.0 / samplesPerPixel;
+                    pixelColor = gammaCorrect(pixelColor);
+
+                    image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0 * clamp(pixelColor.r, 0.0, 1.0));
+                    image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0 * clamp(pixelColor.g, 0.0, 1.0));
+                    image[(j * m_width + i) * 3 + 2] = static_cast<uint8_t>(255.0 * clamp(pixelColor.b, 0.0, 1.0));
+                }
+            }
+        }, t * m_height / numThreads, (t+1) == numThreads ? m_height : (t+1) * m_height / numThreads, t));
     }
 
+    for(auto &thread : threads)
+    {
+        thread.join();
+    }
+
+    this->writePPMImage(image.get(), m_width, m_height, out);
     std::clog << "\nDone.\n";
 }
 
@@ -187,12 +210,10 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
     glm::dvec3 origin = this->getPosition() + (u * circleOfConfusionRadius * this->getHorizontalAxis()) + (v * circleOfConfusionRadius * this->getVerticalAxis());
     glm::dvec3 direction = glm::normalize(focusPoint - origin);
 
-    const double time = randomDouble();
-
     // Clean-up
     delete pinholeRay;
 
-    Ray *lensRay = new Ray(origin, direction, time);
+    Ray *lensRay = new Ray(origin, direction, randomDouble());
     return lensRay;
 }
 
@@ -222,7 +243,9 @@ PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
     glm::dvec3 rayOriginWorld = glm::mat3(cameraToWorldTransform) * rayOrigin;
     glm::dvec3 rayPointWorld = glm::mat3(cameraToWorldTransform) * glm::dvec3(pxCamera, pyCamera, rayOrigin.z-1);
 
-    Ray *ray = new Ray(rayOriginWorld, glm::normalize(rayPointWorld - rayOriginWorld));
+    Ray *ray = new Ray(rayOriginWorld,
+                       glm::normalize(rayPointWorld - rayOriginWorld),
+                       randomDouble());
     return ray;
 }
 
@@ -286,8 +309,8 @@ glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const Hittabl
 
         if(record.material && record.material->scatter(*ray, record, attenuation, scattered))
         {
-            // return attenuation * rayColor(&scattered, depth-1, world);
-            return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
+            return attenuation * rayColor(&scattered, depth-1, world);
+            // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
         }
 
         return glm::dvec3(0.0);
@@ -310,5 +333,21 @@ void PerspectiveCamera::writeColor3(std::ostream& out, glm::dvec3 pixelColor, co
     out << static_cast<int>(255.0 * clamp(pixelColor.x, 0.0, 1.0)) << ' '
         << static_cast<int>(255.0 * clamp(pixelColor.y, 0.0, 1.0)) << ' '
         << static_cast<int>(255.0 * clamp(pixelColor.z, 0.0, 1.0)) << '\n';
+}
+
+//----------------------------------------------------------------------------------
+void PerspectiveCamera::writePPMImage(uint8_t *image, const int width, const int height, std::ostream &out)
+{
+    out << "P3\n" << width << ' ' << height << "\n255\n";
+
+    for(int j=0; j < height; j++)
+    {
+        for(int i=0; i < width; ++i)
+        {
+            out << static_cast<int>(image[(j * width + i) * 3 + 0]) << ' '
+                << static_cast<int>(image[(j * width + i) * 3 + 1]) << ' '
+                << static_cast<int>(image[(j * width + i) * 3 + 2]) << '\n';
+        }
+    }
 }
 } // namespace raytracer

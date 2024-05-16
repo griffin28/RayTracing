@@ -111,6 +111,13 @@ public:
     /// @param samplesPerPixel the number of samples per pixel
     void writeColor3(std::ostream& out, glm::dvec3 pixelColor, const int samplesPerPixel=1);
 
+    /// @brief  Write a PPM image to the output stream.
+    /// @param image PPM image data
+    /// @param width the width of the image
+    /// @param height the height of the image
+    /// @param out the output stream
+    void writePPMImage(uint8_t *image, const int width, const int height, std::ostream &out=std::cout);
+
     int m_width;
     int m_height;
     int m_maxDepth;
