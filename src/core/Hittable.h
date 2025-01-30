@@ -2,6 +2,7 @@
 
 #include "Ray.h"
 #include "Material.h"
+#include "AABB.h"
 
 #include <glm/glm.hpp>
 
@@ -54,5 +55,13 @@ namespace raytracer
         /// @param record the hit record
         /// @return true if the ray intersects the object, false otherwise
         virtual bool hit(const Ray& ray, HitRecord& record) const = 0;
+
+        /// @brief Get the world space bounds for this object
+        /// @return Bounding box for the object using world space coordinates
+        virtual AxisAlignedBoundingBox getBounds() const = 0;
+
+        /// @brief Get the center of the object
+        /// @return  the center of the object
+        virtual glm::dvec3 center() const = 0;
     };
 } // namespace raytracer

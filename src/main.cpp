@@ -3,23 +3,24 @@
 #include "Lambertian.h"
 #include "Metal.h"
 #include "Dielectric.h"
-
 #include "Utility.h"
 #include "Ray.h"
-#include "HittableList.h"
+#include "BVH.h"
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 
 #include <iostream>
 #include <memory>
+#include <vector>
 
 using PerspectiveCamera = raytracer::PerspectiveCamera;
 using Ray = raytracer::Ray;
-using HittableList = raytracer::HittableList;
+using Hittable = raytracer::Hittable;
 using HitRecord = raytracer::HitRecord;
+using BVH = raytracer::BVH;
 
-glm::dvec3 rayColor(Ray * const ray, int depth, const HittableList &world)
+glm::dvec3 rayColor(Ray * const ray, int depth, const BVH &world)
 {
     if(depth <= 0)
     {
@@ -48,11 +49,13 @@ glm::dvec3 rayColor(Ray * const ray, int depth, const HittableList &world)
 
 int main()
 {
-    HittableList world;
+    BVH world;
 
+    // Ground
     auto materialGround = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.5, 0.5, 0.5));
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000,-200), 1000, materialGround));
 
+    // Random spheres
     for(int a=-11; a < 11; ++a)
     {
         for(int b=-11; b < 11; ++b)
@@ -89,6 +92,7 @@ int main()
         }
     }
 
+    // Three big spheres
     auto material1 = std::make_shared<raytracer::Dielectric>(1.5);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 1, -2), 1.0, material1));
 
@@ -98,14 +102,17 @@ int main()
     auto material3 = std::make_shared<raytracer::Metal>(glm::dvec3(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(4, 1, -2), 1.0, material3));
 
+    // Build BVH
+    world.build();
+
     PerspectiveCamera camera(1200, 675, 40, 60.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
     camera.setPosition(glm::dvec3(0, 0.3, 6));
     // camera.setPosition(glm::dvec3(13, -2, 3));
     camera.setFocalPoint(glm::dvec3(0, 0.5, -1.0));
-    camera.setAperatureRadius(0.1);
+    camera.setAperatureRadius(0);
 
-    camera.render(world, 100);
+    camera.render(world, 5);
 
     return 0;
 }

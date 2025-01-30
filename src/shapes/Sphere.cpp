@@ -3,6 +3,17 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
+Sphere::Sphere(const glm::dvec3 &center, const double radius, std::shared_ptr<Material> material)
+        : m_center(center)
+        , m_radius(radius)
+        , m_material(material)
+{
+    m_bounds = AxisAlignedBoundingBox(m_center - glm::dvec3(m_radius),
+                                      m_center + glm::dvec3(m_radius),
+                                      0.01);
+}
+
+//----------------------------------------------------------------------------------
 // bool Sphere::hit(const Ray &ray, HitRecord &record) const
 // {
 //     glm::dvec3 oc = ray.origin() - m_center;
@@ -40,7 +51,7 @@ namespace raytracer
 //----------------------------------------------------------------------------------
 bool Sphere::hit(const Ray &ray, HitRecord &record) const
 {
-    auto sphereCenter = m_isMoving ? center(ray.time()) : m_center;
+    auto sphereCenter = m_center;
     auto l = sphereCenter - ray.origin();
     auto tca = glm::dot(l, ray.direction());
 

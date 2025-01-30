@@ -3,12 +3,12 @@
         {
             "name": "Linux",
             "includePath": [
-                "${default}",
-                "${workspaceFolder}/**",
+                "/home/kgriffin/Learning/RayTracing/Code/src/**",
                 "/home/kgriffin/Learning/RayTracing/Code/external/glm/**",
                 "/home/kgriffin/Learning/RayTracing/Code/external/stb_image/**",
                 "${workspaceFolder}/src/**",
-                "${workspaceFolder}/external/glm"
+                "${workspaceFolder}/external/glm",
+                "${default}"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",

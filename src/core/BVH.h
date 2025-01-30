@@ -1,0 +1,62 @@
+#ifndef INCLUDED_BVH_H
+#define INCLUDED_BVH_H
+
+#include "Hittable.h"
+
+#include <vector>
+#include <memory>
+
+namespace raytracer
+{
+class AxisAlignedBoundingBox;
+class Ray;
+class BVHNode;
+
+/// @class BVH
+/// @brief Bounding Volume Heirarchy
+///
+/// Bounding volume heirarchy (BVH) is an approach for ray intersection acceleration based on
+/// primitive subdivision, where the primitives are partitioned into a hierarchy of disjoint sets.
+/// Primitives are stored in the leaves and each node stores a bounding box of the primitives
+/// in the nodes beneath it. Thus, as a ray traverses through the tree, any time it doesn't
+/// intersect a node's bounds, the subtree beneath that node can be skipped.
+///
+/// This implementation uses equal counts to partition primitives into equally sized subsets
+/// when building the tree.
+class BVH : public Hittable
+{
+public:
+    /// @brief Default constructor
+    // BVH(const std::vector<std::shared_ptr<Hittable>>);
+    BVH();
+
+    /// @brief Destructor
+    ~BVH() = default;
+
+    /// @brief Build the BVH tree
+    void build();
+
+    /// @brief add a hittable object to the list.
+    void add(std::shared_ptr<Hittable> object) { m_sceneObjects.push_back(object); }
+
+    /// @brief Clear the hittable list
+    void clear() { m_sceneObjects.clear(); }
+
+    /// @see Hittable::getBounds
+    AxisAlignedBoundingBox getBounds() const override;
+
+    /// @see Hittable::hit
+    bool hit(const Ray& ray, HitRecord& record) const override;
+
+    /// @see Hittable::center
+    virtual glm::dvec3 center() const override;
+
+private:
+    void build(std::shared_ptr<BVHNode>, const std::vector<std::shared_ptr<Hittable>> &, std::size_t, std::size_t);
+
+    std::shared_ptr<BVHNode> m_root;
+    std::vector<std::shared_ptr<Hittable>> m_sceneObjects;
+};
+} // namespace raytracer
+
+#endif

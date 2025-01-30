@@ -50,7 +50,7 @@ void PerspectiveCamera::reset()
 }
 
 //----------------------------------------------------------------------------------
-void PerspectiveCamera::render(const HittableList &world, const int samplesPerPixel, std::ostream &out)
+void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std::ostream &out)
 {
     std::unique_ptr<uint8_t[]> image(new uint8_t[m_width * m_height * 3]);
     auto numThreads = std::thread::hardware_concurrency();
@@ -293,7 +293,7 @@ PerspectiveCamera::copy(const ProjectionCamera * const camera)
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const HittableList &world)
+glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world)
 {
     if(depth <= 0)
     {
@@ -320,7 +320,7 @@ glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const Hittabl
     // double a = 0.5 * (unitDirection.y + 1.0);
     // // return gammaCorrect((1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f));
     // return (1.0 - a) * glm::dvec3(1.0, 1.0, 1.0) + a * glm::dvec3(0.5, 0.7, 1.0);
-    return glm::dvec3(0.678, 0.847, 0.902);
+    return glm::dvec3(0.678, 0.847, 0.902); // sky color
 }
 
 //----------------------------------------------------------------------------------

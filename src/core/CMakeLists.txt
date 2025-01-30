@@ -1,8 +1,9 @@
 set (CORE_SRCS
         Ray.h
         Hittable.h
-        HittableList.h
-        Utility.h)
+        Utility.h
+        BVH.cpp
+        AABB.cpp)
 
 add_library(core OBJECT ${CORE_SRCS})
 

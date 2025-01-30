@@ -37,6 +37,7 @@ include(SandboxUtils)
 
 # Find packages
 find_package(GLM REQUIRED)
+find_package(Threads REQUIRED)
 
 # Options
 # option(BUILD_TESTS "Build unit tests" OFF)

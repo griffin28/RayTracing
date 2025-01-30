@@ -2,7 +2,7 @@
 #define INCLUDED_PERSPECTIVE_CAMERA_H
 
 #include "ProjectionCamera.h"
-#include "HittableList.h"
+#include "BVH.h"
 
 namespace raytracer
 {
@@ -46,7 +46,7 @@ public:
     /// @param world the hittable list representing the scene
     /// @param samplesPerPixel the number of samples per pixel.
     /// @param out the output stream to write the rendered image to (default is std::cout)
-    void render(const HittableList &world, const int samplesPerPixel=1, std::ostream &out=std::cout);
+    void render(const BVH &world, const int samplesPerPixel=1, std::ostream &out=std::cout);
 
     /// @brief Creates a ray in world space from a screen pixel location. Caller is responsible
     ///        for managing the memory allocated for this object.
@@ -103,7 +103,7 @@ public:
     /// @param ray the ray to compute the color for
     /// @param depth the maximum number of ray bounces into the scene
     /// @param world the hittable list representing the scene
-    glm::dvec3 rayColor(Ray * const ray, int depth, const HittableList &world);
+    glm::dvec3 rayColor(Ray * const ray, int depth, const BVH &world);
 
     /// @brief Write a single pixel's color to the output stream.
     /// @param out the output stream
