@@ -92,6 +92,7 @@ bool Sphere::hit(const Ray &ray, HitRecord &record) const
         auto outwardNormal = glm::normalize(record.point - sphereCenter);
         record.setFaceNormal(ray, outwardNormal);
         record.material = m_material;
+        getSphereUV(outwardNormal, record.u, record.v);
         return true;
     }
 

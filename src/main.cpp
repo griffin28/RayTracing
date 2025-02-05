@@ -6,6 +6,7 @@
 #include "Utility.h"
 #include "Ray.h"
 #include "BVH.h"
+#include "CheckerTexture.h"
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
@@ -20,39 +21,14 @@ using Hittable = raytracer::Hittable;
 using HitRecord = raytracer::HitRecord;
 using BVH = raytracer::BVH;
 
-glm::dvec3 rayColor(Ray * const ray, int depth, const BVH &world)
+void random_spheres()
 {
-    if(depth <= 0)
-    {
-        return glm::dvec3(0.0);
-    }
-
-    HitRecord record;
-
-    if(world.hit(*ray, record))
-    {
-        Ray scattered;
-        glm::dvec3 attenuation(1.0);
-
-        if(record.material->scatter(*ray, record, attenuation, scattered))
-        {
-            return attenuation * rayColor(&scattered, depth-1, world);
-            // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
-        }
-
-        return glm::dvec3(0.0);
-        // return 0.5 * (record.normal + glm::dvec3(1.0));
-    }
-
-    return glm::dvec3(0.678, 0.847, 0.902);
-}
-
-int main()
-{
+    std::clog << "Rendering Scene 1: Random Spheres" << std::endl;
     BVH world;
 
     // Ground
-    auto materialGround = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.5, 0.5, 0.5));
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(glm::dvec3(0.2, 0.3, 0.1), glm::dvec3(0.9, 0.9, 0.9), 2);
+    auto materialGround = std::make_shared<raytracer::Lambertian>(checkerTexture);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000,-200), 1000, materialGround));
 
     // Random spheres
@@ -112,7 +88,50 @@ int main()
     camera.setFocalPoint(glm::dvec3(0, 0.5, -1.0));
     camera.setAperatureRadius(0);
 
-    camera.render(world, 5);
+    camera.render(world, 20);
+}
+
+void two_spheres()
+{
+
+}
+
+int main(int argc, char *argv[])
+{
+    // check if user provided -h or --help
+    if(argc == 2)
+    {
+        if(std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help")
+        {
+            std::clog << "Usage: raytracer <-h || -s scene_number>" << std::endl;
+            std::clog << "-h --help: show help" << std::endl;
+            std::clog << "-s 1: random_spheres" << std::endl;
+            std::clog << "-s 2: two_spheres" << std::endl;
+            return 0;
+        }
+    }
+
+    if((argc == 3) && std::string(argv[1]) == "-s")
+    {
+        const int scene = std::stoi(argv[2]);
+
+        switch (scene)
+        {
+        case 1:
+            random_spheres();
+            break;
+        case 2:
+            two_spheres();
+            break;
+        }
+    }
+    else
+    {
+        std::clog << "Usage: raytracer <-h || -s scene_number>" << std::endl;
+        std::clog << "-h --help: show help" << std::endl;
+        std::clog << "-s 1: random_spheres" << std::endl;
+        std::clog << "-s 2: two_spheres" << std::endl;
+    }
 
     return 0;
 }

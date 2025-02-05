@@ -22,6 +22,8 @@ namespace raytracer
         glm::dvec3 normal;
         std::shared_ptr<Material> material;
         double t;
+        double u;
+        double v;
         bool frontFace;
 
         HitRecord()
@@ -29,6 +31,8 @@ namespace raytracer
             , normal()
             , material(nullptr)
             , t(-1.0)
+            , u(0.0)
+            , v(0.0)
             , frontFace(false)
         {
         }

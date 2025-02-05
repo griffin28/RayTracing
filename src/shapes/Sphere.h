@@ -33,6 +33,19 @@ public:
     /// @return Bounding box for the sphere using world space coordinates
     AxisAlignedBoundingBox getBounds() const override { return m_bounds; }
 
+    /// @brief Get the texture coordinates of the sphere
+    /// @param p the point on the sphere
+    /// @param u the u texture coordinate
+    /// @param v the v texture coordinate
+    static void getSphereUV(const glm::dvec3 &p, double &u, double &v)
+    {
+        auto theta = acos(-p.y);
+        auto phi = atan2(-p.z, p.x) + glm::pi<double>();
+
+        u = phi / (2 * glm::pi<double>());
+        v = theta / glm::pi<double>();
+    }
+
 private:
     glm::dvec3 m_center;
     double m_radius;
