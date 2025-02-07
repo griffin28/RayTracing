@@ -18,25 +18,25 @@ public:
     /// @param even the even texture
     /// @param odd the odd texture
     /// @param scale the scale of the texture
-    CheckerTexture(std::shared_ptr<Texture> even, std::shared_ptr<Texture> odd, double scale)
+    CheckerTexture(const std::shared_ptr<Texture> &even, const std::shared_ptr<Texture> &odd, double scale)
         : m_even(even)
         , m_odd(odd)
         , m_scale(scale) {}
 
     /// @brief Constructor
-    /// @param color1 the first color that will be used for the even texture
-    /// @param color2 the second color that will be used for the odd texture
+    /// @param evenColor the first color that will be used for the even texture
+    /// @param oddColor the second color that will be used for the odd texture
     /// @param scale the scale of the texture
-    CheckerTexture(glm::dvec3 color1, glm::dvec3 color2, double scale)
-        : m_even(std::make_shared<SolidColorTexture>(color1))
-        , m_odd(std::make_shared<SolidColorTexture>(color2))
+    CheckerTexture(const Color3d &evenColor, const Color3d &oddColor, double scale)
+        : m_even(std::make_shared<SolidColorTexture>(evenColor))
+        , m_odd(std::make_shared<SolidColorTexture>(oddColor))
         , m_scale(scale) {}
 
     /// @brief Destructor
     ~CheckerTexture() = default;
 
     /// @see Texture::value
-    glm::dvec3 value(double u, double v, const glm::dvec3 &p) const override
+    Color3d value(double u, double v, const glm::dvec3 &p) const override
     {
         double scaleInv = 1 / m_scale;
         auto xInt = static_cast<int>(std::floor(scaleInv * p.x));

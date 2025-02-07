@@ -1,8 +1,6 @@
 #include "Lambertian.h"
 #include "Hittable.h"
 #include "Ray.h"
-#include "Utility.h"
-#include "Texture.h"
 #include "SolidColorTexture.h"
 
 #include <glm/glm.hpp>
@@ -10,7 +8,7 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
-Lambertian::Lambertian(const glm::dvec3 &albedo)
+Lambertian::Lambertian(const Color3d &albedo)
     : m_albedo(std::make_shared<SolidColorTexture>(albedo))
 {
 }

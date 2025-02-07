@@ -1,11 +1,18 @@
-#pragma once
+#ifndef INCLUDED_RAYTRACER_UTILITY_H
+#define INCLUDED_RAYTRACER_UTILITY_H
 
+#include <iostream>
 #include <random>
+
 #include <glm/vec3.hpp>
 #include <glm/glm.hpp>
 
 namespace raytracer
 {
+    using Color3d = glm::dvec3;
+    using Color3f = glm::vec3;
+    using Color3i = glm::ivec3;
+
     /// @brief Generate a random double in the range [0,1).
     /// @return a random double in the range [0,1)
     inline double randomDouble()
@@ -74,9 +81,9 @@ namespace raytracer
     /// @brief Convert a linear color to gamma-corrected color.
     /// @param color the linear color
     /// @return the gamma-corrected color
-    inline glm::dvec3 gammaCorrect(const glm::dvec3 &color)
+    inline Color3d gammaCorrect(Color3d &color)
     {
-        return glm::dvec3(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
+        return Color3d(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
     }
 
     /// @brief Generate a random vector in the range [0,1).
@@ -145,3 +152,5 @@ namespace raytracer
         return -onUnitSphere;
     }
 } // namespace raytracer
+
+#endif

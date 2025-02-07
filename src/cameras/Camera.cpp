@@ -6,14 +6,13 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
-Camera::Camera() : m_position(glm::dvec3(0.0, 0.0, 0.0)),
-                   m_focalPoint(glm::dvec3(0.0, 0.0, -1.0)),
-                   m_viewUp(glm::dvec3(0.0, 1.0, 0.0)),
-                   m_aperatureRadius(0.0),
-                   m_modelMatrix(glm::dmat4(1.0))
-{
-    this->updateViewMatrix();
-}
+Camera::Camera()
+    : m_position(glm::dvec3(0.0, 0.0, 0.0))
+    , m_focalPoint(glm::dvec3(0.0, 0.0, -1.0))
+    , m_viewUp(glm::dvec3(0.0, 1.0, 0.0))
+    , m_aperatureRadius(0.0)
+    , m_modelMatrix(glm::dmat4(1.0))
+{}
 
 //----------------------------------------------------------------------------------
 void Camera::reset()
@@ -22,8 +21,6 @@ void Camera::reset()
     m_focalPoint = glm::dvec3(0.0, 0.0, -1.0);
     m_viewUp = glm::dvec3(0.0, 1.0, 0.0);
     m_modelMatrix = glm::dmat4(1.0);
-
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
@@ -32,7 +29,6 @@ void Camera::roll(const double angle)
     m_modelMatrix = glm::rotate(m_modelMatrix,
                                 glm::radians(angle),
                                 this->getForwardAxis());
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
@@ -41,7 +37,6 @@ void Camera::tilt(const double angle)
     m_modelMatrix = glm::rotate(m_modelMatrix,
                                 glm::radians(angle),
                                 this->getHorizontalAxis());
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
@@ -50,7 +45,6 @@ void Camera::pan(const double angle)
     m_modelMatrix = glm::rotate(m_modelMatrix,
                                 glm::radians(angle),
                                 this->getVerticalAxis());
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
@@ -63,7 +57,8 @@ void Camera::dolly(const double value)
     auto forwardAxis = this->getForwardAxis();
     auto delta = forwardAxis * d;
 
-    this->setPosition(m_focalPoint - delta);
+    m_modelMatrix = glm::translate(m_modelMatrix, -delta);
+    // this->setPosition(m_focalPoint - delta);
 }
 
 //----------------------------------------------------------------------------------
@@ -72,28 +67,26 @@ void Camera::boom(const double value)
     auto verticalAxis = this->getVerticalAxis();
     auto delta = verticalAxis * value;
 
-    this->setPosition(m_position - delta);
+    m_modelMatrix = glm::translate(m_modelMatrix, -delta);
+    // this->setPosition(m_position - delta);
 }
 
 //----------------------------------------------------------------------------------
 void Camera::setPosition(const glm::dvec3 &position)
 {
     m_position = position;
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
 void Camera::setFocalPoint(const glm::dvec3 &focalPoint)
 {
     m_focalPoint = focalPoint;
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
 void Camera::setViewUp(const glm::dvec3 &up)
 {
     m_viewUp = glm::normalize(up);
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
@@ -113,7 +106,7 @@ glm::dvec3 Camera::getHorizontalAxis()
 glm::dvec3 Camera::getVerticalAxis()
 {
     auto forwardAxis = this->getForwardAxis();
-    auto horizontalAxis = glm::cross(m_viewUp, forwardAxis);
+    auto horizontalAxis = this->getHorizontalAxis();
     return glm::cross(horizontalAxis, forwardAxis);
 }
 
@@ -121,24 +114,12 @@ glm::dvec3 Camera::getVerticalAxis()
 void Camera::setCameraToWorldMatrix(const glm::dmat4 &matrix)
 {
     m_modelMatrix = matrix;
-    this->updateViewMatrix();
 }
 
 //----------------------------------------------------------------------------------
-void Camera::updateViewMatrix()
+glm::dmat4 Camera::getViewMatrix()
 {
-    auto position = m_modelMatrix * glm::dvec4(m_position, 1.0);
-    auto viewUp = m_modelMatrix * glm::dvec4(m_viewUp, 1.0);
-
-    auto pos = glm::dvec3(position[0]/position[3],
-                          position[1]/position[3],
-                          position[2]/position[3]);
-
-    auto up = glm::normalize(glm::dvec3(viewUp[0]/viewUp[3],
-                                        viewUp[1]/viewUp[3],
-                                        viewUp[2]/viewUp[3]));
-
-    m_viewMatrix = glm::lookAt(pos, m_focalPoint, up);
+    return glm::lookAt(m_position, m_focalPoint, m_viewUp);
 }
 
 //----------------------------------------------------------------------------------

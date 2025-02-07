@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Material.h"
+#include "Texture.h"
 #include <memory>
 
 namespace raytracer
 {
-class Texture;
 
 /// @class Lambertian
 /// @brief Lambertian material
@@ -14,7 +14,7 @@ class Lambertian : public Material
 public:
     /// @brief Constructor
     /// @param albedo the color of the material
-    Lambertian(const glm::dvec3 &albedo);
+    Lambertian(const Color3d &albedo);
 
     /// @brief Constructor
     /// @param albedo the texture of the material

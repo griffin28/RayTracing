@@ -84,7 +84,7 @@ public:
 
     /// @brief The viewing transformation for moving objects from world space to view space.
     /// @return world to view transformation matrix
-    glm::dmat4 getViewMatrix() const { return  m_viewMatrix; }
+    glm::dmat4 getViewMatrix();
 
     //@{
     /// Set/get the camera to world matrix for moving the camera to world space.
@@ -99,16 +99,12 @@ public:
     static void generateHaltonSequence(const int N, const int b, double *out);
 
 private:
-    void updateViewMatrix();
-
     glm::dvec3 m_position;
     glm::dvec3 m_focalPoint;
     glm::dvec3 m_viewUp;
 
     double     m_aperatureRadius;
-
     glm::dmat4 m_modelMatrix;
-    glm::dmat4 m_viewMatrix;
 };
 } // namespace raytracer
 

@@ -1,9 +1,6 @@
 set (SRCS main.cpp)
 
 # add_subdirectory(<sourcedir> [<binarydir>])
-# Utility
-add_subdirectory(utility)
-
 # Core
 add_subdirectory(core)
 
@@ -25,10 +22,9 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     PUBLIC
         Threads::Threads
     PRIVATE
-        utility
         core
         cameras
         shapes
         materials
         textures
-        stb_image glm::glm utility)
+        stb_image glm::glm)

@@ -1,5 +1,4 @@
 #include "PerspectiveCamera.h"
-#include "Utility.h"
 
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 
@@ -72,7 +71,7 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
 
                 for(int i=0; i < m_width; ++i)
                 {
-                    glm::dvec3 pixelColor(0.0);
+                    Color3d pixelColor(0.0);
 
                     for(int k=0; k < samplesPerPixel; ++k)
                     {
@@ -239,13 +238,14 @@ PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
 
     // Camera Space -> World Space
     glm::mat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
-    glm::dvec3 rayOrigin = this->getPosition();
-    glm::dvec3 rayOriginWorld = glm::mat3(cameraToWorldTransform) * rayOrigin;
-    glm::dvec3 rayPointWorld = glm::mat3(cameraToWorldTransform) * glm::dvec3(pxCamera, pyCamera, rayOrigin.z-1);
 
-    Ray *ray = new Ray(rayOriginWorld,
-                       glm::normalize(rayPointWorld - rayOriginWorld),
-                       randomDouble());
+    auto rayOrigin = this->getPosition();
+    glm::dvec3 rayOriginWorld = glm::mat3(cameraToWorldTransform) * rayOrigin;
+
+    auto focalPoint = this->getFocalPoint();
+    glm::dvec3 rayPointWorld = glm::mat3(cameraToWorldTransform) * glm::dvec3(pxCamera, pyCamera, focalPoint.z);
+
+    Ray *ray = new Ray(rayOriginWorld, glm::normalize(rayPointWorld - rayOriginWorld));
     return ray;
 }
 
@@ -293,7 +293,7 @@ PerspectiveCamera::copy(const ProjectionCamera * const camera)
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world)
+Color3d PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world)
 {
     if(depth <= 0)
     {
@@ -321,18 +321,6 @@ glm::dvec3 PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &wo
     // // return gammaCorrect((1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f));
     // return (1.0 - a) * glm::dvec3(1.0, 1.0, 1.0) + a * glm::dvec3(0.5, 0.7, 1.0);
     return glm::dvec3(0.678, 0.847, 0.902); // sky color
-}
-
-//----------------------------------------------------------------------------------
-void PerspectiveCamera::writeColor3(std::ostream& out, glm::dvec3 pixelColor, const int samplesPerPixel)
-{
-    auto scale = 1.0 / samplesPerPixel;
-    pixelColor *= scale;
-
-    // Write the translated [0,255] value of each color component.
-    out << static_cast<int>(255.0 * clamp(pixelColor.x, 0.0, 1.0)) << ' '
-        << static_cast<int>(255.0 * clamp(pixelColor.y, 0.0, 1.0)) << ' '
-        << static_cast<int>(255.0 * clamp(pixelColor.z, 0.0, 1.0)) << '\n';
 }
 
 //----------------------------------------------------------------------------------

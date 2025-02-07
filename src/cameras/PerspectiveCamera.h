@@ -3,6 +3,7 @@
 
 #include "ProjectionCamera.h"
 #include "BVH.h"
+#include "Utility.h"
 
 namespace raytracer
 {
@@ -98,25 +99,19 @@ public:
     /// @see ProjectionCamera::copy
     void copy(const ProjectionCamera * const camera) override;
 
-// private:
+private:
     /// @brief Compute the color of a ray.
     /// @param ray the ray to compute the color for
     /// @param depth the maximum number of ray bounces into the scene
     /// @param world the hittable list representing the scene
-    glm::dvec3 rayColor(Ray * const ray, int depth, const BVH &world);
-
-    /// @brief Write a single pixel's color to the output stream.
-    /// @param out the output stream
-    /// @param pixelColor the color of the pixel (r,g,b) ranging from 0.0 to 1.0
-    /// @param samplesPerPixel the number of samples per pixel
-    void writeColor3(std::ostream& out, glm::dvec3 pixelColor, const int samplesPerPixel=1);
+    Color3d rayColor(Ray * const ray, int depth, const BVH &world);
 
     /// @brief  Write a PPM image to the output stream.
     /// @param image PPM image data
     /// @param width the width of the image
     /// @param height the height of the image
     /// @param out the output stream
-    void writePPMImage(uint8_t *image, const int width, const int height, std::ostream &out=std::cout);
+    void writePPMImage(uint8_t *image, const int width, const int height, std::ostream &out);
 
     int m_width;
     int m_height;

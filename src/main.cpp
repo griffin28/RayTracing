@@ -21,13 +21,14 @@ using Hittable = raytracer::Hittable;
 using HitRecord = raytracer::HitRecord;
 using BVH = raytracer::BVH;
 
+//----------------------------------------------------------------------------------
 void random_spheres()
 {
     std::clog << "Rendering Scene 1: Random Spheres" << std::endl;
     BVH world;
 
     // Ground
-    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(glm::dvec3(0.2, 0.3, 0.1), glm::dvec3(0.9, 0.9, 0.9), 2);
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(0.2, 0.3, 0.1), raytracer::Color3d(0.9, 0.9, 0.9), 2);
     auto materialGround = std::make_shared<raytracer::Lambertian>(checkerTexture);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000,-200), 1000, materialGround));
 
@@ -72,10 +73,10 @@ void random_spheres()
     auto material1 = std::make_shared<raytracer::Dielectric>(1.5);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 1, -2), 1.0, material1));
 
-    auto material2 = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.4, 0.2, 0.1));
+    auto material2 = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.4, 0.2, 0.1));
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-4, 1, -2), 1.0, material2));
 
-    auto material3 = std::make_shared<raytracer::Metal>(glm::dvec3(0.7, 0.6, 0.5), 0.0);
+    auto material3 = std::make_shared<raytracer::Metal>(raytracer::Color3d(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(4, 1, -2), 1.0, material3));
 
     // Build BVH
@@ -83,19 +84,40 @@ void random_spheres()
 
     PerspectiveCamera camera(1200, 675, 40, 60.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
-    camera.setPosition(glm::dvec3(0, 0.3, 6));
-    // camera.setPosition(glm::dvec3(13, -2, 3));
-    camera.setFocalPoint(glm::dvec3(0, 0.5, -1.0));
+    // camera.setPosition(glm::dvec3(0, 0.3, 6));
+    camera.setPosition(glm::dvec3(0.0, 0.5, 70.0));
+    camera.setFocalPoint(glm::dvec3(0.0, 0.0, -1.0));
     camera.setAperatureRadius(0);
 
     camera.render(world, 20);
 }
 
+//----------------------------------------------------------------------------------
 void two_spheres()
 {
+    std::clog << "Rendering Scene 2: Two Spheres" << std::endl;
+    BVH world;
 
+    // Ground
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(1.0, 0, 0), raytracer::Color3d(0.9, 0.9, 0.9), 0.8);
+
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, -10, 0), 10, std::make_shared<raytracer::Lambertian>(checkerTexture)));
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 10, 0), 10, std::make_shared<raytracer::Lambertian>(checkerTexture)));
+
+    // Build BVH
+    world.build();
+
+    // width, height, maxDepth, fovy
+    PerspectiveCamera camera(400, 225, 50, 45);
+    camera.setPosition(glm::dvec3(0, 0, -20));
+    // camera.setPosition(glm::dvec3(13, 2, 3));
+    camera.setFocalPoint(glm::dvec3(0, 0, 0));
+    camera.setAperatureRadius(0);
+
+    camera.render(world, 10);
 }
 
+//----------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
     // check if user provided -h or --help

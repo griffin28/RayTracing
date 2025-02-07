@@ -1,7 +1,7 @@
 #ifndef INCLUDED_TEXTURE_H
 #define INCLUDED_TEXTURE_H
 
-#include <glm/glm.hpp>
+#include "Utility.h"
 
 namespace raytracer
 {
@@ -18,8 +18,8 @@ public:
     /// @param u the u texture coordinate
     /// @param v the v texture coordinate
     /// @param p the 3D point
-    /// @return the color value of the texture
-    virtual glm::dvec3 value(double u, double v, const glm::dvec3 &p) const = 0;
+    /// @return the RGB color value of the texture
+    virtual Color3d value(double u, double v, const glm::dvec3 &p) const = 0;
 };
 }
 
