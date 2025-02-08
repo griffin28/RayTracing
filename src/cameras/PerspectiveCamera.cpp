@@ -243,7 +243,8 @@ PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
     glm::dvec3 rayOriginWorld = glm::mat3(cameraToWorldTransform) * rayOrigin;
 
     auto focalPoint = this->getFocalPoint();
-    glm::dvec3 rayPointWorld = glm::mat3(cameraToWorldTransform) * glm::dvec3(pxCamera, pyCamera, focalPoint.z);
+    auto zCoord = focalPoint.z < rayOrigin.z ? rayOrigin.z - 1 : rayOrigin.z + 1;
+    glm::dvec3 rayPointWorld = glm::mat3(cameraToWorldTransform) * glm::dvec3(pxCamera, pyCamera, zCoord);
 
     Ray *ray = new Ray(rayOriginWorld, glm::normalize(rayPointWorld - rayOriginWorld));
     return ray;

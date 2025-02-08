@@ -28,7 +28,7 @@ void random_spheres()
     BVH world;
 
     // Ground
-    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(0.2, 0.3, 0.1), raytracer::Color3d(0.9, 0.9, 0.9), 2);
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(0.0, 0.0, 0.0), raytracer::Color3d(0.9, 0.9, 0.9), 2);
     auto materialGround = std::make_shared<raytracer::Lambertian>(checkerTexture);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000,-200), 1000, materialGround));
 
@@ -85,11 +85,11 @@ void random_spheres()
     PerspectiveCamera camera(1200, 675, 40, 60.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
     // camera.setPosition(glm::dvec3(0, 0.3, 6));
-    camera.setPosition(glm::dvec3(0.0, 0.5, 70.0));
-    camera.setFocalPoint(glm::dvec3(0.0, 0.0, -1.0));
+    camera.setPosition(glm::dvec3(0.0, 0.4, 6.0));
+    camera.setFocalPoint(glm::dvec3(0.0, 0.0, -2.0));
     camera.setAperatureRadius(0);
 
-    camera.render(world, 20);
+    camera.render(world, 2);
 }
 
 //----------------------------------------------------------------------------------
