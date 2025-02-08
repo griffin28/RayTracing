@@ -1,8 +1,8 @@
 # RayTracing
 
-![image](https://github.com/user-attachments/assets/d371d7e3-deae-4032-94a9-fdde48db062d)
+![image](https://github.com/user-attachments/assets/389bcdef-55af-4a9d-b68f-5860e79cac54)
 
-Code enhancements for Ray Tracing Series including Camera, BVH an other classes.
+Code enhancements for Ray Tracing Series including Camera, BVH and other classes.
 
 # Build
 ```bash
