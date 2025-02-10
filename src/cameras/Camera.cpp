@@ -119,8 +119,9 @@ void Camera::setCameraToWorldMatrix(const glm::dmat4 &matrix)
 //----------------------------------------------------------------------------------
 glm::dmat4 Camera::getViewMatrix()
 {
-    glm::dvec3 worldPos = glm::mat3(m_modelMatrix) * m_position;
-    return glm::lookAt(worldPos, m_focalPoint, m_viewUp);
+    auto worldPos = m_modelMatrix * glm::dvec4(m_position, 1.0);
+
+    return glm::lookAt(glm::dvec3(worldPos), m_focalPoint, m_viewUp);
 }
 
 //----------------------------------------------------------------------------------

@@ -223,7 +223,6 @@ PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
     const double scale = tan(glm::radians(m_fovy * 0.5));
 
     // Raster Space -> Normalized Device Coordinate Space
-    // TODO: look at NVIDIA's Raytracing Gems book for a better way to do this
     double pxNDC = pixel.x / static_cast<double>(m_width);
     double pyNDC = pixel.y / static_cast<double>(m_height);
 
@@ -237,33 +236,22 @@ PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
     double pyCamera = pyScreen * scale;
 
     // Camera Space -> World Space
-    glm::mat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
+    glm::dmat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
 
-    auto rayOrigin = this->getPosition();
-    glm::dvec3 rayOriginWorld = glm::mat3(cameraToWorldTransform) * rayOrigin;
+    glm::dvec3 rayOrigin = this->getPosition();
+    glm::dvec3 rayOriginWorld = glm::dvec3(cameraToWorldTransform * glm::dvec4(rayOrigin, 1.0));
 
-    auto focalPoint = this->getFocalPoint();
-    auto zCoord = focalPoint.z < rayOrigin.z ? rayOrigin.z - 1 : rayOrigin.z + 1;
-    glm::dvec3 rayPointWorld = glm::mat3(cameraToWorldTransform) * glm::dvec3(pxCamera, pyCamera, zCoord);
+    // Camera coordinate frame
+    auto u = this->getHorizontalAxis();
+    auto v = glm::dvec3(-1) * this->getVerticalAxis();
+    auto w = this->getForwardAxis();
 
-    Ray *ray = new Ray(rayOriginWorld, glm::normalize(rayPointWorld - rayOriginWorld));
+    glm::dvec3 direction = (pxCamera * u) - (pyCamera * v) + w;
+    auto directionWorld = glm::normalize(glm::dvec3(cameraToWorldTransform * glm::dvec4(direction, 1.0)));
+
+    Ray *ray = new Ray(rayOriginWorld, directionWorld);
     return ray;
 }
-
-// Ray *
-// PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
-// {
-//     glm::dvec2 p = (((pixel + glm::dvec2(0.5f)) / glm::dvec2(m_width, m_height)) * 2.0f) - glm::dvec2(1.0f);
-//     auto view = this->getViewMatrix();
-//     double aspect = static_cast<double>(m_width) / static_cast<double>(m_height);
-//     const double scale = tan(glm::radians(m_fovy * 0.5f));
-
-//     Ray *ray = new Ray();
-//     ray->m_origin = glm::dvec3(view[3]);
-//     ray->m_direction = glm::normalize((p.x * glm::dvec3(view[0]) * aspect * scale) - (p.y * glm::dvec3(view[1]) * scale) + glm::dvec3(view[2]));
-
-//     return ray;
-// }
 
 //----------------------------------------------------------------------------------
 void

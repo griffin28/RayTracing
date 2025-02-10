@@ -30,7 +30,7 @@ void random_spheres()
     // Ground
     auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(0.0, 0.0, 0.0), raytracer::Color3d(0.9, 0.9, 0.9), 2);
     auto materialGround = std::make_shared<raytracer::Lambertian>(checkerTexture);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000,-200), 1000, materialGround));
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000, 0), 1000, materialGround));
 
     // Random spheres
     for(int a=-11; a < 11; ++a)
@@ -82,14 +82,15 @@ void random_spheres()
     // Build BVH
     world.build();
 
-    PerspectiveCamera camera(1200, 675, 40, 60.0);
+    PerspectiveCamera camera(1200, 675, 50, 20.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
     // camera.setPosition(glm::dvec3(0, 0.3, 6));
-    camera.setPosition(glm::dvec3(0.0, 0.4, 6.0));
-    camera.setFocalPoint(glm::dvec3(0.0, 0.0, -2.0));
+    camera.setPosition(glm::dvec3(13,2,3));
+    camera.setFocalPoint(glm::dvec3(0.0, 0.0, 0.0));
     camera.setAperatureRadius(0);
+    // camera.tilt(-2);
 
-    camera.render(world, 2);
+    camera.render(world, 100);
 }
 
 //----------------------------------------------------------------------------------
@@ -109,8 +110,8 @@ void two_spheres()
 
     // width, height, maxDepth, fovy
     PerspectiveCamera camera(400, 225, 50, 45);
-    camera.setPosition(glm::dvec3(0, 0, -20));
-    // camera.setPosition(glm::dvec3(13, 2, 3));
+    // camera.setPosition(glm::dvec3(0, 0, 20));
+    camera.setPosition(glm::dvec3(13, 2, 3));
     camera.setFocalPoint(glm::dvec3(0, 0, 0));
     camera.setAperatureRadius(0);
 
