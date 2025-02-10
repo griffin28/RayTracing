@@ -1,6 +1,6 @@
 # RayTracing
 
-![image](https://github.com/user-attachments/assets/389bcdef-55af-4a9d-b68f-5860e79cac54)
+![Screenshot from 2025-02-09 22-33-32](https://github.com/user-attachments/assets/5c4ad49b-5411-4c50-8cb2-cdd8792aee4c)
 
 Code enhancements for Ray Tracing Series including Camera, BVH and other classes.
 
