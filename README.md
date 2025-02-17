@@ -14,8 +14,8 @@ cmake --build . [-j <threads>]
 # Run
 ```bash
 cd build
-bin/raytracing <-h | -s scene_number> where:
+bin/raytracing <-h | -s scene_number>
 ```
-* -h --help: show help
-* -s 1: random spheres
-* -s 2: two spheres
+* `-h --help`: show help
+* `-s 1`: random spheres
+* `-s 2`: two spheres
