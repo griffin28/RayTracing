@@ -11,7 +11,7 @@ namespace raytracer
 class Sphere : public Hittable
 {
 public:
-    Sphere() = default;
+    Sphere();
 
     /// @brief a constructor to create a sphere with a center and radius.
     /// @param center the center of the sphere
