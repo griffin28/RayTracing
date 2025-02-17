@@ -54,11 +54,15 @@ public:
     //@}
 
     //@{
-    /// @brief Set/Get the position of the camera in world coordinates.
+    /// @brief Set/Get the position of the camera in object space.
     /// @param position position of the camera
     void setPosition(const glm::dvec3 &position);
     glm::dvec3 getPosition() const { return m_position; }
     //@}
+
+    /// @brief Get the position of the camera in world space.
+    /// @return the position of the camera in world space
+    glm::dvec3 getWorldPosition() const;
 
     //@{
     /// @brief Set/Get the focal point of the camera in world coordinates. The default

@@ -90,7 +90,7 @@ void random_spheres()
     camera.setAperatureRadius(0);
     // camera.tilt(-2);
 
-    camera.render(world, 100);
+    camera.render(world, 10);
 }
 
 //----------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ void two_spheres()
     camera.setFocalPoint(glm::dvec3(0, 0, 0));
     camera.setAperatureRadius(0);
 
-    camera.render(world, 10);
+    camera.render(world, 5);
 }
 
 //----------------------------------------------------------------------------------
@@ -158,51 +158,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-// int main()
-// {
-//     const int IMAGE_WIDTH = 400;
-//     const int IMAGE_HEIGHT = 200;
-
-//     // Materials
-//     auto materialGround = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.0, 0.8, 0.0));
-//     auto materialCenter = std::make_shared<raytracer::Lambertian>(glm::dvec3(0.7, 0.3, 0.3));
-//     auto materialLeft = std::make_shared<raytracer::Dielectric>(1.5);
-//     auto materialRight = std::make_shared<raytracer::Metal>(glm::dvec3(0.8, 0.6, 0.2));
-
-//     // World
-//     raytracer::HittableList world;
-//     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,0,-50), 9, materialCenter));
-//     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(20,0,-50), 9, materialLeft));
-//     // world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(20,0,-50), -8, materialLeft));
-//     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-20,0,-50), 9, materialRight));
-//     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-550.5,-200), 550, materialGround));
-
-//     // // Camera
-//     PerspectiveCamera camera(400, 200);
-//     // // camera.dolly(30);
-//     // // camera.boom(-50);
-//     // // camera.tilt(-70);
-
-//     camera.setFocalPoint(glm::dvec3(0,0,-50));
-//     camera.setAperatureRadius(4);
-
-//     camera.render(world, 10);
-
-//     // std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
-
-//     // for(int j=0; j < IMAGE_HEIGHT; ++j)
-//     // {
-//     //     std::clog << "\rScanlines remaining: " << IMAGE_HEIGHT - j << ' ' << std::flush;
-
-//     //     for(int i=0; i < IMAGE_WIDTH; ++i)
-//     //     {
-//     //         std::unique_ptr<Ray> ray(camera.generateRay(glm::dvec2(i, j)));
-//     //         auto pixelColor = rayColor(ray.get(), 10, world);
-//     //         camera.writeColor3(std::cout, pixelColor, 1);
-//     //     }
-//     // }
-
-//     // std::clog << "\nDone.\n";
-//     return 0;
-// }

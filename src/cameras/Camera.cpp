@@ -58,7 +58,6 @@ void Camera::dolly(const double value)
     auto delta = forwardAxis * d;
 
     m_modelMatrix = glm::translate(m_modelMatrix, -delta);
-    // this->setPosition(m_focalPoint - delta);
 }
 
 //----------------------------------------------------------------------------------
@@ -68,13 +67,19 @@ void Camera::boom(const double value)
     auto delta = verticalAxis * value;
 
     m_modelMatrix = glm::translate(m_modelMatrix, -delta);
-    // this->setPosition(m_position - delta);
 }
 
 //----------------------------------------------------------------------------------
 void Camera::setPosition(const glm::dvec3 &position)
 {
     m_position = position;
+}
+
+//----------------------------------------------------------------------------------
+glm::dvec3 Camera::getWorldPosition() const
+{
+    auto worldPos = m_modelMatrix * glm::dvec4(m_position, 1.0);
+    return glm::dvec3(worldPos);
 }
 
 //----------------------------------------------------------------------------------
@@ -92,7 +97,8 @@ void Camera::setViewUp(const glm::dvec3 &up)
 //----------------------------------------------------------------------------------
 glm::dvec3 Camera::getForwardAxis()
 {
-    return glm::normalize(m_focalPoint - m_position);
+    auto worldPos = this->getWorldPosition();
+    return glm::normalize(m_focalPoint - worldPos);
 }
 
 //----------------------------------------------------------------------------------
@@ -119,9 +125,8 @@ void Camera::setCameraToWorldMatrix(const glm::dmat4 &matrix)
 //----------------------------------------------------------------------------------
 glm::dmat4 Camera::getViewMatrix()
 {
-    auto worldPos = m_modelMatrix * glm::dvec4(m_position, 1.0);
-
-    return glm::lookAt(glm::dvec3(worldPos), m_focalPoint, m_viewUp);
+    auto worldPos = this->getWorldPosition();
+    return glm::lookAt(worldPos, m_focalPoint, m_viewUp);
 }
 
 //----------------------------------------------------------------------------------
