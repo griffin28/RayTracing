@@ -120,13 +120,13 @@ void two_spheres()
 }
 
 //----------------------------------------------------------------------------------
-void earth()
+void earth(const std::string &filename)
 {
     std::clog << "Rendering Scene 3: Earth" << std::endl;
     BVH world;
 
     // Ground
-    auto earthTexture = std::make_shared<raytracer::ImageTexture>("earth_8k.jpg");
+    auto earthTexture = std::make_shared<raytracer::ImageTexture>(filename.c_str());
     auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 0, 0), 2, earthMaterial));
 
@@ -139,7 +139,17 @@ void earth()
     camera.setFocalPoint(glm::dvec3(0, 0, 0));
     camera.setAperatureRadius(0);
 
-    camera.render(world, 50);
+    camera.render(world, 5);
+}
+
+//----------------------------------------------------------------------------------
+void print_usage()
+{
+    std::clog << "Usage: raytracer <-s scene_number> [-h] [-f filename]" << std::endl;
+    std::clog << "-h --help: show help" << std::endl;
+    std::clog << "-s 1: random_spheres" << std::endl;
+    std::clog << "-s 2: two_spheres" << std::endl;
+    std::clog << "-s 3 -f filename: earth" << std::endl;
 }
 
 //----------------------------------------------------------------------------------
@@ -150,16 +160,12 @@ int main(int argc, char *argv[])
     {
         if(std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help")
         {
-            std::clog << "Usage: raytracer <-h || -s scene_number>" << std::endl;
-            std::clog << "-h --help: show help" << std::endl;
-            std::clog << "-s 1: random_spheres" << std::endl;
-            std::clog << "-s 2: two_spheres" << std::endl;
-            std::clog << "-s 3: earth" << std::endl;
+            print_usage();
             return 0;
         }
     }
 
-    if((argc == 3) && std::string(argv[1]) == "-s")
+    if((argc >= 3) && std::string(argv[1]) == "-s")
     {
         const int scene = std::stoi(argv[2]);
 
@@ -172,17 +178,20 @@ int main(int argc, char *argv[])
             two_spheres();
             break;
         case 3:
-            earth();
+            if((argc == 5) && std::string(argv[3]) == "-f")
+            {
+                earth(std::string(argv[4]));
+            }
+            else
+            {
+                std::clog << "Usage: raytracer -s 3 -f <filename>" << std::endl;
+            }
             break;
         }
     }
     else
     {
-        std::clog << "Usage: raytracer <-h || -s scene_number>" << std::endl;
-        std::clog << "-h --help: show help" << std::endl;
-        std::clog << "-s 1: random_spheres" << std::endl;
-        std::clog << "-s 2: two_spheres" << std::endl;
-        std::clog << "-s 3: earth" << std::endl;
+        print_usage();
     }
 
     return 0;
