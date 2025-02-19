@@ -19,3 +19,4 @@ bin/raytracing <-h | -s scene_number>
 * `-h --help`: show help
 * `-s 1`: random spheres
 * `-s 2`: two spheres
+* `-s 3`: earth

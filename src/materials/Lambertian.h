@@ -13,6 +13,10 @@ class Lambertian : public Material
 {
 public:
     /// @brief Constructor
+    /// Creates a white lambertian material.
+    Lambertian();
+
+    /// @brief Constructor
     /// @param albedo the color of the material
     Lambertian(const Color3d &albedo);
 
@@ -20,6 +24,8 @@ public:
     /// @param albedo the texture of the material
     Lambertian(const std::shared_ptr<Texture> &albedo);
 
+    /// @brief  Determines if the ray scatters when it hits the object.
+    /// @see Material::scatter
     bool scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const override;
 
 private:

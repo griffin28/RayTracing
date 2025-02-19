@@ -48,11 +48,11 @@ find_package(Threads REQUIRED)
 
 # add_subdirectory(<sourcedir> [<binarydir>])
 
-# External projects
-add_subdirectory(external)
-
 # Source directory
 add_subdirectory(src bin)
+
+# External projects
+add_subdirectory(external)
 
 # Tests
 #if(BUILD_TESTS)

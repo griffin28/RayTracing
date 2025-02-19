@@ -32,6 +32,8 @@ public:
         , m_odd(std::make_shared<SolidColorTexture>(oddColor))
         , m_scale(scale) {}
 
+    CheckerTexture() = delete;
+
     /// @brief Destructor
     ~CheckerTexture() = default;
 

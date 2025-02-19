@@ -3,7 +3,8 @@ set (CORE_SRCS
         Hittable.h
         Utility.h
         BVH.cpp
-        AABB.cpp)
+        AABB.cpp
+        ImageLoader.cpp)
 
 add_library(core OBJECT ${CORE_SRCS})
 
@@ -16,4 +17,5 @@ target_include_directories(core
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     PRIVATE
         ${GLM_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../materials)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../materials
+        ${CMAKE_CURRENT_LIST_DIR}/../../external/stb_image)

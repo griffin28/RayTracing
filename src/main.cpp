@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include "BVH.h"
 #include "CheckerTexture.h"
+#include "ImageTexture.h"
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
@@ -90,7 +91,7 @@ void random_spheres()
     camera.setAperatureRadius(0);
     // camera.tilt(-2);
 
-    camera.render(world, 10);
+    camera.render(world, 3);
 }
 
 //----------------------------------------------------------------------------------
@@ -119,6 +120,29 @@ void two_spheres()
 }
 
 //----------------------------------------------------------------------------------
+void earth()
+{
+    std::clog << "Rendering Scene 3: Earth" << std::endl;
+    BVH world;
+
+    // Ground
+    auto earthTexture = std::make_shared<raytracer::ImageTexture>("earth_8k.jpg");
+    auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 0, 0), 2, earthMaterial));
+
+    // Build BVH
+    world.build();
+
+    // width, height, maxDepth, fovy
+    PerspectiveCamera camera(400, 225, 50, 20);
+    camera.setPosition(glm::dvec3(0, 0, 12));
+    camera.setFocalPoint(glm::dvec3(0, 0, 0));
+    camera.setAperatureRadius(0);
+
+    camera.render(world, 50);
+}
+
+//----------------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
     // check if user provided -h or --help
@@ -130,6 +154,7 @@ int main(int argc, char *argv[])
             std::clog << "-h --help: show help" << std::endl;
             std::clog << "-s 1: random_spheres" << std::endl;
             std::clog << "-s 2: two_spheres" << std::endl;
+            std::clog << "-s 3: earth" << std::endl;
             return 0;
         }
     }
@@ -146,6 +171,9 @@ int main(int argc, char *argv[])
         case 2:
             two_spheres();
             break;
+        case 3:
+            earth();
+            break;
         }
     }
     else
@@ -154,6 +182,7 @@ int main(int argc, char *argv[])
         std::clog << "-h --help: show help" << std::endl;
         std::clog << "-s 1: random_spheres" << std::endl;
         std::clog << "-s 2: two_spheres" << std::endl;
+        std::clog << "-s 3: earth" << std::endl;
     }
 
     return 0;

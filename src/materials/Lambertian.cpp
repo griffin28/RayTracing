@@ -8,6 +8,12 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
+Lambertian::Lambertian()
+    : m_albedo(std::make_shared<SolidColorTexture>(Color3d(1.0, 1.0, 1.0)))
+{
+}
+
+//----------------------------------------------------------------------------------
 Lambertian::Lambertian(const Color3d &albedo)
     : m_albedo(std::make_shared<SolidColorTexture>(albedo))
 {
