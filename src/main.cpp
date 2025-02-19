@@ -145,7 +145,7 @@ void earth(const std::string &filename)
 //----------------------------------------------------------------------------------
 void print_usage()
 {
-    std::clog << "Usage: raytracer <-s scene_number> [-h] [-f filename]" << std::endl;
+    std::clog << "Usage: raytracing <-s scene_number> [-h] [-f filename]" << std::endl;
     std::clog << "-h --help: show help" << std::endl;
     std::clog << "-s 1: random_spheres" << std::endl;
     std::clog << "-s 2: two_spheres" << std::endl;
