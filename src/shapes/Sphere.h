@@ -11,6 +11,7 @@ namespace raytracer
 class Sphere : public Hittable
 {
 public:
+    /// @brief a default constructor to create a sphere.
     Sphere();
 
     /// @brief a constructor to create a sphere with a center and radius.
@@ -20,6 +21,9 @@ public:
     Sphere(const glm::dvec3 &center,
            const double radius,
            std::shared_ptr<Material> material);
+
+    /// @brief the destructor for the sphere.
+    virtual ~Sphere() = default;
 
     /// @brief the center of the sphere at a given time.
     /// @return  the position of the center at a certain time.

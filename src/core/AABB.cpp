@@ -7,7 +7,7 @@ namespace raytracer
 AxisAlignedBoundingBox::AxisAlignedBoundingBox()
     : m_pMin(glm::vec3(std::numeric_limits<double>::max()))
     , m_pMax(glm::vec3(std::numeric_limits<double>::lowest()))
-    , m_padding(0)
+    , m_padding(0.0001)
 {}
 
 //----------------------------------------------------------------------------------

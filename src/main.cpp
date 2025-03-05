@@ -74,8 +74,10 @@ void random_spheres()
     auto material1 = std::make_shared<raytracer::Dielectric>(1.5);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 1, -2), 1.0, material1));
 
-    auto material2 = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.4, 0.2, 0.1));
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-4, 1, -2), 1.0, material2));
+    // auto material2 = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.4, 0.2, 0.1));
+    auto earthTexture = std::make_shared<raytracer::ImageTexture>("earth_8k.jpg");
+    auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-4, 1, -2), 1.0, earthMaterial));
 
     auto material3 = std::make_shared<raytracer::Metal>(raytracer::Color3d(0.7, 0.6, 0.5), 0.0);
     world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(4, 1, -2), 1.0, material3));
