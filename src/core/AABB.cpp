@@ -17,7 +17,9 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox(const glm::dvec3 &p1,
     : m_pMin(glm::vec3(std::min(p1.x, p2.x), std::min(p1.y, p2.y), std::min(p1.z, p2.z)))
     , m_pMax(glm::vec3(std::max(p1.x, p2.x), std::max(p1.y, p2.y), std::max(p1.z, p2.z)))
     , m_padding(padding)
-{}
+{
+    padToMinExtent();
+}
 
 //----------------------------------------------------------------------------------
 glm::dvec3 AxisAlignedBoundingBox::corner(const int c) const
@@ -45,8 +47,8 @@ bool AxisAlignedBoundingBox::intersect(const Ray &ray) const
                                       1.0 / ray.direction().z);
 
     // Absolute distance to lower and upper box coordinates
-    glm::dvec3 tLower = ((m_pMin - m_padding) - ray.origin()) * invRayDir;
-    glm::dvec3 tUpper = ((m_pMax + m_padding) - ray.origin()) * invRayDir;
+    glm::dvec3 tLower = (m_pMin - ray.origin()) * invRayDir;
+    glm::dvec3 tUpper = (m_pMax - ray.origin()) * invRayDir;
 
     // The four t-intervals (for x-/y-/z-slabs, and ray p(t))
     glm::dvec4 tMins = glm::dvec4(glm::min(tLower, tUpper), ray.tMin());
@@ -116,4 +118,29 @@ AxisAlignedBoundingBox AxisAlignedBoundingBox::combine(const AxisAlignedBounding
                                             std::max(box.m_pMax.y, point.y),
                                             std::max(box.m_pMax.z, point.z)));
 }
+
+//----------------------------------------------------------------------------------
+void AxisAlignedBoundingBox::padToMinExtent()
+{
+    auto padding = m_padding * 0.5;
+
+    if( (m_pMax.x - m_pMin.x) < m_padding)
+    {
+        m_pMin.x -= padding;
+        m_pMax.x += padding;
+    }
+
+    if( (m_pMax.y - m_pMin.y) < m_padding)
+    {
+        m_pMin.y -= padding;
+        m_pMax.y += padding;
+    }
+
+    if( (m_pMax.z - m_pMin.z) < m_padding)
+    {
+        m_pMin.z -= padding;
+        m_pMax.z += padding;
+    }
+}
+
 } // namespace raytracer

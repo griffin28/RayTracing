@@ -1,5 +1,6 @@
 set (SHAPES_SRCS
-        Sphere.cpp)
+        Sphere.cpp
+        Quad.cpp)
 
 add_library(shapes OBJECT ${SHAPES_SRCS})
 

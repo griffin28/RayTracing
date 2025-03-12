@@ -1,5 +1,6 @@
 #include "PerspectiveCamera.h"
 #include "Sphere.h"
+#include "Quad.h"
 #include "Lambertian.h"
 #include "Metal.h"
 #include "Dielectric.h"
@@ -145,6 +146,37 @@ void earth(const std::string &filename)
 }
 
 //----------------------------------------------------------------------------------
+void quads()
+{
+    std::clog << "Rendering Scene 4: Quads" << std::endl;
+    BVH world;
+
+    // Materials
+    auto leftRed = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(1.0, 0.0, 0.0));
+    auto backGreen = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.0, 0.9, 0.0));
+    auto rightBlue = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.1, 0.0, 1.0));
+    auto upperOrange = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(1.0, 0.5, 0.0));
+    auto lowerYellow = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.2, 0.8, 0.8));
+
+    // Quads
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-3,-2,5), glm::dvec3(0,0,-4), glm::dvec3(0,4,0), leftRed));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-2,-2,0), glm::dvec3(4,0,0), glm::dvec3(0,4,0), backGreen));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(3,-2,1), glm::dvec3(0,0,4), glm::dvec3(0,4,0), rightBlue));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-2,3,1), glm::dvec3(4,0,0), glm::dvec3(0,0,4), upperOrange));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-2,-3,5), glm::dvec3(4,0,0), glm::dvec3(0,0,-4), lowerYellow));
+
+    // Build BVH
+    world.build();
+
+    PerspectiveCamera camera(400, 400, 50, 80);
+    camera.setPosition(glm::dvec3(0, 0, 9));
+    camera.setFocalPoint(glm::dvec3(0, 0, 0));
+    camera.setAperatureRadius(0);
+
+    camera.render(world, 5);
+}
+
+//----------------------------------------------------------------------------------
 void print_usage()
 {
     std::clog << "Usage: raytracing <-s scene_number> [-h] [-f filename]" << std::endl;
@@ -152,6 +184,7 @@ void print_usage()
     std::clog << "-s 1: random_spheres" << std::endl;
     std::clog << "-s 2: two_spheres" << std::endl;
     std::clog << "-s 3 -f filename: earth" << std::endl;
+    std::clog << "-s 4: quads" << std::endl;
 }
 
 //----------------------------------------------------------------------------------
@@ -188,6 +221,9 @@ int main(int argc, char *argv[])
             {
                 std::clog << "Usage: raytracer -s 3 -f <filename>" << std::endl;
             }
+            break;
+        case 4:
+            quads();
             break;
         }
     }

@@ -12,57 +12,53 @@ Quad::Quad(const glm::dvec3 &Q,
     , m_v(v)
     , m_material(material)
 {
+    auto n = glm::cross(m_u, m_v);
+    m_normal = glm::normalize(n);
+    m_D = glm::dot(m_normal, m_Q);
+    m_w = n / glm::dot(n, n);
+
     setBoundingBox();
 }
 
 //----------------------------------------------------------------------------------
 bool Quad::hit(const Ray &ray, HitRecord &record) const
 {
-    // Calculate the normal of the quad
-    // auto normal = glm::cross(m_u, m_v);
-    // auto denom = glm::dot(normal, ray.direction());
+    auto denom = glm::dot(m_normal, ray.direction());
 
-    // // Check if the ray is parallel to the quad
-    // if (std::abs(denom) < 1e-6)
-    // {
-    //     return false;
-    // }
+    // Check if the ray is parallel to the quad
+    if (std::abs(denom) < 1e-8)
+    {
+        return false;
+    }
 
-    // auto t = glm::dot(normal, m_Q - ray.origin()) / denom;
+    // Check if hit point is within the ray interval
+    auto t = (m_D - glm::dot(m_normal, ray.origin())) / denom;
 
-    // // Check if the intersection is behind the ray
-    // if (t < 0)
-    // {
-    //     return false;
-    // }
+    if (!ray.contains(t))
+    {
+        return false;
+    }
 
-    // auto P = ray.at(t);
-    // auto w = P - m_Q;
+    auto intersectionPoint = ray(t);
 
-    // auto uu = glm::dot(m_u, m_u);
-    // auto uv = glm::dot(m_u, m_v);
-    // auto vv = glm::dot(m_v, m_v);
-    // auto wu = glm::dot(w, m_u);
-    // auto wv = glm::dot(w, m_v);
-    // auto D = uv * uv - uu * vv;
+    // Check if the hit point is within the quad
+    auto p = intersectionPoint - m_Q;
+    auto alpha = glm::dot(m_w, glm::cross(p, m_v));
+    auto beta = glm::dot(m_w, glm::cross(m_u, p));
 
-    // auto s = (uv * wv - vv * wu) / D;
-    // if (s < 0 || s > 1)
-    // {
-    //     return false;
-    // }
+    if(alpha < 0.0 || alpha > 1.0 || beta < 0.0 || beta > 1.0)
+    {
+        return false;
+    }
 
-    // auto t1 = (uv * wu - uu * wv) / D;
-    // if (t1 < 0 || t1 > 1)
-    // {
-    //     return false;
-    // }
-
-    // record.t = t;
-    // record.point = P;
-    // record.material = m_material;
-    // record.normal = glm::normalize(normal);
-    // record.setFaceNormal(ray, record.normal);
+    // Record the hit
+    record.u = alpha;
+    record.v = beta;
+    record.t = t;
+    record.point = intersectionPoint;
+    record.material = m_material;
+    record.normal = m_normal;
+    record.setFaceNormal(ray, record.normal);
 
     return true;
 }
@@ -70,8 +66,6 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
 //----------------------------------------------------------------------------------
 void Quad::setBoundingBox()
 {
-    auto diagonal1 = AxisAlignedBoundingBox(m_Q, m_Q + m_u + m_v);
-    auto diagonal2 = AxisAlignedBoundingBox(m_Q + m_u, m_Q + m_v);
-    m_bounds = AxisAlignedBoundingBox::combine(diagonal1, diagonal2);
+    m_bounds = AxisAlignedBoundingBox(m_Q, m_Q + m_u + m_v);
 }
 } // namespace raytracer

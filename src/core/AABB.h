@@ -81,6 +81,9 @@ public:
     glm::dvec3 m_pMax;
     /// @brief padding to ensure the bounding box handles grazing cases
     double m_padding;
+
+private:
+    void padToMinExtent();
 };
 } // namespace raytracer
 

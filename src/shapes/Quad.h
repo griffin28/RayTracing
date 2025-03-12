@@ -33,11 +33,22 @@ public:
     /// @see Hittable::getBounds
     AxisAlignedBoundingBox getBounds() const override { return m_bounds; }
 
+    /// @brief Get the center of the quad
+    /// @see Hittable::center
+    glm::dvec3 center() const override
+    {
+        return m_Q + 0.5 * m_u + 0.5 * m_v;
+    }
+
 private:
     glm::dvec3 m_Q;
     glm::dvec3 m_u;
     glm::dvec3 m_v;
     std::shared_ptr<Material> m_material;
+
+    glm::dvec3 m_normal;
+    double m_D;
+    glm::dvec3 m_w;
     AxisAlignedBoundingBox m_bounds;
 
     void setBoundingBox();

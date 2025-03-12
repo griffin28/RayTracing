@@ -61,6 +61,11 @@ public:
     /// @return the maximum t-value to count as a hit
     double tMax() const { return m_tMax; }
 
+    /// @brief Check if a t-value is within the ray's bounds
+    /// @param t the t-value to check
+    /// @return true if the t-value is within the ray's bounds, false otherwise
+    bool contains(const double t) const { return t >= m_tMin && t <= m_tMax; }
+
     /// @brief The ray parametric equation
     /// @param t the distance between the ray origin and the returned point
     /// @return the point at distance t from the ray origin
