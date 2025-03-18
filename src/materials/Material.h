@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Hittable.h"
+#include "Ray.h"
+#include "Utility.h"
+
 #include <cmath>
 
 #include <glm/vec3.hpp>
@@ -7,12 +11,12 @@
 
 namespace raytracer
 {
-class Ray;
-class HitRecord;
-
+/// @class Material
+/// @brief A material is an object that can scatter light.
 class Material
 {
 public:
+    /// @brief Destructor
     virtual ~Material() = default;
 
     /// @brief Determines if the ray scatters when it hits the object.
@@ -22,6 +26,13 @@ public:
     /// @param scattered the scattered ray if the ray scatters
     /// @return true if the ray scatters, false otherwise
     virtual bool scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const = 0;
+
+    /// @brief A light emitting material will emit light.
+    /// @param u the u coordinate of the hit point
+    /// @param v the v coordinate of the hit point
+    /// @param point the point of the hit
+    /// @return the emitted color
+    virtual Color3d emitted(double u, double v, const glm::dvec3 &point) const { return Color3d(0,0,0); }
 
     /// @brief Determines if the vector is close to zero in all dimensions.
     /// @param vec the vector to test

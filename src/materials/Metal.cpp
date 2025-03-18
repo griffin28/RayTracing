@@ -1,9 +1,5 @@
 #include "Metal.h"
-#include "Hittable.h"
-#include "Ray.h"
 #include "SolidColorTexture.h"
-
-#include <glm/glm.hpp>
 
 namespace raytracer
 {

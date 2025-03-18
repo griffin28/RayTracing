@@ -1,9 +1,4 @@
 #include "Dielectric.h"
-#include "Hittable.h"
-#include "Ray.h"
-#include "Utility.h"
-
-#include <glm/glm.hpp>
 
 namespace raytracer
 {

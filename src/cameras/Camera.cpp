@@ -10,6 +10,7 @@ Camera::Camera()
     : m_position(glm::dvec3(0.0, 0.0, 0.0))
     , m_focalPoint(glm::dvec3(0.0, 0.0, -1.0))
     , m_viewUp(glm::dvec3(0.0, 1.0, 0.0))
+    , m_background(Color3d(0.0, 0.0, 0.0))
     , m_aperatureRadius(0.0)
     , m_modelMatrix(glm::dmat4(1.0))
 {}
@@ -20,6 +21,8 @@ void Camera::reset()
     m_position = glm::dvec3(0.0, 0.0, 0.0);
     m_focalPoint = glm::dvec3(0.0, 0.0, -1.0);
     m_viewUp = glm::dvec3(0.0, 1.0, 0.0);
+    m_background = Color3d(0.0, 0.0, 0.0);
+    m_aperatureRadius = 0.0;
     m_modelMatrix = glm::dmat4(1.0);
 }
 

@@ -286,7 +286,7 @@ Color3d PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
 {
     if(depth <= 0)
     {
-        return glm::dvec3(0.0);
+        return Color3d(0.0);
     }
 
     HitRecord record;
@@ -295,21 +295,22 @@ Color3d PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
     {
         Ray scattered;
         glm::dvec3 attenuation(1.0);
+        Color3d emitted = record.material->emitted(record.u, record.v, record.point);
 
         if(record.material && record.material->scatter(*ray, record, attenuation, scattered))
         {
-            return attenuation * rayColor(&scattered, depth-1, world);
+            return emitted + attenuation * rayColor(&scattered, depth-1, world);
             // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
         }
 
-        return glm::dvec3(0.0);
+        return emitted;
     }
 
     // auto unitDirection = glm::normalize(ray->direction());
     // double a = 0.5 * (unitDirection.y + 1.0);
     // // return gammaCorrect((1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f));
     // return (1.0 - a) * glm::dvec3(1.0, 1.0, 1.0) + a * glm::dvec3(0.5, 0.7, 1.0);
-    return glm::dvec3(0.678, 0.847, 0.902); // sky color
+    return this->getBackgroundColor();
 }
 
 //----------------------------------------------------------------------------------

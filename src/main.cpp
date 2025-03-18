@@ -86,7 +86,7 @@ void random_spheres()
     // Build BVH
     world.build();
 
-    PerspectiveCamera camera(1200, 675, 50, 20.0);
+    PerspectiveCamera camera(1200, 675, 5, 20.0);
     // PerspectiveCamera camera(400, 200, 20, 20.0);
     // camera.setPosition(glm::dvec3(0, 0.3, 6));
     camera.setPosition(glm::dvec3(13,2,3));
@@ -173,7 +173,7 @@ void quads()
     camera.setFocalPoint(glm::dvec3(0, 0, 0));
     camera.setAperatureRadius(0);
 
-    camera.render(world, 5);
+    camera.render(world, 25);
 }
 
 //----------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ Quad::Quad(const glm::dvec3 &Q,
     m_D = glm::dot(m_normal, m_Q);
     m_w = n / glm::dot(n, n);
 
-    setBoundingBox();
+    this->setBoundingBox();
 }
 
 //----------------------------------------------------------------------------------

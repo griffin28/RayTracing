@@ -41,6 +41,8 @@ public:
     }
 
 private:
+    void setBoundingBox();
+
     glm::dvec3 m_Q;
     glm::dvec3 m_u;
     glm::dvec3 m_v;
@@ -50,8 +52,6 @@ private:
     double m_D;
     glm::dvec3 m_w;
     AxisAlignedBoundingBox m_bounds;
-
-    void setBoundingBox();
 };
 } // namespace raytracer
 #endif

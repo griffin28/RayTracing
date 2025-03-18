@@ -2,6 +2,7 @@
 #define INCLUDED_CAMERA_H
 
 #include <glm/glm.hpp>
+#include <Utility.h>
 
 namespace raytracer
 {
@@ -80,6 +81,13 @@ public:
     //@}
 
     //@{
+    /// @brief Set/Get the background color of the camera.
+    /// @param color the background color
+    void setBackgroundColor(const Color3d &color) { m_background = color; }
+    Color3d getBackgroundColor() const { return m_background; }
+    //@}
+
+    //@{
     /// @brief Set/Get the aperature radius of the camera.
     /// @param radius the aperature radius
     void setAperatureRadius(const double radius) { m_aperatureRadius = radius; }
@@ -106,6 +114,8 @@ private:
     glm::dvec3 m_position;
     glm::dvec3 m_focalPoint;
     glm::dvec3 m_viewUp;
+
+    Color3d m_background;
 
     double     m_aperatureRadius;
     glm::dmat4 m_modelMatrix;
