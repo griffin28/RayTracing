@@ -9,6 +9,8 @@
 #include "BVH.h"
 #include "CheckerTexture.h"
 #include "ImageTexture.h"
+#include "QuadLight.h"
+#include "SphereLight.h"
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
@@ -92,7 +94,7 @@ void random_spheres()
     camera.setPosition(glm::dvec3(13,2,3));
     camera.setFocalPoint(glm::dvec3(0.0, 0.0, 0.0));
     camera.setAperatureRadius(0);
-    // camera.tilt(-2);
+    camera.setBackgroundColor(raytracer::Color3d(0.7, 0.8, 1.0));
 
     camera.render(world, 3);
 }
@@ -177,6 +179,44 @@ void quads()
 }
 
 //----------------------------------------------------------------------------------
+void simple_light(const std::string &filename)
+{
+    std::clog << "Rendering Scene 5: Quad and Sphere Lights" << std::endl;
+    BVH world;
+
+    // Earth
+    auto earthTexture = std::make_shared<raytracer::ImageTexture>(filename.c_str());
+    auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 2, 0), 2, earthMaterial));
+
+    // Ground
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(0.0, 0.0, 0.0), raytracer::Color3d(0.9, 0.9, 0.9), 2);
+    auto materialGround = std::make_shared<raytracer::Lambertian>(checkerTexture);
+    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000, 0), 1000, materialGround));
+
+    // Lights
+    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(3,1,-2), glm::dvec3(2,0,0), glm::dvec3(0,2,0));
+    auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3d(1.0), 1.0);
+    world.add(quadLight);
+
+    auto sphere = std::make_shared<raytracer::Sphere>(glm::dvec3(0,7,0), 2.0);
+    auto sphereLight = std::make_shared<raytracer::SphereLight>(sphere, raytracer::Color3d(1.0, 0.4, 0.6), 1.0);
+    world.add(sphereLight);
+
+    // Build BVH
+    world.build();
+
+    // width, height, maxDepth, fovy
+    PerspectiveCamera camera(400, 225, 50, 20);
+    camera.setPosition(glm::dvec3(26,3,6));
+    camera.setFocalPoint(glm::dvec3(0, 2, 0));
+    camera.setAperatureRadius(0);
+    camera.setBackgroundColor(raytracer::Color3d(0.0, 0.0, 0.0));
+
+    camera.render(world, 100);
+}
+
+//----------------------------------------------------------------------------------
 void print_usage()
 {
     std::clog << "Usage: raytracing <-s scene_number> [-h] [-f filename]" << std::endl;
@@ -185,6 +225,7 @@ void print_usage()
     std::clog << "-s 2: two_spheres" << std::endl;
     std::clog << "-s 3 -f filename: earth" << std::endl;
     std::clog << "-s 4: quads" << std::endl;
+    std::clog << "-s 5 -f filename: quad and sphere lights" << std::endl;
 }
 
 //----------------------------------------------------------------------------------
@@ -224,6 +265,16 @@ int main(int argc, char *argv[])
             break;
         case 4:
             quads();
+            break;
+        case 5:
+            if((argc == 5) && std::string(argv[3]) == "-f")
+            {
+                simple_light(std::string(argv[4]));
+            }
+            else
+            {
+                std::clog << "Usage: raytracer -s 5 -f <filename>" << std::endl;
+            }
             break;
         }
     }

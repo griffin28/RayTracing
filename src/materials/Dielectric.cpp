@@ -1,4 +1,5 @@
 #include "Dielectric.h"
+#include "Hittable.h"
 
 namespace raytracer
 {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Hittable.h"
 #include "Ray.h"
 #include "Utility.h"
 
@@ -11,6 +10,8 @@
 
 namespace raytracer
 {
+struct HitRecord;
+
 /// @class Material
 /// @brief A material is an object that can scatter light.
 class Material

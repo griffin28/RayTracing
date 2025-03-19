@@ -20,10 +20,19 @@ public:
     /// @param material the material of the sphere
     Sphere(const glm::dvec3 &center,
            const double radius,
-           std::shared_ptr<Material> material);
+           std::shared_ptr<Material> material = nullptr);
 
     /// @brief the destructor for the sphere.
     virtual ~Sphere() = default;
+
+    /// @brief Set the material for the sphere
+    /// @param material the material to set
+    void setMaterial(std::shared_ptr<Material> material) { m_material = material; }
+
+    /// @brief Get the material for the sphere
+    /// @return the material for the sphere
+    Material *getMaterial() const { return m_material.get(); }
+
 
     /// @brief the center of the sphere at a given time.
     /// @return  the position of the center at a certain time.

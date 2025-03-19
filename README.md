@@ -20,3 +20,4 @@ bin/raytracing <-s scene_number> [-h] [-f filename]
 * `-s 2`: two spheres
 * `-s 3 -f filename`: earth
 * `-s 4`: quads
+* `-s 5 -f filename`: quad and sphere lights

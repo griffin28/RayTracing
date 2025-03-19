@@ -1,5 +1,6 @@
 #include "Lambertian.h"
 #include "SolidColorTexture.h"
+#include "Hittable.h"
 
 namespace raytracer
 {

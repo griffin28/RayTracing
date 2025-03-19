@@ -2,7 +2,8 @@ set (MATERIAL_SRCS
     Material.h
     Lambertian.cpp
     Metal.cpp
-    Dielectric.cpp)
+    Dielectric.cpp
+    EmissiveMaterial.cpp)
 
 add_library(materials OBJECT ${MATERIAL_SRCS})
 

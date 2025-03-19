@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Material.h"
-#include "Texture.h"
+#include "Hittable.h"
 
 #include <memory>
 
 namespace raytracer
 {
+class Texture;
+
 /// @class EmissiveMaterial
 /// @brief A light emitting material
 class EmissiveMaterial : public Material

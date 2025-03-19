@@ -295,12 +295,17 @@ Color3d PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
     {
         Ray scattered;
         glm::dvec3 attenuation(1.0);
-        Color3d emitted = record.material->emitted(record.u, record.v, record.point);
+        Color3d emitted = Color3d(0.0);
 
-        if(record.material && record.material->scatter(*ray, record, attenuation, scattered))
+        if(record.material)
         {
-            return emitted + attenuation * rayColor(&scattered, depth-1, world);
-            // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
+            emitted = record.material->emitted(record.u, record.v, record.point);
+
+            if(record.material->scatter(*ray, record, attenuation, scattered))
+            {
+                return emitted + attenuation * rayColor(&scattered, depth-1, world);
+                // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
+            }
         }
 
         return emitted;

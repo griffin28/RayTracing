@@ -16,6 +16,9 @@ add_subdirectory(materials)
 # Textures
 add_subdirectory(textures)
 
+# Lights
+add_subdirectory(lights)
+
 add_executable(${CMAKE_PROJECT_NAME} ${SRCS})
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
@@ -27,4 +30,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         shapes
         materials
         textures
-        stb_image glm::glm)
+        lights
+        stb_image
+        glm::glm)

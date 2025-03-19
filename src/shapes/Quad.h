@@ -1,5 +1,4 @@
-#ifndef INCLUDED_QUAD_SHAPE_H
-#define INCLUDED_QUAD_SHAPE_H
+#pragma once
 
 #include "Hittable.h"
 
@@ -20,10 +19,18 @@ public:
     Quad(const glm::dvec3 &Q,
          const glm::dvec3 &u,
          const glm::dvec3 &v,
-         std::shared_ptr<Material> material);
+         std::shared_ptr<Material> material = nullptr);
 
     /// @brief the destructor for the quad.
     virtual ~Quad() = default;
+
+    /// @brief Set the material for the quad
+    /// @param material the material to set
+    void setMaterial(std::shared_ptr<Material> material) { m_material = material; }
+
+    /// @brief Get the material for the quad
+    /// @return the material for the quad
+    Material *getMaterial() const { return m_material.get(); }
 
     /// @brief Determines if the ray intersects the quad.
     /// @see Hittable::hit
@@ -54,4 +61,3 @@ private:
     AxisAlignedBoundingBox m_bounds;
 };
 } // namespace raytracer
-#endif
