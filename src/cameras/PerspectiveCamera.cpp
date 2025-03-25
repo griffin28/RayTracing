@@ -81,7 +81,7 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
                     }
 
                     pixelColor *= 1.0 / samplesPerPixel;
-                    pixelColor = gammaCorrect(pixelColor);
+                    // pixelColor = gammaCorrect(pixelColor);
 
                     image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0 * clamp(pixelColor.r, 0.0, 1.0));
                     image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0 * clamp(pixelColor.g, 0.0, 1.0));

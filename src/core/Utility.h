@@ -9,6 +9,17 @@
 
 namespace raytracer
 {
+    // Human perceptible wavelengths are between 380 and 750 nanometers.
+    // The human eye is most sensitive to green light, so we use a gamma of 2.2.
+    // This is a standard value for gamma correction.
+    // https://en.wikipedia.org/wiki/SRGB
+    // https://en.wikipedia.org/wiki/Gamma_correction\
+
+    // bluish color = 400-480 nm
+    // green color = 480-560 nm
+    // yellowish color = 560-580 nm
+    // reddish color = 580-645 nm
+    // reddish color = 645-750 nm
     using Color3d = glm::dvec3;
     using Color3f = glm::vec3;
     using Color3i = glm::ivec3;

@@ -217,6 +217,42 @@ void simple_light(const std::string &filename)
 }
 
 //----------------------------------------------------------------------------------
+void cornell_box()
+{
+    std::clog << "Rendering Scene 6: Cornell Box" << std::endl;
+    BVH world;
+
+    // Materials
+    auto red = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.65, 0.05, 0.05));
+    auto white = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.73, 0.73, 0.73));
+    auto green = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.12, 0.45, 0.0));
+
+    // Light
+    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(343,554,332), glm::dvec3(-130,0,0), glm::dvec3(0,0,-105));
+    auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3d(1.0), 1.0);
+    world.add(quadLight);
+
+    // Walls
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(555,0,0), glm::dvec3(0,555,0), glm::dvec3(0,0,555), green));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,0), glm::dvec3(0,555,0), glm::dvec3(0,0,555), red));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,0), glm::dvec3(555,0,0), glm::dvec3(0,0,555), white));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(555,555,555), glm::dvec3(-555,0,0), glm::dvec3(0,0,-555), white));
+    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,555), glm::dvec3(555,0,0), glm::dvec3(0,555,0), white));
+
+    // Build BVH
+    world.build();
+
+    // width, height, maxDepth, fovy
+    PerspectiveCamera camera(600, 600, 5, 40);
+    camera.setPosition(glm::dvec3(278, 278, -800));
+    camera.setFocalPoint(glm::dvec3(278, 278, 0));
+    camera.setAperatureRadius(0);
+    camera.setBackgroundColor(raytracer::Color3d(0.0, 0.0, 0.0));
+
+    camera.render(world, 5);
+}
+
+//----------------------------------------------------------------------------------
 void print_usage()
 {
     std::clog << "Usage: raytracing <-s scene_number> [-h] [-f filename]" << std::endl;
@@ -226,6 +262,7 @@ void print_usage()
     std::clog << "-s 3 -f filename: earth" << std::endl;
     std::clog << "-s 4: quads" << std::endl;
     std::clog << "-s 5 -f filename: quad and sphere lights" << std::endl;
+    std::clog << "-s 6: cornell box" << std::endl;
 }
 
 //----------------------------------------------------------------------------------
@@ -275,6 +312,9 @@ int main(int argc, char *argv[])
             {
                 std::clog << "Usage: raytracer -s 5 -f <filename>" << std::endl;
             }
+            break;
+        case 6:
+            cornell_box();
             break;
         }
     }
