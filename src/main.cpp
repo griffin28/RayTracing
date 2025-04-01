@@ -11,6 +11,7 @@
 #include "ImageTexture.h"
 #include "QuadLight.h"
 #include "SphereLight.h"
+#include "Box.h"
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
@@ -238,6 +239,12 @@ void cornell_box()
     world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,0), glm::dvec3(555,0,0), glm::dvec3(0,0,555), white));
     world.add(std::make_shared<raytracer::Quad>(glm::dvec3(555,555,555), glm::dvec3(-555,0,0), glm::dvec3(0,0,-555), white));
     world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,555), glm::dvec3(555,0,0), glm::dvec3(0,555,0), white));
+
+    // Boxes
+    auto box1 = std::make_shared<raytracer::Box>(glm::dvec3(130,0,65), glm::dvec3(295,165,230), white);
+    auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(265,0,295), glm::dvec3(430,330,460), white);
+    world.add(box1);
+    world.add(box2);
 
     // Build BVH
     world.build();
