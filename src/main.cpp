@@ -229,7 +229,7 @@ void cornell_box()
     auto green = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.12, 0.45, 0.0));
 
     // Light
-    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(343,554,332), glm::dvec3(-130,0,0), glm::dvec3(0,0,-105));
+    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(343,554,332), glm::dvec3(-150,0,20), glm::dvec3(20,0,-125));
     auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3d(1.0), 1.0);
     world.add(quadLight);
 
@@ -242,8 +242,9 @@ void cornell_box()
 
     // Boxes
     auto box1 = std::make_shared<raytracer::Box>(glm::dvec3(130,0,65), glm::dvec3(295,165,230), white);
-    auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(265,0,295), glm::dvec3(430,330,460), white);
     world.add(box1);
+
+    auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(265,0,295), glm::dvec3(430,330,460), white);
     world.add(box2);
 
     // Build BVH
@@ -256,7 +257,7 @@ void cornell_box()
     camera.setAperatureRadius(0);
     camera.setBackgroundColor(raytracer::Color3d(0.0, 0.0, 0.0));
 
-    camera.render(world, 5);
+    camera.render(world, 100);
 }
 
 //----------------------------------------------------------------------------------

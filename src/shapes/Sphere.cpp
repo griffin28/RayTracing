@@ -6,26 +6,42 @@ namespace raytracer
 Sphere::Sphere()
     : m_center(0.0)
     , m_radius(0.0)
-    , m_material(nullptr)
-    , m_bounds() {}
+    , m_material(nullptr) {}
 
 //----------------------------------------------------------------------------------
 Sphere::Sphere(const glm::dvec3 &center, const double radius, std::shared_ptr<Material> material)
         : m_center(center)
         , m_radius(radius)
-        , m_material(material)
+        , m_material(material) {}
+
+//----------------------------------------------------------------------------------
+glm::dvec3 Sphere::center() const
 {
-    m_bounds = AxisAlignedBoundingBox(m_center - glm::dvec3(m_radius),
-                                      m_center + glm::dvec3(m_radius),
-                                      0.01);
+    auto modelMatrix = this->getModelMatrix();
+    auto worldCenter = glm::dvec3(modelMatrix * glm::dvec4(m_center, 1.0));
+
+    return worldCenter;
+}
+
+//----------------------------------------------------------------------------------
+AxisAlignedBoundingBox Sphere::getBounds() const
+{
+    auto modelMatrix = this->getModelMatrix();
+    auto center = this->center();
+
+    return AxisAlignedBoundingBox(center - glm::dvec3(m_radius),
+                                  center + glm::dvec3(m_radius),
+                                  0.01);
 }
 
 //----------------------------------------------------------------------------------
 bool Sphere::hit(const Ray &ray, HitRecord &record) const
 {
-    if(m_bounds.intersect(ray))
+    auto bounds = this->getBounds();
+
+    if(bounds.intersect(ray))
     {
-        auto sphereCenter = m_center;
+        auto sphereCenter = this->center();
         auto l = sphereCenter - ray.origin();
         auto tca = glm::dot(l, ray.direction());
 

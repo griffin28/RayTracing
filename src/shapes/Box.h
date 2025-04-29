@@ -41,19 +41,19 @@ public:
 
     /// @brief the center of the box at a given time.
     /// @return  the position of the center at a certain time.
-    glm::dvec3 center() const override { return m_center; }
+    glm::dvec3 center() const override;
 
     /// @brief Get the world space bounds for this box
     /// @return Bounding box for the box using world space coordinates
-    AxisAlignedBoundingBox getBounds() const override { return m_bounds; }
+    AxisAlignedBoundingBox getBounds() const override;
+
+    /// @brief get the sides of the box.
+    /// @return the sides of the box
+    std::vector<Quad> getSides() const;
 
 private:
     glm::dvec3 m_point1;
     glm::dvec3 m_point2;
     std::shared_ptr<Material> m_material;
-
-    glm::dvec3 m_center;
-    AxisAlignedBoundingBox m_bounds;
-    std::unique_ptr<Quad> m_sides[6];
 };
 } // namespace raytracer

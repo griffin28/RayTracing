@@ -33,10 +33,9 @@ public:
     /// @return the material for the sphere
     Material *getMaterial() const { return m_material.get(); }
 
-
     /// @brief the center of the sphere at a given time.
     /// @return  the position of the center at a certain time.
-    glm::dvec3 center() const override { return m_center; }
+    glm::dvec3 center() const override;
 
     /// @brief Determines if the ray intersects the sphere.
     /// @see Hittable::hit
@@ -44,7 +43,7 @@ public:
 
     /// @brief Get the world space bounds for this sphere
     /// @return Bounding box for the sphere using world space coordinates
-    AxisAlignedBoundingBox getBounds() const override { return m_bounds; }
+    AxisAlignedBoundingBox getBounds() const override;
 
     /// @brief Get the texture coordinates of the sphere
     /// @param p the point on the sphere
@@ -63,6 +62,5 @@ private:
     glm::dvec3 m_center;
     double m_radius;
     std::shared_ptr<Material> m_material;
-    AxisAlignedBoundingBox m_bounds;
 };
 } // namespace raytracer
