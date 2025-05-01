@@ -26,7 +26,6 @@ glm::dvec3 Sphere::center() const
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox Sphere::getBounds() const
 {
-    auto modelMatrix = this->getModelMatrix();
     auto center = this->center();
 
     return AxisAlignedBoundingBox(center - glm::dvec3(m_radius),

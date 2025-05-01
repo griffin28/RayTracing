@@ -9,7 +9,8 @@ namespace raytracer
 class Quad : public Hittable
 {
 public:
-    Quad() = delete;
+    /// @brief Default constructor for the quad.
+    Quad();
 
     /// @brief a constructor to create a quad with a point and two vectors.
     /// @param Q the point on the quad
@@ -40,7 +41,7 @@ public:
     /// @see Hittable::getBounds
     AxisAlignedBoundingBox getBounds() const override;
 
-    /// @brief Get the center of the quad
+    /// @brief Get the center of the quad in world space
     /// @see Hittable::center
     glm::dvec3 center() const override;
 

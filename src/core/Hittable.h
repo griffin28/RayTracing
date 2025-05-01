@@ -91,7 +91,7 @@ namespace raytracer
         virtual glm::dvec3 center() const = 0;
 
         /// @brief translate the object in world space
-        /// @param translation the translation vector
+        /// @param translation the coordinates, in world space, of a translation vector
         /// @note This function modifies the model matrix of the object.
         virtual void translate(const glm::dvec3& translation)
         {
@@ -100,16 +100,15 @@ namespace raytracer
 
         /// @brief rotate the object in world space
         /// @param angle the angle to rotate in degrees
-        /// @param axis the axis to rotate around
+        /// @param axis rotation axis, recommended to be normalized
         /// @note This function modifies the model matrix of the object.
-        /// @note The axis is in world space coordinates.
         virtual void rotate(const double angle, const glm::dvec3& axis)
         {
             m_modelMatrix = glm::rotate(m_modelMatrix, glm::radians(angle), axis);
         }
 
         /// @brief scale the object in world space
-        /// @param scale the scale factor
+        /// @param scale ratio of scaling for each axis
         /// @note This function modifies the model matrix of the object.
         virtual void scale(const glm::dvec3& scale)
         {

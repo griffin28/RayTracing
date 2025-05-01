@@ -3,6 +3,13 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
+Quad::Quad()
+    : m_Q(0.0, 0.0, 0.0)
+    , m_u(1.0, 0.0, 0.0)
+    , m_v(0.0, 1.0, 0.0)
+    , m_material(nullptr) {}
+
+//----------------------------------------------------------------------------------
 Quad::Quad(const glm::dvec3 &Q,
            const glm::dvec3 &u,
            const glm::dvec3 &v,
@@ -64,20 +71,23 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
 //----------------------------------------------------------------------------------
 glm::dvec3 Quad::center() const
 {
-    auto center = m_Q + 0.5 * m_u + 0.5 * m_v;
-    glm::dvec3 worldCenter = glm::dvec3(this->getModelMatrix() * glm::dvec4(center, 1.0));
-    return worldCenter;
+    auto Q = this->getQ();
+    auto u = this->getU();
+    auto v = this->getV();
+
+    // Calculate the center of the quad in world space
+    auto center = Q + 0.5 * u + 0.5 * v;
+    return center;
 }
 
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox Quad::getBounds() const
 {
-    auto modelMatrix = this->getModelMatrix();
-    auto world_Q = modelMatrix * glm::dvec4(m_Q, 1.0);
-    auto world_u = modelMatrix * glm::dvec4(m_u, 1.0);
-    auto world_v = modelMatrix * glm::dvec4(m_v, 1.0);
+    auto Q = this->getQ();
+    auto u = this->getU();
+    auto v = this->getV();
 
-    return AxisAlignedBoundingBox(world_Q, world_Q + world_u + world_v);
+    return AxisAlignedBoundingBox(Q, Q + u + v);
 }
 
 //----------------------------------------------------------------------------------

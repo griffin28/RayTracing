@@ -229,7 +229,7 @@ void cornell_box()
     auto green = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.12, 0.45, 0.0));
 
     // Light
-    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(343,554,332), glm::dvec3(-150,0,20), glm::dvec3(20,0,-125));
+    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(113,554,127), glm::dvec3(330,0,0), glm::dvec3(0,0,305));
     auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3d(1.0), 1.0);
     world.add(quadLight);
 
@@ -241,10 +241,15 @@ void cornell_box()
     world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,555), glm::dvec3(555,0,0), glm::dvec3(0,555,0), white));
 
     // Boxes
-    auto box1 = std::make_shared<raytracer::Box>(glm::dvec3(130,0,65), glm::dvec3(295,165,230), white);
+    auto box1 = std::make_shared<raytracer::Box>(glm::dvec3(0,0,0), glm::dvec3(165,330,165), white);
+    box1->rotate(15, glm::dvec3(0,1,0));
+    box1->translate(glm::dvec3(265,0,295));
     world.add(box1);
 
-    auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(265,0,295), glm::dvec3(430,330,460), white);
+    // auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(265,0,295), glm::dvec3(430,330,460), white);
+    auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(0,0,0), glm::dvec3(165,165,165), white);
+    box2->rotate(-18, glm::dvec3(0,1,0));
+    box2->translate(glm::dvec3(130,0,65));
     world.add(box2);
 
     // Build BVH

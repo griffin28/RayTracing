@@ -52,7 +52,7 @@ void PerspectiveCamera::reset()
 void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std::ostream &out)
 {
     std::unique_ptr<uint8_t[]> image(new uint8_t[m_width * m_height * 3]);
-    auto numThreads = std::thread::hardware_concurrency();
+    auto numThreads = std::thread::hardware_concurrency() * 4;
     numThreads = numThreads > m_height ? m_height : numThreads;
     std::clog << "Using " << numThreads << " threads\n";
     std::vector<std::thread> threads(numThreads);

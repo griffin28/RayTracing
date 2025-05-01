@@ -13,9 +13,11 @@ Box::Box(const glm::dvec3 &a, const glm::dvec3 &b, std::shared_ptr<Material> mat
 AxisAlignedBoundingBox Box::getBounds() const
 {
     auto modelMatrix = this->getModelMatrix();
+
     auto a = modelMatrix * glm::dvec4(m_point1, 1.0);
     auto b = modelMatrix * glm::dvec4(m_point2, 1.0);
     auto bounds = AxisAlignedBoundingBox(a, b);
+
     return bounds;
 }
 
@@ -25,6 +27,7 @@ glm::dvec3 Box::center() const
     auto bounds = this->getBounds();
     auto min = bounds.m_pMin;
     auto max = bounds.m_pMax;
+
     return 0.5 * (min + max);
 }
 
@@ -35,7 +38,7 @@ std::vector<Quad> Box::getSides() const
     auto min = bounds.m_pMin;
     auto max = bounds.m_pMax;
 
-    auto center = this->center();
+    auto center = 0.5 * (min + max);
 
     // Create the sides
     glm::dvec3 dx = glm::dvec3(max.x - min.x, 0, 0);
