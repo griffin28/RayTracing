@@ -6,12 +6,12 @@ namespace raytracer
 {
 //----------------------------------------------------------------------------------
 Lambertian::Lambertian()
-    : m_albedo(std::make_shared<SolidColorTexture>(Color3d(1.0, 1.0, 1.0)))
+    : m_albedo(std::make_shared<SolidColorTexture>(Color3f(1.0f, 1.0f, 1.0f)))
 {
 }
 
 //----------------------------------------------------------------------------------
-Lambertian::Lambertian(const Color3d &albedo)
+Lambertian::Lambertian(const Color3f &albedo)
     : m_albedo(std::make_shared<SolidColorTexture>(albedo))
 {
 }
@@ -23,9 +23,9 @@ Lambertian::Lambertian(const std::shared_ptr<Texture> &albedo)
 }
 
 //----------------------------------------------------------------------------------
-bool Lambertian::scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const
+bool Lambertian::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const
 {
-    glm::dvec3 scatterDirection = record.normal + glm::normalize(randomInUnitSphere());
+    glm::vec3 scatterDirection = record.normal + glm::normalize(randomInUnitSphere());
 
     // Catch degenerate scatter direction
     if(nearZero(scatterDirection))

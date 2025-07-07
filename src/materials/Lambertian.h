@@ -18,7 +18,7 @@ public:
 
     /// @brief Constructor
     /// @param albedo the color of the material
-    Lambertian(const Color3d &albedo);
+    Lambertian(const Color3f &albedo);
 
     /// @brief Constructor
     /// @param albedo the texture of the material
@@ -26,7 +26,7 @@ public:
 
     /// @brief  Determines if the ray scatters when it hits the object.
     /// @see Material::scatter
-    bool scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const override;
+    bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const override;
 
 private:
     std::shared_ptr<Texture> m_albedo;

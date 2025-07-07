@@ -33,69 +33,70 @@ void random_spheres()
     BVH world;
 
     // Ground
-    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(0.0, 0.0, 0.0), raytracer::Color3d(0.9, 0.9, 0.9), 2);
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3f(0.0f, 0.0f, 0.0f), raytracer::Color3f(0.9f, 0.9f, 0.9f), 2);
     auto materialGround = std::make_shared<raytracer::Lambertian>(checkerTexture);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000, 0), 1000, materialGround));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0.f,-1000.f, 0.f), 1000, materialGround));
 
     // Random spheres
     for(int a=-11; a < 11; ++a)
     {
         for(int b=-11; b < 11; ++b)
         {
-            auto chooseMat = raytracer::randomDouble();
-            glm::dvec3 center(a + 0.9 * raytracer::randomDouble(), 0.2, b + 0.9 * raytracer::randomDouble());
+            auto chooseMat = static_cast<float>(raytracer::randomDouble());
+            glm::vec3 center(a + 0.9f * static_cast<float>(raytracer::randomDouble()), 0.2f, b + 0.9f * static_cast<float>(raytracer::randomDouble()));
 
-            if(glm::length(center - glm::dvec3(4, 0.2, 0)) > 0.9)
+            if(glm::length(center - glm::vec3(4.f, 0.2f, 0.f)) > 0.9f)
             {
                 std::shared_ptr<raytracer::Material> sphereMaterial;
 
-                if(chooseMat < 0.8)
+                if(chooseMat < 0.8f)
                 {
                     // Diffuse
                     auto albedo = raytracer::randomVector() * raytracer::randomVector();
                     sphereMaterial = std::make_shared<raytracer::Lambertian>(albedo);
-                    world.add(std::make_shared<raytracer::Sphere>(center, 0.2, sphereMaterial));
+                    world.add(std::make_shared<raytracer::Sphere>(center, 0.2f, sphereMaterial));
                 }
-                else if(chooseMat < 0.95)
+                else if(chooseMat < 0.95f)
                 {
                     // Metal
-                    auto albedo = raytracer::randomVector(0.5, 1);
-                    auto fuzz = raytracer::randomDouble(0, 0.5);
+                    auto albedo = raytracer::randomVector(0.5f, 1.f);
+                    auto fuzz = static_cast<float>(raytracer::randomDouble(0, 0.5));
                     sphereMaterial = std::make_shared<raytracer::Metal>(albedo, fuzz);
-                    world.add(std::make_shared<raytracer::Sphere>(center, 0.2, sphereMaterial));
+                    world.add(std::make_shared<raytracer::Sphere>(center, 0.2f, sphereMaterial));
                 }
                 else
                 {
                     // Glass
-                    sphereMaterial = std::make_shared<raytracer::Dielectric>(1.5);
-                    world.add(std::make_shared<raytracer::Sphere>(center, 0.2, sphereMaterial));
+                    sphereMaterial = std::make_shared<raytracer::Dielectric>(1.5f);
+                    world.add(std::make_shared<raytracer::Sphere>(center, 0.2f, sphereMaterial));
                 }
             }
         }
     }
 
     // Three big spheres
-    auto material1 = std::make_shared<raytracer::Dielectric>(1.5);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 1, -2), 1.0, material1));
+    auto material1 = std::make_shared<raytracer::Dielectric>(1.5f);
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0.f, 1.f, -2.f), 1.0f, material1));
 
-    // auto material2 = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.4, 0.2, 0.1));
+    // auto material2 = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.4, 0.2, 0.1));
     auto earthTexture = std::make_shared<raytracer::ImageTexture>("earth_8k.jpg");
     auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(-4, 1, -2), 1.0, earthMaterial));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(-4.f, 1.f, -2.f), 1.f, earthMaterial));
 
-    auto material3 = std::make_shared<raytracer::Metal>(raytracer::Color3d(0.7, 0.6, 0.5), 0.0);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(4, 1, -2), 1.0, material3));
+    auto material3 = std::make_shared<raytracer::Metal>(raytracer::Color3f(0.7f, 0.6f, 0.5f), 0.0f);
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(4.f, 1.f, -2.f), 1.f, material3));
 
     // Build BVH
     world.build();
 
-    PerspectiveCamera camera(1200, 675, 5, 20.0);
+    PerspectiveCamera camera(1200, 675, 5, 20.0f);
+    camera.setBackgroundColor(raytracer::Color3f(0.7f, 0.8f, 1.f));
     // PerspectiveCamera camera(400, 200, 20, 20.0);
-    // camera.setPosition(glm::dvec3(0, 0.3, 6));
-    camera.setPosition(glm::dvec3(13,2,3));
-    camera.setFocalPoint(glm::dvec3(0.0, 0.0, 0.0));
-    camera.setAperatureRadius(0);
-    camera.setBackgroundColor(raytracer::Color3d(0.7, 0.8, 1.0));
+    // camera.setPosition(glm::vec3(0, 0.3, 6));
+    camera.setPosition(glm::vec3(13.f, 2.f, 3.f));
+    camera.setFocalPoint(glm::vec3(0.f, 0.f, 0.f));
+    camera.setAperatureRadius(0.f);
+    camera.setBackgroundColor(raytracer::Color3f(0.7f, 0.8f, 1.f));
 
     camera.render(world, 3);
 }
@@ -107,22 +108,22 @@ void two_spheres()
     BVH world;
 
     // Ground
-    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(1.0, 0, 0), raytracer::Color3d(0.9, 0.9, 0.9), 0.8);
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3f(1.0f, 0.f, 0.f), raytracer::Color3f(0.9f, 0.9f, 0.9f), 0.8f);
 
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, -10, 0), 10, std::make_shared<raytracer::Lambertian>(checkerTexture)));
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 10, 0), 10, std::make_shared<raytracer::Lambertian>(checkerTexture)));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0.f, -10.f, 0.f), 10.f, std::make_shared<raytracer::Lambertian>(checkerTexture)));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0.f, 10.f, 0.f), 10.f, std::make_shared<raytracer::Lambertian>(checkerTexture)));
 
     // Build BVH
     world.build();
 
     // width, height, maxDepth, fovy
-    PerspectiveCamera camera(400, 225, 50, 45);
-    // camera.setPosition(glm::dvec3(0, 0, 20));
-    camera.setPosition(glm::dvec3(13, 2, 3));
-    camera.setFocalPoint(glm::dvec3(0, 0, 0));
-    camera.setAperatureRadius(0);
+    PerspectiveCamera camera(400, 225, 50, 45.f);
+    camera.setBackgroundColor(raytracer::Color3f(0.7f, 0.8f, 1.f)); // Light blue background
+    camera.setPosition(glm::vec3(13.f, 2.f, 3.f));
+    camera.setFocalPoint(glm::vec3(0.f, 0.f, 0.f));
+    camera.setAperatureRadius(0.f);
 
-    camera.render(world, 5);
+    camera.render(world, 50);
 }
 
 //----------------------------------------------------------------------------------
@@ -134,15 +135,15 @@ void earth(const std::string &filename)
     // Ground
     auto earthTexture = std::make_shared<raytracer::ImageTexture>(filename.c_str());
     auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 0, 0), 2, earthMaterial));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0, 0, 0), 2, earthMaterial));
 
     // Build BVH
     world.build();
 
     // width, height, maxDepth, fovy
     PerspectiveCamera camera(400, 225, 50, 20);
-    camera.setPosition(glm::dvec3(0, 0, 12));
-    camera.setFocalPoint(glm::dvec3(0, 0, 0));
+    camera.setPosition(glm::vec3(0, 0, 12));
+    camera.setFocalPoint(glm::vec3(0, 0, 0));
     camera.setAperatureRadius(0);
 
     camera.render(world, 5);
@@ -155,25 +156,25 @@ void quads()
     BVH world;
 
     // Materials
-    auto leftRed = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(1.0, 0.0, 0.0));
-    auto backGreen = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.0, 0.9, 0.0));
-    auto rightBlue = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.1, 0.0, 1.0));
-    auto upperOrange = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(1.0, 0.5, 0.0));
-    auto lowerYellow = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.2, 0.8, 0.8));
+    auto leftRed = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(1.0f, 0.0f, 0.0f));
+    auto backGreen = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.0f, 0.9f, 0.0f));
+    auto rightBlue = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.1f, 0.0f, 1.0f));
+    auto upperOrange = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(1.0f, 0.5f, 0.0f));
+    auto lowerYellow = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.2f, 0.8f, 0.8f));
 
     // Quads
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-3,-2,5), glm::dvec3(0,0,-4), glm::dvec3(0,4,0), leftRed));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-2,-2,0), glm::dvec3(4,0,0), glm::dvec3(0,4,0), backGreen));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(3,-2,1), glm::dvec3(0,0,4), glm::dvec3(0,4,0), rightBlue));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-2,3,1), glm::dvec3(4,0,0), glm::dvec3(0,0,4), upperOrange));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(-2,-3,5), glm::dvec3(4,0,0), glm::dvec3(0,0,-4), lowerYellow));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(-3,-2,5), glm::vec3(0,0,-4), glm::vec3(0,4,0), leftRed));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(-2,-2,0), glm::vec3(4,0,0), glm::vec3(0,4,0), backGreen));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(3,-2,1), glm::vec3(0,0,4), glm::vec3(0,4,0), rightBlue));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(-2,3,1), glm::vec3(4,0,0), glm::vec3(0,0,4), upperOrange));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(-2,-3,5), glm::vec3(4,0,0), glm::vec3(0,0,-4), lowerYellow));
 
     // Build BVH
     world.build();
 
     PerspectiveCamera camera(400, 400, 50, 80);
-    camera.setPosition(glm::dvec3(0, 0, 9));
-    camera.setFocalPoint(glm::dvec3(0, 0, 0));
+    camera.setPosition(glm::vec3(0, 0, 9));
+    camera.setFocalPoint(glm::vec3(0, 0, 0));
     camera.setAperatureRadius(0);
 
     camera.render(world, 25);
@@ -188,20 +189,20 @@ void simple_light(const std::string &filename)
     // Earth
     auto earthTexture = std::make_shared<raytracer::ImageTexture>(filename.c_str());
     auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0, 2, 0), 2, earthMaterial));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0, 2, 0), 2, earthMaterial));
 
     // Ground
-    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3d(0.0, 0.0, 0.0), raytracer::Color3d(0.9, 0.9, 0.9), 2);
+    auto checkerTexture = std::make_shared<raytracer::CheckerTexture>(raytracer::Color3f(0.0f, 0.0f, 0.0f), raytracer::Color3f(0.9f, 0.9f, 0.9f), 2);
     auto materialGround = std::make_shared<raytracer::Lambertian>(checkerTexture);
-    world.add(std::make_shared<raytracer::Sphere>(glm::dvec3(0,-1000, 0), 1000, materialGround));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0,-1000, 0), 1000, materialGround));
 
     // Lights
-    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(3,1,-2), glm::dvec3(2,0,0), glm::dvec3(0,2,0));
-    auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3d(1.0), 1.0);
+    auto quad = std::make_shared<raytracer::Quad>(glm::vec3(3,1,-2), glm::vec3(2,0,0), glm::vec3(0,2,0));
+    auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3f(1.0f), 1.0f);
     world.add(quadLight);
 
-    auto sphere = std::make_shared<raytracer::Sphere>(glm::dvec3(0,7,0), 2.0);
-    auto sphereLight = std::make_shared<raytracer::SphereLight>(sphere, raytracer::Color3d(1.0, 0.4, 0.6), 1.0);
+    auto sphere = std::make_shared<raytracer::Sphere>(glm::vec3(0,7,0), 2.0f);
+    auto sphereLight = std::make_shared<raytracer::SphereLight>(sphere, raytracer::Color3f(1.0f, 0.4f, 0.6f), 1.0f);
     world.add(sphereLight);
 
     // Build BVH
@@ -209,12 +210,12 @@ void simple_light(const std::string &filename)
 
     // width, height, maxDepth, fovy
     PerspectiveCamera camera(400, 225, 50, 20);
-    camera.setPosition(glm::dvec3(26,3,6));
-    camera.setFocalPoint(glm::dvec3(0, 2, 0));
+    camera.setPosition(glm::vec3(26,3,6));
+    camera.setFocalPoint(glm::vec3(0, 2, 0));
     camera.setAperatureRadius(0);
-    camera.setBackgroundColor(raytracer::Color3d(0.0, 0.0, 0.0));
+    camera.setBackgroundColor(raytracer::Color3f(0.0f, 0.0f, 0.0f));
 
-    camera.render(world, 100);
+    camera.render(world, 50);
 }
 
 //----------------------------------------------------------------------------------
@@ -224,45 +225,45 @@ void cornell_box()
     BVH world;
 
     // Materials
-    auto red = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.65, 0.05, 0.05));
-    auto white = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.73, 0.73, 0.73));
-    auto green = std::make_shared<raytracer::Lambertian>(raytracer::Color3d(0.12, 0.45, 0.0));
+    auto red = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.65f, 0.05f, 0.05f));
+    auto white = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.73f, 0.73f, 0.73f));
+    auto green = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.12f, 0.45f, 0.0f));
 
     // Light
-    auto quad = std::make_shared<raytracer::Quad>(glm::dvec3(113,554,127), glm::dvec3(330,0,0), glm::dvec3(0,0,305));
-    auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3d(1.0), 1.0);
+    auto quad = std::make_shared<raytracer::Quad>(glm::vec3(113,554,127), glm::vec3(330,0,0), glm::vec3(0,0,305));
+    auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3f(1.0f), 1.0f);
     world.add(quadLight);
 
     // Walls
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(555,0,0), glm::dvec3(0,555,0), glm::dvec3(0,0,555), green));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,0), glm::dvec3(0,555,0), glm::dvec3(0,0,555), red));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,0), glm::dvec3(555,0,0), glm::dvec3(0,0,555), white));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(555,555,555), glm::dvec3(-555,0,0), glm::dvec3(0,0,-555), white));
-    world.add(std::make_shared<raytracer::Quad>(glm::dvec3(0,0,555), glm::dvec3(555,0,0), glm::dvec3(0,555,0), white));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), green));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), red));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,0,555), white));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,555,555), glm::vec3(-555,0,0), glm::vec3(0,0,-555), white));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,555), glm::vec3(555,0,0), glm::vec3(0,555,0), white));
 
     // Boxes
-    auto box1 = std::make_shared<raytracer::Box>(glm::dvec3(0,0,0), glm::dvec3(165,330,165), white);
-    box1->rotate(15, glm::dvec3(0,1,0));
-    box1->translate(glm::dvec3(265,0,295));
+    auto box1 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
+    box1->rotate(15, glm::vec3(0,1,0));
+    box1->translate(glm::vec3(265,0,295));
     world.add(box1);
 
-    // auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(265,0,295), glm::dvec3(430,330,460), white);
-    auto box2 = std::make_shared<raytracer::Box>(glm::dvec3(0,0,0), glm::dvec3(165,165,165), white);
-    box2->rotate(-18, glm::dvec3(0,1,0));
-    box2->translate(glm::dvec3(130,0,65));
+    // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
+    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
+    box2->rotate(-18, glm::vec3(0,1,0));
+    box2->translate(glm::vec3(130,0,65));
     world.add(box2);
 
     // Build BVH
     world.build();
 
     // width, height, maxDepth, fovy
-    PerspectiveCamera camera(600, 600, 5, 40);
-    camera.setPosition(glm::dvec3(278, 278, -800));
-    camera.setFocalPoint(glm::dvec3(278, 278, 0));
+    PerspectiveCamera camera(600, 600, 10, 40);
+    camera.setPosition(glm::vec3(278, 278, -800));
+    camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setAperatureRadius(0);
-    camera.setBackgroundColor(raytracer::Color3d(0.0, 0.0, 0.0));
+    camera.setBackgroundColor(raytracer::Color3f(0.0f, 0.0f, 0.0f));
 
-    camera.render(world, 100);
+    camera.render(world, 10);
 }
 
 //----------------------------------------------------------------------------------

@@ -26,7 +26,7 @@ public:
     /// @param p1 Minimum point of the bounding box
     /// @param p2 Maximum point of the bounding box
     /// @param padding the amount of padding to add to the bounding box
-    AxisAlignedBoundingBox(const glm::dvec3 &p1, const glm::dvec3 &p2, double padding = 0);
+    AxisAlignedBoundingBox(const glm::vec3 &p1, const glm::vec3 &p2, float padding = 0);
 
     /// Default destructor
     ~AxisAlignedBoundingBox() = default;
@@ -35,15 +35,15 @@ public:
     /// @param  c the corner index which can be one of eight values ranging from 0 to 7.
     /// @return the coordinates of one of the eight corners of the bounding box.
     /// @throws std::runtime_error if the corner index is not in the range of 0 to 7 inclusive.
-    glm::dvec3 corner(const int c) const;
+    glm::vec3 corner(const int c) const;
 
     /// @brief Compute the surface area of the six faces of the bounding box.
     /// @return the surface area of the bounding box
-    double surfaceArea() const;
+    float surfaceArea() const;
 
     /// @brief Compute the volume of the bounding box.
     /// @return the volume of this bounding box
-    double volume() const;
+    float volume() const;
 
     /// @brief Uses the slab test to determine if a ray intersects the bounding box.
     /// @param ray the ray to test for intersection
@@ -65,7 +65,7 @@ public:
     /// @param box the bounding box
     /// @param point the point
     /// @return  A new bounding box bounding the space encompassed by box and point
-    static AxisAlignedBoundingBox combine(const AxisAlignedBoundingBox &box, const glm::dvec3 &point);
+    static AxisAlignedBoundingBox combine(const AxisAlignedBoundingBox &box, const glm::vec3 &point);
 
     friend std::ostream &operator<<(std::ostream &os, const AxisAlignedBoundingBox &b)
     {
@@ -76,11 +76,11 @@ public:
     }
 
     /// @brief minimum point of the bounding box
-    glm::dvec3 m_pMin;
+    glm::vec3 m_pMin;
     /// @brief maximum point of the bounding box
-    glm::dvec3 m_pMax;
+    glm::vec3 m_pMax;
     /// @brief padding to ensure the bounding box handles grazing cases
-    double m_padding;
+    float m_padding;
 
 private:
     void padToMinExtent();

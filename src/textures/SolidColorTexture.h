@@ -13,25 +13,25 @@ class SolidColorTexture : public Texture
 public:
     /// @brief Constructor
     /// @param color the color of the texture
-    SolidColorTexture(const Color3d &color) : m_color(color) {}
+    SolidColorTexture(const Color3f &color) : m_color(color) {}
 
     /// @brief Constructor
     /// @param r red channel
     /// @param g green channel
     /// @param b blue channel
-    SolidColorTexture(double r, double g, double b) : m_color(r, g, b) {}
+    SolidColorTexture(float r, float g, float b) : m_color(r, g, b) {}
 
     /// @brief Destructor
     ~SolidColorTexture() = default;
 
     /// @see Texture::value
-    Color3d value(double u = 0, double v = 0, const glm::dvec3 &p = glm::dvec3(0, 0, 0)) const override
+    Color3f value(float u = 0.f, float v = 0.f, const glm::vec3 &p = glm::vec3(0.f, 0.f, 0.f)) const override
     {
         return m_color;
     }
 
 private:
-    Color3d m_color;
+    Color3f m_color;
 };
 }
 

@@ -7,8 +7,8 @@ namespace raytracer
 {
 //----------------------------------------------------------------------------------
 SphereLight::SphereLight(const std::shared_ptr<Sphere> &quad,
-                         const Color3d &color,
-                         double intensity)
+                         const Color3f &color,
+                         float intensity)
     : m_sphere(quad)
     , m_material(std::make_shared<EmissiveMaterial>(color, intensity))
 {
@@ -18,7 +18,7 @@ SphereLight::SphereLight(const std::shared_ptr<Sphere> &quad,
 //----------------------------------------------------------------------------------
 SphereLight::SphereLight(const std::shared_ptr<Sphere> &quad,
                      const std::shared_ptr<Texture> &texture,
-                     double intensity)
+                     float intensity)
     : m_sphere(quad)
     , m_material(std::make_shared<EmissiveMaterial>(texture, intensity))
 {
@@ -38,7 +38,7 @@ AxisAlignedBoundingBox SphereLight::getBounds() const
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 SphereLight::center() const
+glm::vec3 SphereLight::center() const
 {
     return m_sphere->center();
 }

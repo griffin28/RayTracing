@@ -4,15 +4,15 @@ namespace raytracer
 {
 //----------------------------------------------------------------------------------
 Quad::Quad()
-    : m_Q(0.0, 0.0, 0.0)
-    , m_u(1.0, 0.0, 0.0)
-    , m_v(0.0, 1.0, 0.0)
+    : m_Q(0.0f, 0.0f, 0.0f)
+    , m_u(1.0f, 0.0f, 0.0f)
+    , m_v(0.0f, 1.0f, 0.0f)
     , m_material(nullptr) {}
 
 //----------------------------------------------------------------------------------
-Quad::Quad(const glm::dvec3 &Q,
-           const glm::dvec3 &u,
-           const glm::dvec3 &v,
+Quad::Quad(const glm::vec3 &Q,
+           const glm::vec3 &u,
+           const glm::vec3 &v,
            std::shared_ptr<Material> material)
     : m_Q(Q)
     , m_u(u)
@@ -51,7 +51,7 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
     auto alpha = glm::dot(w, glm::cross(p, v));
     auto beta = glm::dot(w, glm::cross(u, p));
 
-    if(alpha < 0.0 || alpha > 1.0 || beta < 0.0 || beta > 1.0)
+    if(alpha < 0.0f || alpha > 1.0f || beta < 0.0f || beta > 1.0f)
     {
         return false;
     }
@@ -69,14 +69,14 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Quad::center() const
+glm::vec3 Quad::center() const
 {
     auto Q = this->getQ();
     auto u = this->getU();
     auto v = this->getV();
 
     // Calculate the center of the quad in world space
-    auto center = Q + 0.5 * u + 0.5 * v;
+    auto center = Q + 0.5f * u + 0.5f * v;
     return center;
 }
 
@@ -91,28 +91,28 @@ AxisAlignedBoundingBox Quad::getBounds() const
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Quad::getQ() const
+glm::vec3 Quad::getQ() const
 {
-    glm::dvec3 worldQ = glm::dvec3(this->getModelMatrix() * glm::dvec4(m_Q, 1.0));
+    glm::vec3 worldQ = glm::vec3(this->getModelMatrix() * glm::vec4(m_Q, 1.0f));
     return worldQ;
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Quad::getU() const
+glm::vec3 Quad::getU() const
 {
-    glm::dvec3 worldU = glm::dvec3(this->getModelMatrix() * glm::dvec4(m_u, 1.0));
+    glm::vec3 worldU = glm::vec3(this->getModelMatrix() * glm::vec4(m_u, 1.0f));
     return worldU;
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Quad::getV() const
+glm::vec3 Quad::getV() const
 {
-    glm::dvec3 worldV = glm::dvec3(this->getModelMatrix() * glm::dvec4(m_v, 1.0));
+    glm::vec3 worldV = glm::vec3(this->getModelMatrix() * glm::vec4(m_v, 1.0f));
     return worldV;
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Quad::getNormal() const
+glm::vec3 Quad::getNormal() const
 {
     auto u = this->getU();
     auto v = this->getV();
@@ -130,7 +130,7 @@ double Quad::getD() const
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Quad::getW() const
+glm::vec3 Quad::getW() const
 {
     auto normal = this->getNormal();
     auto w = normal / glm::dot(normal, normal);

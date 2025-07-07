@@ -51,9 +51,9 @@ public:
     }
 
     //----------------------------------------------------------------------------------
-    glm::dvec3 center() const override
+    glm::vec3 center() const override
     {
-        return 0.5 * m_bounds.m_pMin + 0.5 * m_bounds.m_pMax;
+        return 0.5f * m_bounds.m_pMin + 0.5f * m_bounds.m_pMax;
     }
 
     /// @brief left child node
@@ -98,9 +98,9 @@ AxisAlignedBoundingBox BVH::getBounds() const
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 BVH::center() const
+glm::vec3 BVH::center() const
 {
-    return m_root ? m_root->center() : glm::dvec3(0);
+    return m_root ? m_root->center() : glm::vec3(0);
 }
 
 //----------------------------------------------------------------------------------

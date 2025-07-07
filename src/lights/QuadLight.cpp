@@ -7,8 +7,8 @@ namespace raytracer
 {
 //----------------------------------------------------------------------------------
 QuadLight::QuadLight(const std::shared_ptr<Quad> &quad,
-                     const Color3d &color,
-                     double intensity)
+                     const Color3f &color,
+                     float intensity)
     : m_quad(quad)
     , m_material(std::make_shared<EmissiveMaterial>(color, intensity))
 {
@@ -18,7 +18,7 @@ QuadLight::QuadLight(const std::shared_ptr<Quad> &quad,
 //----------------------------------------------------------------------------------
 QuadLight::QuadLight(const std::shared_ptr<Quad> &quad,
                      const std::shared_ptr<Texture> &texture,
-                     double intensity)
+                     float intensity)
     : m_quad(quad)
     , m_material(std::make_shared<EmissiveMaterial>(texture, intensity))
 {
@@ -38,7 +38,7 @@ AxisAlignedBoundingBox QuadLight::getBounds() const
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 QuadLight::center() const
+glm::vec3 QuadLight::center() const
 {
     return m_quad->center();
 }

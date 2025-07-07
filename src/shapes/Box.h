@@ -20,8 +20,8 @@ public:
     /// @param a the first point of the box
     /// @param b the second point of the box
     /// @param material the material of the box
-    Box(const glm::dvec3 &a,
-        const glm::dvec3 &b,
+    Box(const glm::vec3 &a,
+        const glm::vec3 &b,
         std::shared_ptr<Material> material = nullptr);
 
     /// @brief the destructor for the box.
@@ -41,7 +41,7 @@ public:
 
     /// @brief the center of the box at a given time.
     /// @return  the position of the center at a certain time.
-    glm::dvec3 center() const override;
+    glm::vec3 center() const override;
 
     /// @brief Get the world space bounds for this box
     /// @return Bounding box for the box using world space coordinates
@@ -52,8 +52,8 @@ public:
     std::vector<Quad> getSides() const;
 
 private:
-    glm::dvec3 m_point1;
-    glm::dvec3 m_point2;
+    glm::vec3 m_point1;
+    glm::vec3 m_point2;
     std::shared_ptr<Material> m_material;
 };
 } // namespace raytracer

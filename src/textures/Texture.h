@@ -19,7 +19,7 @@ public:
     /// @param v the v texture coordinate
     /// @param p the 3D point
     /// @return the RGB color value of the texture
-    virtual Color3d value(double u, double v, const glm::dvec3 &p) const = 0;
+    virtual Color3f value(float u, float v, const glm::vec3 &p) const = 0;
 };
 }
 

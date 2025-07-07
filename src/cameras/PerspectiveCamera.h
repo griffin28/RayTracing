@@ -33,9 +33,9 @@ public:
     PerspectiveCamera(int width,
                       int height,
                       int maxDepth=10,
-                      double fovy=45.0,
-                      double near=0.0,
-                      double far=1000.0);
+                      float fovy=45.0,
+                      float near=0.0,
+                      float far=1000.0);
 
     /// Default destructor.
     ~PerspectiveCamera() = default;
@@ -54,24 +54,24 @@ public:
     ///        Implementation based on: https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays.html
     /// @param p the x- and y-coordinates of the pixel in raster space
     /// @return the generated ray
-    Ray *generateRay(const glm::dvec2 &p) override;
+    Ray *generateRay(const glm::vec2 &p) override;
 
     /// @brief Creates a ray in world space from a screen pixel location and a lens offset to simulate
     ///        depth of field. Caller is responsible for managing the memory allocated for this object.
     /// @param pixel the x- and y-coordinates of the pixel in raster space
     /// @return the generated ray
-    Ray *generateThinLensRay(const glm::dvec2 &pixel);
+    Ray *generateThinLensRay(const glm::vec2 &pixel);
 
     /// @brief Change the view angle by the specified factor
     /// @param factor
-    void zoom(const double factor) override;
-    double getZoomFactor() const override { return m_zoomFactor; }
+    void zoom(const float factor) override;
+    float getZoomFactor() const override { return m_zoomFactor; }
 
     //@{
     /// @brief Set/get the camera view angle.
     /// @param angle angular height of the camera view measured in degrees
-    void setViewAngle(const double angle) override;
-    double getViewAngle() const override { return m_fovy; }
+    void setViewAngle(const float angle) override;
+    float getViewAngle() const override { return m_fovy; }
     //@}
 
     //@{
@@ -80,20 +80,20 @@ public:
     ///        (0.1,1000) and is measured in world coordinates.
     /// @param  near distance to the near clipping plane along the forward axis
     /// @param  far  distance to the far clipping plane along the forward axis
-    void setClippingRange(const double near, const double far) override;
-    glm::dvec2 getClippingRange() const override { return glm::dvec2(m_near, m_far); }
+    void setClippingRange(const float near, const float far) override;
+    glm::vec2 getClippingRange() const override { return glm::vec2(m_near, m_far); }
     //@}
 
     /// @brief Update the screen size.
     /// @param width screen width
     /// @param height screen height
     void setScreenSize(const int width, const int height) override;
-    glm::dvec2 getScreenSize() const override { return glm::dvec2(m_width, m_height); }
+    glm::vec2 getScreenSize() const override { return glm::vec2(m_width, m_height); }
 
     /// @brief Get the projection matrix in the form of a frustrum matrix such that clip-space
     ///        takes the shape of a truncated rectangular pyramid.
     /// @return the projection matrix
-    glm::dmat4 getProjectionMatrix() const override { return m_perspectiveMatrix; }
+    glm::mat4 getProjectionMatrix() const override { return m_perspectiveMatrix; }
 
     /// @brief Copy the camera's state to this camera.
     /// @see ProjectionCamera::copy
@@ -104,7 +104,7 @@ private:
     /// @param ray the ray to compute the color for
     /// @param depth the maximum number of ray bounces into the scene
     /// @param world the hittable list representing the scene
-    Color3d rayColor(Ray * const ray, int depth, const BVH &world);
+    Color3f rayColor(Ray * const ray, int depth, const BVH &world);
 
     /// @brief  Write a PPM image to the output stream.
     /// @param image PPM image data
@@ -117,13 +117,13 @@ private:
     int m_height;
     int m_maxDepth;
 
-    double m_zoomFactor;
+    float m_zoomFactor;
 
-    double m_fovy;
-    double m_near;
-    double m_far;
+    float m_fovy;
+    float m_near;
+    float m_far;
 
-    glm::dmat4 m_perspectiveMatrix;
+    glm::mat4 m_perspectiveMatrix;
 };
 } // namespace raytracerS
 

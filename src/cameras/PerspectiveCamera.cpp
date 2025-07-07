@@ -17,9 +17,9 @@ PerspectiveCamera::PerspectiveCamera()
 PerspectiveCamera::PerspectiveCamera(int width,
                                      int height,
                                      int maxDepth,
-                                     double fovy,
-                                     double near,
-                                     double far) :
+                                     float fovy,
+                                     float near,
+                                     float far) :
     m_width(width),
     m_height(height),
     m_maxDepth(maxDepth),
@@ -33,7 +33,7 @@ PerspectiveCamera::PerspectiveCamera(int width,
         throw std::invalid_argument("Invalid screen size");
     }
 
-    double aspect = static_cast<double>(m_width) / static_cast<double>(m_height);
+    float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
     m_perspectiveMatrix = glm::perspective(glm::radians(m_fovy), aspect, m_near, m_far);
 }
 
@@ -71,21 +71,21 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
 
                 for(int i=0; i < m_width; ++i)
                 {
-                    Color3d pixelColor(0.0);
+                    Color3f pixelColor(0.0f);
 
                     for(int k=0; k < samplesPerPixel; ++k)
                     {
-                        auto pixel = glm::dvec2(i + raytracer::randomDouble() - 0.5, j + raytracer::randomDouble() - 0.5);
+                        auto pixel = glm::vec2(i + raytracer::randomDouble() - 0.5f, j + raytracer::randomDouble() - 0.5f);
                         std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
                         pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
                     }
 
-                    pixelColor *= 1.0 / samplesPerPixel;
+                    pixelColor *= 1.0f / samplesPerPixel;
                     // pixelColor = gammaCorrect(pixelColor);
 
-                    image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0 * clamp(pixelColor.r, 0.0, 1.0));
-                    image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0 * clamp(pixelColor.g, 0.0, 1.0));
-                    image[(j * m_width + i) * 3 + 2] = static_cast<uint8_t>(255.0 * clamp(pixelColor.b, 0.0, 1.0));
+                    image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0f * clamp(pixelColor.r, 0.0f, 1.0f));
+                    image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0f * clamp(pixelColor.g, 0.0f, 1.0f));
+                    image[(j * m_width + i) * 3 + 2] = static_cast<uint8_t>(255.0f * clamp(pixelColor.b, 0.0f, 1.0f));
                 }
             }
         }, t * m_height / numThreads, (t+1) == numThreads ? m_height : (t+1) * m_height / numThreads, t));
@@ -101,35 +101,35 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
 }
 
 //----------------------------------------------------------------------------------
-void PerspectiveCamera::zoom(const double factor)
+void PerspectiveCamera::zoom(const float factor)
 {
     m_zoomFactor = factor;
     this->setViewAngle(m_fovy / factor);
 }
 
 //----------------------------------------------------------------------------------
-void PerspectiveCamera::setViewAngle(const double angle)
+void PerspectiveCamera::setViewAngle(const float angle)
 {
     if(m_fovy != angle)
     {
-        double min = 0.00000001;
-        double max = 179.0;
+        float min = 0.00000001f;
+        float max = 179.0f;
 
         m_fovy = (angle < min ? min : (angle > max ? max : angle));
-        double aspect = static_cast<double>(m_width) / static_cast<double>(m_height);
+        float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
 
         m_perspectiveMatrix = glm::perspective(glm::radians(m_fovy), aspect, m_near, m_far);
     }
 }
 
 //----------------------------------------------------------------------------------
-void PerspectiveCamera::setClippingRange(const double near, const double far)
+void PerspectiveCamera::setClippingRange(const float near, const float far)
 {
     if(m_near != near || m_far != far)
     {
         m_near = near;
         m_far = far;
-        double aspect = static_cast<double>(m_width) / static_cast<double>(m_height);
+        float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
 
         m_perspectiveMatrix = glm::perspective(glm::radians(m_fovy), aspect, m_near, m_far);
     }
@@ -142,7 +142,7 @@ void PerspectiveCamera::setScreenSize(const int width, const int height)
     {
         m_width = width;
         m_height = height;
-        double aspect = static_cast<double>(m_width) / static_cast<double>(m_height);
+        float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
 
         m_perspectiveMatrix = glm::perspective(glm::radians(m_fovy), aspect, m_near, m_far);
     }
@@ -151,10 +151,10 @@ void PerspectiveCamera::setScreenSize(const int width, const int height)
 
 //----------------------------------------------------------------------------------
 // Ray *
-// PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
+// PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
 // {
 //     Ray *pinholeRay = this->generateRay(pixel);
-//     const double aperatureRadius = this->getAperatureRadius();
+//     const float aperatureRadius = this->getAperatureRadius();
 
 //     if(aperatureRadius <= 0.0)
 //     {
@@ -167,10 +167,10 @@ void PerspectiveCamera::setScreenSize(const int width, const int height)
 //     auto defocusDiskU = u * aperatureRadius;
 //     auto defocusDiskV = v * aperatureRadius;
 
-//     glm::dvec2 lensOffset = glm::dvec2(randomInUnitDisk());
+//     glm::vec2 lensOffset = glm::vec2(randomInUnitDisk());
 
 //     auto origin = this->getPosition() + (lensOffset[0] * defocusDiskU) + (lensOffset[1] * defocusDiskV);
-//     glm::dvec3 direction = glm::normalize(pinholeRay->direction() - origin);
+//     glm::vec3 direction = glm::normalize(pinholeRay->direction() - origin);
 
 //     // Clean-up
 //     delete pinholeRay;
@@ -181,33 +181,33 @@ void PerspectiveCamera::setScreenSize(const int width, const int height)
 
 //----------------------------------------------------------------------------------
 Ray *
-PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
+PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
 {
     Ray *pinholeRay = this->generateRay(pixel);
-    const double aperatureRadius = this->getAperatureRadius();
+    const float aperatureRadius = this->getAperatureRadius();
 
     if(aperatureRadius <= 0.0)
     {
         return pinholeRay;
     }
 
-    glm::dvec2 lensOffset = glm::dvec2(randomInUnitDisk());
+    glm::vec2 lensOffset = glm::vec2(randomInUnitDisk());
 
-    const double focalDistance = 8; // glm::distance(this->getPosition(), this->getFocalPoint());
-    const double fstop = focalDistance / (aperatureRadius * 2.0);
+    const float focalDistance = 8; // glm::distance(this->getPosition(), this->getFocalPoint());
+    const float fstop = focalDistance / (aperatureRadius * 2.0f);
 
-    double theta = lensOffset.x * aperatureRadius * 2.0 * M_PI;
-    double radius = lensOffset.y;
+    float theta = lensOffset.x * aperatureRadius * 2.0f * M_PI;
+    float radius = lensOffset.y;
 
-    auto u = cos(theta) * sqrt(radius);
-    auto v = sin(theta) * sqrt(radius);
+    float u = static_cast<float>(cos(theta) * sqrt(radius));
+    float v = static_cast<float>(sin(theta) * sqrt(radius));
 
-    glm::dvec3 focusPoint = pinholeRay->direction() * (focalDistance / glm::dot(pinholeRay->direction(), this->getForwardAxis()));
-    const double circleOfConfusionRadius = focalDistance / (2.0 * fstop);
+    glm::vec3 focusPoint = pinholeRay->direction() * (focalDistance / glm::dot(pinholeRay->direction(), this->getForwardAxis()));
+    const float circleOfConfusionRadius = focalDistance / (2.0f * fstop);
 
-    // glm::dvec3 origin = this->getPosition() + (lensOffsetWorld * circleOfConfusion);
-    glm::dvec3 origin = this->getPosition() + (u * circleOfConfusionRadius * this->getHorizontalAxis()) + (v * circleOfConfusionRadius * this->getVerticalAxis());
-    glm::dvec3 direction = glm::normalize(focusPoint - origin);
+    // glm::vec3 origin = this->getPosition() + (lensOffsetWorld * circleOfConfusion);
+    glm::vec3 origin = this->getPosition() + (u * circleOfConfusionRadius * this->getHorizontalAxis()) + (v * circleOfConfusionRadius * this->getVerticalAxis());
+    glm::vec3 direction = glm::normalize(focusPoint - origin);
 
     // Clean-up
     delete pinholeRay;
@@ -218,36 +218,36 @@ PerspectiveCamera::generateThinLensRay(const glm::dvec2 &pixel)
 
 //----------------------------------------------------------------------------------
 Ray *
-PerspectiveCamera::generateRay(const glm::dvec2 &pixel)
+PerspectiveCamera::generateRay(const glm::vec2 &pixel)
 {
-    const double scale = tan(glm::radians(m_fovy * 0.5));
+    const float scale = tan(glm::radians(m_fovy * 0.5f));
 
     // Raster Space -> Normalized Device Coordinate Space
-    double pxNDC = pixel.x / static_cast<double>(m_width);
-    double pyNDC = pixel.y / static_cast<double>(m_height);
+    float pxNDC = pixel.x / static_cast<float>(m_width);
+    float pyNDC = pixel.y / static_cast<float>(m_height);
 
     // NDC Space -> Screen Space
-    double pxScreen = 2 * pxNDC - 1;
-    double pyScreen = 1 - 2 * pyNDC;
+    float pxScreen = 2 * pxNDC - 1;
+    float pyScreen = 1 - 2 * pyNDC;
 
     // Screen Space -> Camera Space
-    double aspect = static_cast<double>(m_width) / static_cast<double>(m_height);
-    double pxCamera = pxScreen * aspect * scale;
-    double pyCamera = pyScreen * scale;
+    float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
+    float pxCamera = pxScreen * aspect * scale;
+    float pyCamera = pyScreen * scale;
 
     // Camera Space -> World Space
-    glm::dmat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
+    glm::mat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
 
-    glm::dvec3 rayOrigin = this->getPosition();
-    glm::dvec3 rayOriginWorld = glm::dvec3(cameraToWorldTransform * glm::dvec4(rayOrigin, 1.0));
+    glm::vec3 rayOrigin = this->getPosition();
+    glm::vec3 rayOriginWorld = glm::vec3(cameraToWorldTransform * glm::vec4(rayOrigin, 1.0f));
 
     // Camera coordinate frame
     auto u = this->getHorizontalAxis();
-    auto v = glm::dvec3(-1) * this->getVerticalAxis();
+    auto v = glm::vec3(-1) * this->getVerticalAxis();
     auto w = this->getForwardAxis();
 
-    glm::dvec3 direction = (pxCamera * u) - (pyCamera * v) + w;
-    auto directionWorld = glm::normalize(glm::dvec3(cameraToWorldTransform * glm::dvec4(direction, 1.0)));
+    glm::vec3 direction = (pxCamera * u) - (pyCamera * v) + w;
+    auto directionWorld = glm::normalize(glm::vec3(cameraToWorldTransform * glm::vec4(direction, 1.0f)));
 
     Ray *ray = new Ray(rayOriginWorld, directionWorld);
     return ray;
@@ -262,10 +262,10 @@ PerspectiveCamera::copy(const ProjectionCamera * const camera)
         // Projection Camera
         this->zoom(camera->getZoomFactor());
 
-        glm::dvec2 clippingRange = camera->getClippingRange();
+        glm::vec2 clippingRange = camera->getClippingRange();
         this->setClippingRange(clippingRange[0], clippingRange[1]);
 
-        glm::dvec2 screenSize = camera->getScreenSize();
+        glm::vec2 screenSize = camera->getScreenSize();
         this->setScreenSize(screenSize.x, screenSize.y);
 
         // Camera
@@ -282,11 +282,11 @@ PerspectiveCamera::copy(const ProjectionCamera * const camera)
 }
 
 //----------------------------------------------------------------------------------
-Color3d PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world)
+Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world)
 {
     if(depth <= 0)
     {
-        return Color3d(0.0);
+        return Color3f(0.0f);
     }
 
     HitRecord record;
@@ -294,8 +294,8 @@ Color3d PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
     if(world.hit(*ray, record))
     {
         Ray scattered;
-        glm::dvec3 attenuation(1.0);
-        Color3d emitted = Color3d(0.0);
+        glm::vec3 attenuation(1.0f);
+        Color3f emitted = Color3f(0.0f);
 
         if(record.material)
         {
@@ -312,9 +312,9 @@ Color3d PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
     }
 
     // auto unitDirection = glm::normalize(ray->direction());
-    // double a = 0.5 * (unitDirection.y + 1.0);
-    // // return gammaCorrect((1.0f - a) * glm::dvec3(1.0f, 1.0f, 1.0f) + a * glm::dvec3(0.5f, 0.7f, 1.0f));
-    // return (1.0 - a) * glm::dvec3(1.0, 1.0, 1.0) + a * glm::dvec3(0.5, 0.7, 1.0);
+    // float a = 0.5 * (unitDirection.y + 1.0);
+    // // return gammaCorrect((1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f));
+    // return (1.0 - a) * glm::vec3(1.0, 1.0, 1.0) + a * glm::vec3(0.5, 0.7, 1.0);
     return this->getBackgroundColor();
 }
 

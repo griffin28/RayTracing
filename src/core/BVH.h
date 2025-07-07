@@ -49,7 +49,7 @@ public:
     bool hit(const Ray& ray, HitRecord& record) const override;
 
     /// @see Hittable::center
-    virtual glm::dvec3 center() const override;
+    virtual glm::vec3 center() const override;
 
 private:
     void build(std::shared_ptr<BVHNode>, const std::vector<std::shared_ptr<Hittable>> &, std::size_t, std::size_t);

@@ -17,26 +17,26 @@ public:
     /// @brief Constructor
     /// @param color the color of the light
     /// @param intensity the intensity of the light
-    EmissiveMaterial(const Color3d &color, double intensity = 1.0);
+    EmissiveMaterial(const Color3f &color, float intensity = 1.f);
 
     /// @brief Constructor
     /// @param texture the texture of the light
     /// @param intensity the intensity of the light
-    EmissiveMaterial(const std::shared_ptr<Texture> &texture, double intensity = 1.0);
+    EmissiveMaterial(const std::shared_ptr<Texture> &texture, float intensity = 1.f);
 
     /// @brief Scatters the ray
     /// @see Material::scatter
-    bool scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const override
+    bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const override
     {
         return false;
     }
 
     /// @brief Emits the light
     /// @see Material::emitted
-    Color3d emitted(double u, double v, const glm::dvec3 &point) const override;
+    Color3f emitted(float u, float v, const glm::vec3 &point) const override;
 
 private:
     std::shared_ptr<Texture> m_texture;
-    double m_intensity;
+    float m_intensity;
 };
 } // namespace raytracer

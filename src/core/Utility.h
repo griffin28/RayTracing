@@ -39,7 +39,7 @@ namespace raytracer
     /// @param min the minimum value of the range
     /// @param max the maximum value of the range
     /// @return a random double in the range [min,max)
-    inline float randomDouble(const double min, const double max)
+    inline double randomDouble(const double min, const double max)
     {
         return min + (max - min) * randomDouble();
     }
@@ -92,23 +92,25 @@ namespace raytracer
     /// @brief Convert a linear color to gamma-corrected color.
     /// @param color the linear color
     /// @return the gamma-corrected color
-    inline Color3d gammaCorrect(Color3d &color)
+    inline Color3f gammaCorrect(Color3d &color)
     {
-        return Color3d(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
+        return Color3f(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
     }
 
     /// @brief Generate a random vector in the range [0,1).
     /// @return a random vector in the range [0,1)
-    inline glm::dvec3 randomVector()
+    inline glm::vec3 randomVector()
     {
-        return glm::dvec3(randomDouble(), randomDouble(), randomDouble());
+        return glm::vec3(static_cast<float>(randomDouble()), static_cast<float>(randomDouble()), static_cast<float>(randomDouble()));
     }
 
     /// @brief Generate a random vector in the range [min,max).
     /// @param min the minimum value of the range
-    inline glm::dvec3 randomVector(const double min, const double max)
+    inline glm::vec3 randomVector(const float min, const float max)
     {
-        return glm::dvec3(randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
+        return glm::vec3(static_cast<float>(randomDouble(min, max)), 
+                         static_cast<float>(randomDouble(min, max)),
+                         static_cast<float>(randomDouble(min, max)));
     }
 
     /// @brief Generate a random vector in the unit sphere.
@@ -117,11 +119,11 @@ namespace raytracer
     /// is not in the unit sphere. This process is repeated until a vector in the unit sphere is
     /// found.
     /// @return a random vector in the unit sphere
-    inline glm::dvec3 randomInUnitSphere()
+    inline glm::vec3 randomInUnitSphere()
     {
         while (true)
         {
-            glm::dvec3 p = randomVector(-1, 1);
+            glm::vec3 p = randomVector(-1, 1);
 
             if (glm::length(p) < 1)
             {
@@ -135,11 +137,11 @@ namespace raytracer
     /// The algorithm works by generating a random vector in the unit square and rejecting it if it
     /// is not in the unit disk. This process is repeated until a vector in the unit disk is found.
     /// @return a random vector in the unit disk
-    inline glm::dvec3 randomInUnitDisk()
+    inline glm::vec3 randomInUnitDisk()
     {
         while (true)
         {
-            glm::dvec3 p(randomDouble(-1, 1), randomDouble(-1, 1), 0);
+            glm::vec3 p(static_cast<float>(randomDouble(-1, 1)), static_cast<float>(randomDouble(-1, 1)), 0.0f);
 
             if (glm::length(p) < 1)
             {
@@ -152,9 +154,9 @@ namespace raytracer
     /// This function uses rejection sampling to generate a random vector on the unit hemisphere.
     /// @param normal the normal of the hemisphere
     /// @return a random vector on the unit hemisphere
-    inline glm::dvec3 randomOnHemisphere(const glm::dvec3 &normal)
+    inline glm::vec3 randomOnHemisphere(const glm::vec3 &normal)
     {
-        glm::dvec3 onUnitSphere = glm::normalize(randomInUnitSphere());
+        auto onUnitSphere = glm::normalize(randomInUnitSphere());
 
         if (glm::dot(onUnitSphere, normal) > 0.0f)
         {

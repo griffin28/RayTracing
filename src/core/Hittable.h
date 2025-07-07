@@ -19,21 +19,21 @@ namespace raytracer
     /// to the point of intersection.
     struct HitRecord
     {
-        glm::dvec3 point;
-        glm::dvec3 normal;
+        glm::vec3 point;
+        glm::vec3 normal;
         std::shared_ptr<Material> material;
-        double t;
-        double u;
-        double v;
+        float t;
+        float u;
+        float v;
         bool frontFace;
 
         HitRecord()
             : point()
             , normal()
             , material(nullptr)
-            , t(-1.0)
-            , u(0.0)
-            , v(0.0)
+            , t(-1.0f)
+            , u(0.0f)
+            , v(0.0f)
             , frontFace(false)
         {
         }
@@ -41,7 +41,7 @@ namespace raytracer
         /// @brief Sets the normal and front face flag based on the ray and outward normal.
         /// @param ray the ray that intersected the object
         /// @param outwardNormal the normal at the point of intersection
-        void setFaceNormal(const Ray& ray, const glm::dvec3& outwardNormal)
+        void setFaceNormal(const Ray& ray, const glm::vec3& outwardNormal)
         {
             frontFace = glm::dot(ray.direction(), outwardNormal) < 0;
             normal = frontFace ? outwardNormal : -outwardNormal;
@@ -88,12 +88,12 @@ namespace raytracer
 
         /// @brief Get the center of the object
         /// @return  the center of the object
-        virtual glm::dvec3 center() const = 0;
+        virtual glm::vec3 center() const = 0;
 
         /// @brief translate the object in world space
         /// @param translation the coordinates, in world space, of a translation vector
         /// @note This function modifies the model matrix of the object.
-        virtual void translate(const glm::dvec3& translation)
+        virtual void translate(const glm::vec3& translation)
         {
             m_modelMatrix = glm::translate(m_modelMatrix, translation);
         }
@@ -102,7 +102,7 @@ namespace raytracer
         /// @param angle the angle to rotate in degrees
         /// @param axis rotation axis, recommended to be normalized
         /// @note This function modifies the model matrix of the object.
-        virtual void rotate(const double angle, const glm::dvec3& axis)
+        virtual void rotate(const float angle, const glm::vec3& axis)
         {
             m_modelMatrix = glm::rotate(m_modelMatrix, glm::radians(angle), axis);
         }
@@ -110,14 +110,14 @@ namespace raytracer
         /// @brief scale the object in world space
         /// @param scale ratio of scaling for each axis
         /// @note This function modifies the model matrix of the object.
-        virtual void scale(const glm::dvec3& scale)
+        virtual void scale(const glm::vec3& scale)
         {
             m_modelMatrix = glm::scale(m_modelMatrix, scale);
         }
 
         /// @brief get the model matrix for the object
         /// @return the model matrix for the object
-        glm::dmat4 getModelMatrix() const
+        glm::mat4 getModelMatrix() const
         {
             return m_modelMatrix;
         }
@@ -125,12 +125,12 @@ namespace raytracer
         /// @brief set the model matrix for the object
         /// @param modelMatrix the model matrix to set
         /// @note This function modifies the model matrix of the object.
-        void setModelMatrix(const glm::dmat4& modelMatrix)
+        void setModelMatrix(const glm::mat4& modelMatrix)
         {
             m_modelMatrix = modelMatrix;
         }
 
     private:
-        glm::dmat4 m_modelMatrix;
+        glm::mat4 m_modelMatrix;
     };
 } // namespace raytracer

@@ -9,16 +9,16 @@ Sphere::Sphere()
     , m_material(nullptr) {}
 
 //----------------------------------------------------------------------------------
-Sphere::Sphere(const glm::dvec3 &center, const double radius, std::shared_ptr<Material> material)
+Sphere::Sphere(const glm::vec3 &center, const float radius, std::shared_ptr<Material> material)
         : m_center(center)
         , m_radius(radius)
         , m_material(material) {}
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Sphere::center() const
+glm::vec3 Sphere::center() const
 {
     auto modelMatrix = this->getModelMatrix();
-    auto worldCenter = glm::dvec3(modelMatrix * glm::dvec4(m_center, 1.0));
+    auto worldCenter = glm::vec3(modelMatrix * glm::vec4(m_center, 1.0f));
 
     return worldCenter;
 }
@@ -28,9 +28,9 @@ AxisAlignedBoundingBox Sphere::getBounds() const
 {
     auto center = this->center();
 
-    return AxisAlignedBoundingBox(center - glm::dvec3(m_radius),
-                                  center + glm::dvec3(m_radius),
-                                  0.01);
+    return AxisAlignedBoundingBox(center - glm::vec3(m_radius),
+                                  center + glm::vec3(m_radius),
+                                  0.01f);
 }
 
 //----------------------------------------------------------------------------------
@@ -56,9 +56,9 @@ bool Sphere::hit(const Ray &ray, HitRecord &record) const
             return false;
         }
 
-        double thc = sqrt(m_radius * m_radius - d2);
-        double t0 = tca - thc;
-        double t1 = tca + thc;
+        float thc = sqrt(m_radius * m_radius - d2);
+        float t0 = tca - thc;
+        float t1 = tca + thc;
 
         if(t0 > t1)
         {

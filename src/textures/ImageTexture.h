@@ -33,22 +33,22 @@ public:
     ~ImageTexture() = default;
 
     /// @see Texture::value
-    Color3d value(double u, double v, const glm::dvec3 &p) const override
+    Color3f value(float u, float v, const glm::vec3 &p) const override
     {
         // Clamp input texture coordinates to [0,1] x [1,0]
-        u = clamp(u, 0.0, 1.0);
-        v = 1.0 - clamp(v, 0.0, 1.0); // Flip V to image coordinates
+        u = clamp(u, 0.f, 1.f);
+        v = 1.f - clamp(v, 0.f, 1.f); // Flip V to image coordinates
 
         int i = static_cast<int>(u * m_image->width());
         int j = static_cast<int>(v * m_image->height());
         auto pixel = m_image->pixelData(i, j);
 
         // Convert pixel color to [0,1]
-        double r = pixel[0] / 255.0;
-        double g = pixel[1] / 255.0;
-        double b = pixel[2] / 255.0;
+        float r = pixel[0] / 255.f;
+        float g = pixel[1] / 255.f;
+        float b = pixel[2] / 255.f;
 
-        return Color3d(r, g, b);
+        return Color3f(r, g, b);
     }
 
 private:

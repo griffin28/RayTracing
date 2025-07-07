@@ -10,24 +10,25 @@ Dielectric::Dielectric()
 }
 
 //----------------------------------------------------------------------------------
-Dielectric::Dielectric(double indexOfRefraction)
+Dielectric::Dielectric(float indexOfRefraction)
     : m_ir(indexOfRefraction)
 {
 }
 
 //----------------------------------------------------------------------------------
-bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &attenuation, Ray &scattered) const
+bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const
 {
-    attenuation = glm::dvec3(1.0, 1.0, 1.0);
+    attenuation = glm::vec3(1.0, 1.0, 1.0);
     auto refractionRatio = record.frontFace ? (1.0 / m_ir) : m_ir;
     auto unitDirection = glm::normalize(ray.direction());
     auto cosTheta = fmin(glm::dot(-unitDirection, record.normal), 1.0);
-    auto sinTheta = static_cast<double>(std::sqrt(1.0 - cosTheta * cosTheta));
+    auto sinTheta = static_cast<float>(std::sqrt(1.0 - cosTheta * cosTheta));
 
     bool cannotRefract = refractionRatio * sinTheta > 1.0;
     glm::vec3 direction;
-
-    if(cannotRefract || reflectance(cosTheta, refractionRatio) > randomDouble())
+    const float randomVal = static_cast<float>(randomDouble());
+    
+    if(cannotRefract || reflectance(cosTheta, refractionRatio) > randomVal)
     {
         direction = glm::reflect(unitDirection, record.normal);
     }
@@ -41,20 +42,20 @@ bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::dvec3 &at
 }
 
 //----------------------------------------------------------------------------------
-glm::dvec3 Dielectric::refract(const glm::dvec3 &uv, const glm::dvec3 &n, double etai_over_etat) const
+glm::vec3 Dielectric::refract(const glm::vec3 &uv, const glm::vec3 &n, float etai_over_etat) const
 {
-    double cos_theta = fmin(glm::dot(-uv, n), 1.0);
-    glm::dvec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
-    glm::dvec3 r_out_parallel = n * static_cast<double>(-std::sqrt(std::fabs(1.0 - glm::length(r_out_perp) * glm::length(r_out_perp))));
+    float cos_theta = fmin(glm::dot(-uv, n), 1.0);
+    glm::vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+    glm::vec3 r_out_parallel = n * static_cast<float>(-std::sqrt(std::fabs(1.0 - glm::length(r_out_perp) * glm::length(r_out_perp))));
     return r_out_perp + r_out_parallel;
 }
 
 //----------------------------------------------------------------------------------
-double Dielectric::reflectance(double cosine, double ref_idx) const
+float Dielectric::reflectance(float cosine, float ref_idx) const
 {
     // Use Schlick's approximation for reflectance.
-    auto r0 = (1 - ref_idx) / (1 + ref_idx);
+    auto r0 = (1.f - ref_idx) / (1.f + ref_idx);
     r0 = r0 * r0;
-    return r0 + (1 - r0) * static_cast<double>(std::pow((1 - cosine), 5));
+    return r0 + (1.f - r0) * static_cast<float>(std::pow((1.f - cosine), 5));
 }
 }   // namespace raytracer

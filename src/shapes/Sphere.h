@@ -18,8 +18,8 @@ public:
     /// @param center the center of the sphere
     /// @param radius the radius of the sphere
     /// @param material the material of the sphere
-    Sphere(const glm::dvec3 &center,
-           const double radius,
+    Sphere(const glm::vec3 &center,
+           const float radius,
            std::shared_ptr<Material> material = nullptr);
 
     /// @brief the destructor for the sphere.
@@ -35,7 +35,7 @@ public:
 
     /// @brief the center of the sphere at a given time.
     /// @return  the position of the center at a certain time.
-    glm::dvec3 center() const override;
+    glm::vec3 center() const override;
 
     /// @brief Determines if the ray intersects the sphere.
     /// @see Hittable::hit
@@ -49,18 +49,18 @@ public:
     /// @param p the point on the sphere
     /// @param u the u texture coordinate
     /// @param v the v texture coordinate
-    static void getSphereUV(const glm::dvec3 &p, double &u, double &v)
+    static void getSphereUV(const glm::vec3 &p, float &u, float &v)
     {
         auto theta = acos(-p.y);
-        auto phi = atan2(-p.z, p.x) + glm::pi<double>();
+        auto phi = atan2(-p.z, p.x) + glm::pi<float>();
 
-        u = phi / (2 * glm::pi<double>());
-        v = theta / glm::pi<double>();
+        u = phi / (2.f * glm::pi<float>());
+        v = theta / glm::pi<float>();
     }
 
 private:
-    glm::dvec3 m_center;
-    double m_radius;
+    glm::vec3 m_center;
+    float m_radius;
     std::shared_ptr<Material> m_material;
 };
 } // namespace raytracer

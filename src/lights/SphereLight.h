@@ -20,8 +20,8 @@ public:
     /// @param color the color of the light
     /// @param intensity the intensity of the light
     SphereLight(const std::shared_ptr<Sphere> &sphere,
-                const Color3d &color,
-                double intensity);
+                const Color3f &color,
+                float intensity);
 
     /// @brief a constructor to create a sphere light with a sphere, texture, and intensity.
     /// @param sphere the sphere that represents the light
@@ -29,7 +29,7 @@ public:
     /// @param intensity the intensity of the light
     SphereLight(const std::shared_ptr<Sphere> &sphere,
                 const std::shared_ptr<Texture> &texture,
-                double intensity);
+                float intensity);
 
     /// @brief the destructor for the sphere light.
     virtual ~SphereLight() = default;
@@ -41,7 +41,7 @@ public:
     AxisAlignedBoundingBox getBounds() const override;
 
     /// @see Shape::center
-    glm::dvec3 center() const override;
+    glm::vec3 center() const override;
 
 private:
     std::shared_ptr<Sphere> m_sphere;

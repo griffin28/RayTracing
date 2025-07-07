@@ -16,8 +16,8 @@ public:
     Ray()
         : m_origin()
         , m_direction()
-        , m_tMin(0.0)
-        , m_tMax(std::numeric_limits<double>::infinity()) {}
+        , m_tMin(0.0f)
+        , m_tMax(std::numeric_limits<float>::infinity()) {}
 
     /// @brief Ray constructor
     /// @param origin ray origin
@@ -25,10 +25,10 @@ public:
     /// @param time time of the ray
     /// @param tMin minimum t-value to count as a hit
     /// @param tMax maximum t-value to count as a hit
-    Ray(const glm::dvec3 &origin,
-        const glm::dvec3 &direction,
-        double tMin = 0.0,
-        double tMax = std::numeric_limits<double>::infinity())
+    Ray(const glm::vec3 &origin,
+        const glm::vec3 &direction,
+        float tMin = 0.0f,
+        float tMax = std::numeric_limits<float>::infinity())
             : m_origin(origin)
             , m_direction(direction)
             , m_tMin(tMin)
@@ -47,29 +47,29 @@ public:
 
     /// @brief Get the ray origin
     /// @return the ray origin
-    glm::dvec3 origin() const { return m_origin; }
+    glm::vec3 origin() const { return m_origin; }
 
     /// @brief Get the ray direction
     /// @return the ray direction
-    glm::dvec3 direction() const { return m_direction; }
+    glm::vec3 direction() const { return m_direction; }
 
     /// @brief Get the minimum t-value to count as a hit
     /// @return the minimum t-value to count as a hit
-    double tMin() const { return m_tMin; }
+    float tMin() const { return m_tMin; }
 
     /// @brief Get the maximum t-value to count as a hit
     /// @return the maximum t-value to count as a hit
-    double tMax() const { return m_tMax; }
+    float tMax() const { return m_tMax; }
 
     /// @brief Check if a t-value is within the ray's bounds
     /// @param t the t-value to check
     /// @return true if the t-value is within the ray's bounds, false otherwise
-    bool contains(const double t) const { return t >= m_tMin && t <= m_tMax; }
+    bool contains(const float t) const { return t >= m_tMin && t <= m_tMax; }
 
     /// @brief The ray parametric equation
     /// @param t the distance between the ray origin and the returned point
     /// @return the point at distance t from the ray origin
-    glm::dvec3 operator()(const double t) const { return m_origin + m_direction * t; }
+    glm::vec3 operator()(const float t) const { return m_origin + m_direction * t; }
 
     /// @brief Ray assignment operator
     /// @param other the ray to assign to this
@@ -95,9 +95,9 @@ public:
     }
 
 private:
-    glm::dvec3 m_origin;
-    glm::dvec3 m_direction;
-    mutable double m_tMin;   // abs(near) / m_direction.z
-    mutable double m_tMax;   // abs(zFar) / m_direction.z
+    glm::vec3 m_origin;
+    glm::vec3 m_direction;
+    mutable float m_tMin;   // abs(near) / m_direction.z
+    mutable float m_tMax;   // abs(zFar) / m_direction.z
 };
 } // namespace raytracer
