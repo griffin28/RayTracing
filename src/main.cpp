@@ -231,6 +231,7 @@ void cornell_box()
 
     // Light
     auto quad = std::make_shared<raytracer::Quad>(glm::vec3(113,554,127), glm::vec3(330,0,0), glm::vec3(0,0,305));
+    // auto quad = std::make_shared<raytracer::Quad>(glm::vec3(343, 554, 332), glm::vec3(-130,0,0), glm::vec3(0,0,-105));
     auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3f(1.0f), 1.0f);
     world.add(quadLight);
 
@@ -242,26 +243,41 @@ void cornell_box()
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,555), glm::vec3(555,0,0), glm::vec3(0,555,0), white));
 
     // Boxes
-    auto box1 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
-    box1->rotate(15, glm::vec3(0,1,0));
-    box1->translate(glm::vec3(265,0,295));
+    auto box1 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
+    // auto box1Sides = box1.getSides();
+    // for(const auto &side : box1Sides)
+    // {
+    //     // Add the sides of the box to the world
+    //     world.add(std::make_shared<raytracer::Quad>(side));
+    // }
+    // auto box1 = std::make_shared<raytracer::Box>(glm::vec3(130.f, 0.f, 65.f), glm::vec3(295.f, 165.f, 230.f), white);
+    // box1->rotate(15.f, glm::vec3(0.f, 1.f, 0.f));
+    // box1->translate(glm::vec3(265.f, 0.f, 295.f));
     world.add(box1);
-
+    
+    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(130,0,65), glm::vec3(295,165,230), white);
+    // auto box2 = raytracer::Box(glm::vec3(130,0,65), glm::vec3(295,165,230), white);
+    //  auto box2Sides = box2.getSides();
+    //  for(const auto &side : box2Sides)
+    //  {
+    //     // Add the sides of the box to the world
+    //     world.add(std::make_shared<raytracer::Quad>(side));
+    //  }
+    // Uncomment the following lines to add a second box
     // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
-    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
-    box2->rotate(-18, glm::vec3(0,1,0));
-    box2->translate(glm::vec3(130,0,65));
+    // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
+    // box2->rotate(-18, glm::vec3(0,1,0));
+    // box2->translate(glm::vec3(130,0,65));
     world.add(box2);
 
     // Build BVH
     world.build();
 
     // width, height, maxDepth, fovy
-    PerspectiveCamera camera(600, 600, 10, 40);
+    PerspectiveCamera camera(600, 600, 40, 40);
     camera.setPosition(glm::vec3(278, 278, -800));
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setAperatureRadius(0);
-    camera.setBackgroundColor(raytracer::Color3f(0.0f, 0.0f, 0.0f));
 
     camera.render(world, 10);
 }

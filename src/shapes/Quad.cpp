@@ -22,7 +22,7 @@ Quad::Quad(const glm::vec3 &Q,
 //----------------------------------------------------------------------------------
 bool Quad::hit(const Ray &ray, HitRecord &record) const
 {
-    auto normal = glm::normalize(this->getNormal());
+    auto normal = glm::normalize(this->getN());
     auto denom = glm::dot(normal, ray.direction());
 
     // Check if the ray is parallel to the quad
@@ -87,7 +87,7 @@ AxisAlignedBoundingBox Quad::getBounds() const
     auto u = this->getU();
     auto v = this->getV();
 
-    return AxisAlignedBoundingBox(Q, Q + u + v);
+    return AxisAlignedBoundingBox(Q, Q + u + v, 0.001f);
 }
 
 //----------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ glm::vec3 Quad::getV() const
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Quad::getNormal() const
+glm::vec3 Quad::getN() const
 {
     auto u = this->getU();
     auto v = this->getV();
@@ -123,7 +123,7 @@ glm::vec3 Quad::getNormal() const
 //----------------------------------------------------------------------------------
 double Quad::getD() const
 {
-    auto normal = glm::normalize(this->getNormal());
+    auto normal = glm::normalize(this->getN());
     auto Q = this->getQ();
     auto D = glm::dot(normal, Q);
     return D;
@@ -132,8 +132,8 @@ double Quad::getD() const
 //----------------------------------------------------------------------------------
 glm::vec3 Quad::getW() const
 {
-    auto normal = this->getNormal();
-    auto w = normal / glm::dot(normal, normal);
+    auto n = this->getN();
+    auto w = n / glm::dot(n, n);
     return w;
 }
 

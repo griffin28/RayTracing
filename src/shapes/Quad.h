@@ -50,7 +50,7 @@ private:
     glm::vec3 getU() const;
     glm::vec3 getV() const;
 
-    glm::vec3 getNormal() const;
+    glm::vec3 getN() const;
     glm::vec3 getW() const;
     double getD() const;
 
