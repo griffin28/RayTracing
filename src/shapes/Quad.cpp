@@ -7,7 +7,13 @@ Quad::Quad()
     : m_Q(0.0f, 0.0f, 0.0f)
     , m_u(1.0f, 0.0f, 0.0f)
     , m_v(0.0f, 1.0f, 0.0f)
-    , m_material(nullptr) {}
+    , m_material(nullptr) 
+{
+    // Need to update n first to get the correct d and w
+    this->updateN();
+    this->updateW();
+    this->updateD();
+}
 
 //----------------------------------------------------------------------------------
 Quad::Quad(const glm::vec3 &Q,
@@ -17,12 +23,18 @@ Quad::Quad(const glm::vec3 &Q,
     : m_Q(Q)
     , m_u(u)
     , m_v(v)
-    , m_material(material) {}
+    , m_material(material) 
+{
+    // Need to update n first to get the correct d and w
+    this->updateN();
+    this->updateW();
+    this->updateD();
+}
 
 //----------------------------------------------------------------------------------
 bool Quad::hit(const Ray &ray, HitRecord &record) const
 {
-    auto normal = glm::normalize(this->getN());
+    auto normal = glm::normalize(m_n);
     auto denom = glm::dot(normal, ray.direction());
 
     // Check if the ray is parallel to the quad
@@ -32,26 +44,27 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
     }
 
     // Check if hit point is within the ray interval
-    auto t = (this->getD() - glm::dot(normal, ray.origin())) / denom;
+    auto t = (m_D - glm::dot(normal, ray.origin())) / denom;
 
     if (!ray.contains(t))
     {
         return false;
     }
 
+    // auto bounds = this->getBounds();
+    // if (!bounds.intersect(ray))
+    // {
+    //     return false;
+    // }
+    
     auto intersectionPoint = ray(t);
 
     // Check if the hit point is within the quad
-    auto Q = this->getQ();
-    auto u = this->getU();
-    auto v = this->getV();
-    auto w = this->getW();
+    auto p = intersectionPoint - m_Q;
+    auto alpha = glm::dot(m_w, glm::cross(p, m_v));
+    auto beta = glm::dot(m_w, glm::cross(m_u, p));
 
-    auto p = intersectionPoint - Q;
-    auto alpha = glm::dot(w, glm::cross(p, v));
-    auto beta = glm::dot(w, glm::cross(u, p));
-
-    if(alpha < 0.0f || alpha > 1.0f || beta < 0.0f || beta > 1.0f)
+    if((alpha < 0.0f) || (alpha > 1.0f) || (beta < 0.0f) || (beta > 1.0f))
     {
         return false;
     }
@@ -62,8 +75,7 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
     record.t = t;
     record.point = intersectionPoint;
     record.material = m_material;
-    record.normal = normal;
-    record.setFaceNormal(ray, record.normal);
+    record.setFaceNormal(ray, normal);
 
     return true;
 }
@@ -71,70 +83,88 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
 //----------------------------------------------------------------------------------
 glm::vec3 Quad::center() const
 {
-    auto Q = this->getQ();
-    auto u = this->getU();
-    auto v = this->getV();
-
     // Calculate the center of the quad in world space
-    auto center = Q + 0.5f * u + 0.5f * v;
+    auto center = m_Q + 0.5f * m_u + 0.5f * m_v;
     return center;
 }
 
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox Quad::getBounds() const
 {
-    auto Q = this->getQ();
-    auto u = this->getU();
-    auto v = this->getV();
-
-    return AxisAlignedBoundingBox(Q, Q + u + v, 0.001f);
+    return AxisAlignedBoundingBox(m_Q, m_Q + m_u + m_v, 0.0001f);
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Quad::getQ() const
+void Quad::rotate(const float angle, const glm::vec3 &axis)
 {
-    glm::vec3 worldQ = glm::vec3(this->getModelMatrix() * glm::vec4(m_Q, 1.0f));
-    return worldQ;
+    Hittable::rotate(angle, axis);
+    this->updateQ();
+    this->updateU();
+    this->updateV();
+    this->updateN();
+    this->updateW();
+    this->updateD(); 
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Quad::getU() const
+void Quad::translate(const glm::vec3 &translation)
 {
-    glm::vec3 worldU = glm::vec3(this->getModelMatrix() * glm::vec4(m_u, 1.0f));
-    return worldU;
+    Hittable::translate(translation);
+    this->updateQ();
+    this->updateU();
+    this->updateV();
+    this->updateN();
+    this->updateW();
+    this->updateD();
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Quad::getV() const
+void Quad::scale(const glm::vec3 &scale)
 {
-    glm::vec3 worldV = glm::vec3(this->getModelMatrix() * glm::vec4(m_v, 1.0f));
-    return worldV;
+    Hittable::scale(scale);
+    this->updateQ();
+    this->updateU();
+    this->updateV();
+    this->updateN();
+    this->updateW();
+    this->updateD();
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Quad::getN() const
+void Quad::updateQ()
 {
-    auto u = this->getU();
-    auto v = this->getV();
-    auto n = glm::cross(u, v);
-    return n;
+    m_Q = glm::vec3(this->getModelMatrix() * glm::vec4(m_Q, 1.0f));
 }
 
 //----------------------------------------------------------------------------------
-double Quad::getD() const
+void Quad::updateU()
 {
-    auto normal = glm::normalize(this->getN());
-    auto Q = this->getQ();
-    auto D = glm::dot(normal, Q);
-    return D;
+    m_u = glm::vec3(this->getModelMatrix() * glm::vec4(m_u, 1.0f));
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Quad::getW() const
+void Quad::updateV()
 {
-    auto n = this->getN();
-    auto w = n / glm::dot(n, n);
-    return w;
+    m_v = glm::vec3(this->getModelMatrix() * glm::vec4(m_v, 1.0f));
+}
+
+//----------------------------------------------------------------------------------
+void Quad::updateN()
+{
+    m_n = glm::cross(m_u, m_v);
+}
+
+//----------------------------------------------------------------------------------
+void Quad::updateD()
+{
+    auto normal = glm::normalize(m_n);
+    m_D = glm::dot(normal, m_Q);
+}
+
+//----------------------------------------------------------------------------------
+void Quad::updateW()
+{
+    m_w = m_n / glm::dot(m_n, m_n);
 }
 
 } // namespace raytracer

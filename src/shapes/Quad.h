@@ -44,19 +44,42 @@ public:
     /// @brief Get the center of the quad in world space
     /// @see Hittable::center
     glm::vec3 center() const override;
+    
+    /// @brief Rotate the quad in world space
+    /// @param angle the angle to rotate in degrees
+    /// @param axis rotation axis, recommended to be normalized
+    /// @note This function modifies the model matrix of the quad.
+    /// @see Hittable::rotate
+    void rotate(const float angle, const glm::vec3 &axis) override;
+    
+    /// @brief Translate the quad in world space
+    /// @param translation the coordinates, in world space, of a translation vector
+    /// @note This function modifies the model matrix of the quad.
+    /// @see Hittable::translate
+    void translate(const glm::vec3 &translation) override;
+
+    /// @brief Scale the quad in world space
+    /// @param scale the scaling factors for each axis
+    /// @note This function modifies the model matrix of the quad.
+    /// @see Hittable::scale
+    void scale(const glm::vec3 &scale) override;
 
 private:
-    glm::vec3 getQ() const;
-    glm::vec3 getU() const;
-    glm::vec3 getV() const;
+    void updateQ();
+    void updateU();
+    void updateV();
 
-    glm::vec3 getN() const;
-    glm::vec3 getW() const;
-    double getD() const;
+    void updateN();
+    void updateW();
+    void updateD();
 
     glm::vec3 m_Q;
     glm::vec3 m_u;
     glm::vec3 m_v;
     std::shared_ptr<Material> m_material;
+    
+    glm::vec3 m_n;
+    glm::vec3 m_w;
+    double m_D;
 };
 } // namespace raytracer

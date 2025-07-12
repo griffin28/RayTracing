@@ -92,6 +92,14 @@ void Box::createSides()
 //----------------------------------------------------------------------------------
 bool Box::hit(const Ray &ray, HitRecord &record) const
 {
+    // Check if ray hits the bounding box
+    auto bounds = this->getBounds();
+    
+    if(!bounds.intersect(ray))
+    {
+        return false;
+    }
+    
     HitRecord tempRecord;
     bool hit = false;
     auto closestT = ray.tMax();
