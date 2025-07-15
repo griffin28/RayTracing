@@ -244,32 +244,41 @@ void cornell_box()
 
     // Boxes
     // auto box1 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
-    auto box1 = raytracer::Box(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
-    auto box1Sides = box1.getSides();
-    for(const auto &side : box1Sides)
-    {
-        // Add the sides of the box to the world
-        world.add(std::make_shared<raytracer::Quad>(side));
-    }
-    // auto box1 = std::make_shared<raytracer::Box>(glm::vec3(130.f, 0.f, 65.f), glm::vec3(295.f, 165.f, 230.f), white);
-    // box1->rotate(15.f, glm::vec3(0.f, 1.f, 0.f));
-    // box1->translate(glm::vec3(265.f, 0.f, 295.f));
-    // world.add(box1);
+    // auto box1 = raytracer::Box(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
+    
+    auto box1 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
+    box1->rotate(15.f, glm::vec3(0.f, 1.f, 0.f));
+    box1->translate(glm::vec3(265.f, 0.f, 295.f));
+    // auto box1Sides = box1->getSides();
+    
+    // for(const auto &side : box1Sides)
+    // {
+    //     // Add the sides of the box to the world
+    //     world.add(std::make_shared<raytracer::Quad>(side));
+    // }
+    world.add(box1);
     
     // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(130,0,65), glm::vec3(295,165,230), white);
-    auto box2 = raytracer::Box(glm::vec3(130,0,65), glm::vec3(295,165,230), white);
-    auto box2Sides = box2.getSides();
-    for(const auto &side : box2Sides)
-    {
-        // Add the sides of the box to the world
-        world.add(std::make_shared<raytracer::Quad>(side));
-    }
+    // auto box2 = raytracer::Box(glm::vec3(130,0,65), glm::vec3(295,165,230), white);
+    // auto box2Sides = box2.getSides();
+    // for(const auto &side : box2Sides)
+    // {
+    //     // Add the sides of the box to the world
+    //     world.add(std::make_shared<raytracer::Quad>(side));
+    // }
     // Uncomment the following lines to add a second box
     // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
-    // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
-    // box2->rotate(-18, glm::vec3(0,1,0));
-    // box2->translate(glm::vec3(130,0,65));
-    // world.add(box2);
+    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
+    box2->rotate(-18, glm::vec3(0,1,0));
+    box2->translate(glm::vec3(130,0,65));
+    // auto box2Sides = box2->getSides();
+    
+    // for(const auto &side : box2Sides)
+    // {
+    //     // Add the sides of the box to the world
+    //     world.add(std::make_shared<raytracer::Quad>(side));
+    // }
+    world.add(box2);
 
     // Build BVH
     world.build();
@@ -284,6 +293,75 @@ void cornell_box()
 }
 
 //----------------------------------------------------------------------------------
+void final_scene(const std::string &filename)
+{
+    std::clog << "Rendering Scene 7: Final Scene" << std::endl;
+    BVH world;
+    
+    // Ground
+    auto groundMaterial = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.48f, 0.83f, 0.53f));
+    for(int i=0; i<20; ++i)
+    {
+        for(int j=0; j<20; ++j)
+        {
+            float w = 100.f;
+            float x0 = -1000.f + i * w;
+            float z0 = -1000.f + j * w;
+            float y0 = 0.f;
+            float x1 = x0 + w;
+            float z1 = z0 + w;
+            float y1 = static_cast<float>(raytracer::randomDouble(1, 101));
+            
+            auto box = std::make_shared<raytracer::Box>(glm::vec3(x0, y0, z0), glm::vec3(x1, y1, z1), groundMaterial);
+            world.add(box);
+        }
+    }
+    
+    // Light
+    auto quad = std::make_shared<raytracer::Quad>(glm::vec3(123, 554, 147), glm::vec3(330,0,0), glm::vec3(0,0,265));
+    auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3f(1.0f), 1.0f);
+    world.add(quadLight);
+    
+    // Spheres
+    auto sphere1 = std::make_shared<raytracer::Sphere>(glm::vec3(400, 400, 200), 50, std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.7f, 0.3f, 0.1f)));
+    world.add(sphere1);
+    
+    auto sphere2 = std::make_shared<raytracer::Sphere>(glm::vec3(260, 150, 45), 50, std::make_shared<raytracer::Dielectric>(1.5f));
+    world.add(sphere2);
+    
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0, 150, 145), 50, std::make_shared<raytracer::Metal>(raytracer::Color3f(0.8f, 0.8f, 0.9f), 1.0f)));
+    
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(360,150,145), 70, std::make_shared<raytracer::Dielectric>(1.5f)));
+    
+    auto earthTexture = std::make_shared<raytracer::ImageTexture>(filename.c_str());
+    auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
+    auto sphere3 = std::make_shared<raytracer::Sphere>(glm::vec3(400,200,400), 100, earthMaterial);
+    world.add(sphere3);
+    
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(220,280,300), 80, std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.8f, 0.5f, 0.2f))));
+    
+    // Sphere Box
+    auto whiteMaterial = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.73f, 0.73f, 0.73f));
+    for(int i=0;i<1000; i++)
+    {
+        auto sphere = std::make_shared<raytracer::Sphere>(raytracer::randomVector(0,165), 10, whiteMaterial);
+        sphere->translate(glm::vec3(-100.f, 270.f, 395.f));
+        world.add(sphere);
+    }
+    
+    // Build BVH
+    world.build();
+
+    // width, height, maxDepth, fovy
+    PerspectiveCamera camera(800, 800, 40, 40);
+    camera.setPosition(glm::vec3(478, 278, -600));
+    camera.setFocalPoint(glm::vec3(278, 278, 0));
+    camera.setAperatureRadius(0);
+
+    camera.render(world, 40);
+}
+
+//----------------------------------------------------------------------------------
 void print_usage()
 {
     std::clog << "Usage: raytracing <-s scene_number> [-h] [-f filename]" << std::endl;
@@ -294,6 +372,7 @@ void print_usage()
     std::clog << "-s 4: quads" << std::endl;
     std::clog << "-s 5 -f filename: quad and sphere lights" << std::endl;
     std::clog << "-s 6: cornell box" << std::endl;
+    std::clog << "-s 7 -f filename: final scene" << std::endl;
 }
 
 //----------------------------------------------------------------------------------
@@ -347,6 +426,18 @@ int main(int argc, char *argv[])
         case 6:
             cornell_box();
             break;
+        case 7:
+            if((argc == 5) && std::string(argv[3]) == "-f")
+            {
+                final_scene(std::string(argv[4]));  
+            }
+            else
+            {
+                std::clog << "Usage: raytracer -s 7 -f <filename>" << std::endl;
+            }
+            break;
+        default:
+            std::clog << "Invalid scene number. Please use -h or --help for usage." << std::endl;
         }
     }
     else

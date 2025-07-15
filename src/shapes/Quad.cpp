@@ -50,12 +50,6 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
     {
         return false;
     }
-
-    // auto bounds = this->getBounds();
-    // if (!bounds.intersect(ray))
-    // {
-    //     return false;
-    // }
     
     auto intersectionPoint = ray(t);
 

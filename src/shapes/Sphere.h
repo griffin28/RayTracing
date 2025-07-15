@@ -35,7 +35,7 @@ public:
 
     /// @brief the center of the sphere at a given time.
     /// @return  the position of the center at a certain time.
-    glm::vec3 center() const override;
+    glm::vec3 center() const override { return m_center; }
 
     /// @brief Determines if the ray intersects the sphere.
     /// @see Hittable::hit
@@ -43,7 +43,26 @@ public:
 
     /// @brief Get the world space bounds for this sphere
     /// @return Bounding box for the sphere using world space coordinates
-    AxisAlignedBoundingBox getBounds() const override;
+    AxisAlignedBoundingBox getBounds() const override { return m_bounds; }
+    
+    /// @brief translate the sphere in world space
+    /// @param translation the coordinates, in world space, of a translation vector
+    /// @note This function modifies the model matrix of the sphere.
+    /// @see Hittable::translate
+    void translate(const glm::vec3 &translation) override;
+    
+    /// @brief rotate the sphere in world space
+    /// @param angle the angle to rotate in degrees
+    /// @param axis rotation axis, recommended to be normalized
+    /// @note This function modifies the model matrix of the sphere.
+    /// @see Hittable::rotate
+    void rotate(const float angle, const glm::vec3 &axis) override;
+    
+    /// @brief scale the sphere in world space
+    /// @param scale ratio of scaling for each axis
+    /// @note This function modifies the model matrix of the sphere.
+    /// @see Hittable::scale
+    void scale(const glm::vec3 &scale) override;
 
     /// @brief Get the texture coordinates of the sphere
     /// @param p the point on the sphere
@@ -59,8 +78,13 @@ public:
     }
 
 private:
+    void updateCenter();
+    void updateBounds(); 
+
     glm::vec3 m_center;
     float m_radius;
     std::shared_ptr<Material> m_material;
+    
+    AxisAlignedBoundingBox m_bounds; // Cached bounds for performance
 };
 } // namespace raytracer

@@ -12,25 +12,48 @@ Sphere::Sphere()
 Sphere::Sphere(const glm::vec3 &center, const float radius, std::shared_ptr<Material> material)
         : m_center(center)
         , m_radius(radius)
-        , m_material(material) {}
-
-//----------------------------------------------------------------------------------
-glm::vec3 Sphere::center() const
+        , m_material(material) 
 {
-    auto modelMatrix = this->getModelMatrix();
-    auto worldCenter = glm::vec3(modelMatrix * glm::vec4(m_center, 1.0f));
-
-    return worldCenter;
+    this->updateBounds();
 }
 
 //----------------------------------------------------------------------------------
-AxisAlignedBoundingBox Sphere::getBounds() const
+void Sphere::updateCenter()
 {
-    auto center = this->center();
+    auto modelMatrix = this->getModelMatrix();
+    m_center = glm::vec3(modelMatrix * glm::vec4(m_center, 1.0f));
+}
 
-    return AxisAlignedBoundingBox(center - glm::vec3(m_radius),
-                                  center + glm::vec3(m_radius),
-                                  0.01f);
+//----------------------------------------------------------------------------------
+void Sphere::updateBounds()
+{
+    m_bounds = AxisAlignedBoundingBox(m_center - glm::vec3(m_radius),
+                                      m_center + glm::vec3(m_radius),
+                                      0.01f);
+}
+
+//----------------------------------------------------------------------------------
+void Sphere::translate(const glm::vec3 &translation)
+{
+    Hittable::translate(translation);
+    this->updateCenter();
+    this->updateBounds();
+}
+
+//----------------------------------------------------------------------------------
+void Sphere::rotate(const float angle, const glm::vec3 &axis)
+{
+    Hittable::rotate(angle, axis);
+    this->updateCenter();
+    this->updateBounds();
+}
+
+//----------------------------------------------------------------------------------
+void Sphere::scale(const glm::vec3 &scale)
+{
+    Hittable::scale(scale);
+    this->updateCenter();
+    this->updateBounds();
 }
 
 //----------------------------------------------------------------------------------
