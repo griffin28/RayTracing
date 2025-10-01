@@ -26,7 +26,14 @@ public:
     /// @param attenuation the color attenuation
     /// @param scattered the scattered ray if the ray scatters
     /// @return true if the ray scatters, false otherwise
-    virtual bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const = 0;
+    virtual bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const = 0;
+
+    /// @brief Computes the scattering PDF for the material.
+    /// @param ray the ray that hit the object
+    /// @param record the hit record that contains the intersection information
+    /// @param scattered the scattered ray
+    /// @return the scattering PDF
+    virtual float scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const { return 0.0f; }
 
     /// @brief A light emitting material will emit light.
     /// @param u the u coordinate of the hit point

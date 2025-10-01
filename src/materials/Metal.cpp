@@ -1,6 +1,7 @@
 #include "Metal.h"
 #include "SolidColorTexture.h"
 #include "Hittable.h"
+#include "OrthoNormalBasis.h"
 
 namespace raytracer
 {
@@ -26,14 +27,18 @@ Metal::Metal(std::shared_ptr<Texture> albedo, float roughness)
 }
 
 //----------------------------------------------------------------------------------
-bool Metal::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const
+bool Metal::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
 {
+    OrthoNormalBasis onb(record.normal);
+    glm::vec3 scatterDirection = onb.localToWorld(RaytracingUtility::randomCosineDirection());
+    
     glm::vec3 reflected = glm::reflect(glm::normalize(ray.direction()), record.normal);
-    scattered = Ray(record.point, reflected + m_roughness * glm::normalize(randomInUnitSphere()));
+    scattered = Ray(record.point, reflected + m_roughness * glm::normalize(scatterDirection));
     attenuation = m_albedo->value(record.u, record.v, record.point);
 
     // The scattered ray is reflected if the dot product of the scattered ray and the normal is greater than zero.
     // This way can absorbed rays that scatter below the surface of the object.
-    return (dot(scattered.direction(), record.normal) > 0.0f);
+    pdf = glm::dot(onb.w(), scattered.direction()) / glm::pi<float>();
+    return (glm::dot(scattered.direction(), record.normal) > 0.0f);
 }
 }   // namespace raytracer

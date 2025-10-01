@@ -75,17 +75,17 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
 
                     for(int k=0; k < samplesPerPixel; ++k)
                     {
-                        auto pixel = glm::vec2(i + raytracer::randomDouble() - 0.5f, j + raytracer::randomDouble() - 0.5f);
+                        auto pixel = glm::vec2(i + RaytracingUtility::randomDouble() - 0.5f, j + RaytracingUtility::randomDouble() - 0.5f);
                         std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
                         pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
                     }
 
                     pixelColor *= 1.0f / samplesPerPixel;
-                    // pixelColor = gammaCorrect(pixelColor);
+                    pixelColor = RaytracingUtility::gammaCorrect(pixelColor);
 
-                    image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0f * clamp(pixelColor.r, 0.0f, 1.0f));
-                    image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0f * clamp(pixelColor.g, 0.0f, 1.0f));
-                    image[(j * m_width + i) * 3 + 2] = static_cast<uint8_t>(255.0f * clamp(pixelColor.b, 0.0f, 1.0f));
+                    image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0f * RaytracingUtility::clamp(pixelColor.r, 0.0f, 1.0f));
+                    image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0f * RaytracingUtility::clamp(pixelColor.g, 0.0f, 1.0f));
+                    image[(j * m_width + i) * 3 + 2] = static_cast<uint8_t>(255.0f * RaytracingUtility::clamp(pixelColor.b, 0.0f, 1.0f));
                 }
             }
         }, t * m_height / numThreads, (t+1) == numThreads ? m_height : (t+1) * m_height / numThreads, t));
@@ -191,7 +191,7 @@ PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
         return pinholeRay;
     }
 
-    glm::vec2 lensOffset = glm::vec2(randomInUnitDisk());
+    glm::vec2 lensOffset = glm::vec2(RaytracingUtility::randomInUnitDisk());
 
     const float focalDistance = 8; // glm::distance(this->getPosition(), this->getFocalPoint());
     const float fstop = focalDistance / (aperatureRadius * 2.0f);
@@ -212,7 +212,7 @@ PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
     // Clean-up
     delete pinholeRay;
 
-    Ray *lensRay = new Ray(origin, direction, randomDouble());
+    Ray *lensRay = new Ray(origin, direction, RaytracingUtility::randomDouble());
     return lensRay;
 }
 
@@ -296,25 +296,27 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
         Ray scattered;
         glm::vec3 attenuation(1.0f);
         Color3f emitted = Color3f(0.0f);
+        float pdfValue = 1.0f;
 
         if(record.material)
         {
             emitted = record.material->emitted(record.u, record.v, record.point);
 
-            if(record.material->scatter(*ray, record, attenuation, scattered))
+            if(!record.material->scatter(*ray, record, attenuation, scattered, pdfValue))
             {
-                return emitted + attenuation * rayColor(&scattered, depth-1, world);
-                // return gammaCorrect(attenuation * rayColor(&scattered, depth-1, world));
+                return emitted;
             }
+
+            // Importance sampling using the material's scattering PDF
+            float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);
+            
+            auto colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world))  / pdfValue;
+            return emitted + colorFromScatter;
         }
 
         return emitted;
     }
 
-    // auto unitDirection = glm::normalize(ray->direction());
-    // float a = 0.5 * (unitDirection.y + 1.0);
-    // // return gammaCorrect((1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f));
-    // return (1.0 - a) * glm::vec3(1.0, 1.0, 1.0) + a * glm::vec3(0.5, 0.7, 1.0);
     return this->getBackgroundColor();
 }
 

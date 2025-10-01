@@ -16,7 +16,7 @@ Dielectric::Dielectric(float indexOfRefraction)
 }
 
 //----------------------------------------------------------------------------------
-bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const
+bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
 {
     attenuation = glm::vec3(1.0, 1.0, 1.0);
     auto refractionRatio = record.frontFace ? (1.0 / m_ir) : m_ir;
@@ -26,7 +26,7 @@ bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &att
 
     bool cannotRefract = refractionRatio * sinTheta > 1.0;
     glm::vec3 direction;
-    const float randomVal = static_cast<float>(randomDouble());
+    const float randomVal = static_cast<float>(RaytracingUtility::randomDouble());
     
     if(cannotRefract || reflectance(cosTheta, refractionRatio) > randomVal)
     {
@@ -37,7 +37,8 @@ bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &att
         direction = refract(unitDirection, record.normal, refractionRatio);
     }
 
-    scattered = Ray(record.point, direction);
+    pdf = 1.0f;
+    scattered = Ray(record.point, glm::normalize(direction));
     return true;
 }
 

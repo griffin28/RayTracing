@@ -4,7 +4,8 @@ set (CORE_SRCS
         Utility.h
         BVH.cpp
         AABB.cpp
-        ImageLoader.cpp)
+        ImageLoader.cpp
+        OrthoNormalBasis.h)
 
 add_library(core OBJECT ${CORE_SRCS})
 

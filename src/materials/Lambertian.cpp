@@ -1,6 +1,7 @@
 #include "Lambertian.h"
 #include "SolidColorTexture.h"
 #include "Hittable.h"
+#include "OrthoNormalBasis.h"
 
 namespace raytracer
 {
@@ -23,18 +24,22 @@ Lambertian::Lambertian(const std::shared_ptr<Texture> &albedo)
 }
 
 //----------------------------------------------------------------------------------
-bool Lambertian::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const
+bool Lambertian::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
 {
-    glm::vec3 scatterDirection = record.normal + glm::normalize(randomInUnitSphere());
+    OrthoNormalBasis onb(record.normal);
+    glm::vec3 scatterDirection = onb.localToWorld(RaytracingUtility::randomCosineDirection());
 
-    // Catch degenerate scatter direction
-    if(nearZero(scatterDirection))
-    {
-        scatterDirection = record.normal;
-    }
-
-    scattered = Ray(record.point, scatterDirection);
+    scattered = Ray(record.point, glm::normalize(scatterDirection));
     attenuation = m_albedo->value(record.u, record.v, record.point);
+    pdf = glm::dot(onb.w(), scattered.direction()) / glm::pi<float>();
     return true;
 }
+
+//----------------------------------------------------------------------------------
+float Lambertian::scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const
+{
+    float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
+    return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
+}
+
 }   // namespace raytracer

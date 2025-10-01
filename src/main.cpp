@@ -25,6 +25,7 @@ using Ray = raytracer::Ray;
 using Hittable = raytracer::Hittable;
 using HitRecord = raytracer::HitRecord;
 using BVH = raytracer::BVH;
+using RaytracingUtility = raytracer::RaytracingUtility;
 
 //----------------------------------------------------------------------------------
 void random_spheres()
@@ -42,8 +43,8 @@ void random_spheres()
     {
         for(int b=-11; b < 11; ++b)
         {
-            auto chooseMat = static_cast<float>(raytracer::randomDouble());
-            glm::vec3 center(a + 0.9f * static_cast<float>(raytracer::randomDouble()), 0.2f, b + 0.9f * static_cast<float>(raytracer::randomDouble()));
+            auto chooseMat = static_cast<float>(RaytracingUtility::randomDouble());
+            glm::vec3 center(a + 0.9f * static_cast<float>(RaytracingUtility::randomDouble()), 0.2f, b + 0.9f * static_cast<float>(RaytracingUtility::randomDouble()));
 
             if(glm::length(center - glm::vec3(4.f, 0.2f, 0.f)) > 0.9f)
             {
@@ -52,15 +53,15 @@ void random_spheres()
                 if(chooseMat < 0.8f)
                 {
                     // Diffuse
-                    auto albedo = raytracer::randomVector() * raytracer::randomVector();
+                    auto albedo = RaytracingUtility::randomVector() * RaytracingUtility::randomVector();
                     sphereMaterial = std::make_shared<raytracer::Lambertian>(albedo);
                     world.add(std::make_shared<raytracer::Sphere>(center, 0.2f, sphereMaterial));
                 }
                 else if(chooseMat < 0.95f)
                 {
                     // Metal
-                    auto albedo = raytracer::randomVector(0.5f, 1.f);
-                    auto fuzz = static_cast<float>(raytracer::randomDouble(0, 0.5));
+                    auto albedo = RaytracingUtility::randomVector(0.5f, 1.f);
+                    auto fuzz = static_cast<float>(RaytracingUtility::randomDouble(0, 0.5));
                     sphereMaterial = std::make_shared<raytracer::Metal>(albedo, fuzz);
                     world.add(std::make_shared<raytracer::Sphere>(center, 0.2f, sphereMaterial));
                 }
@@ -310,7 +311,7 @@ void final_scene(const std::string &filename)
             float y0 = 0.f;
             float x1 = x0 + w;
             float z1 = z0 + w;
-            float y1 = static_cast<float>(raytracer::randomDouble(1, 101));
+            float y1 = static_cast<float>(RaytracingUtility::randomDouble(1, 101));
             
             auto box = std::make_shared<raytracer::Box>(glm::vec3(x0, y0, z0), glm::vec3(x1, y1, z1), groundMaterial);
             world.add(box);
@@ -344,7 +345,7 @@ void final_scene(const std::string &filename)
     auto whiteMaterial = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.73f, 0.73f, 0.73f));
     for(int i=0;i<1000; i++)
     {
-        auto sphere = std::make_shared<raytracer::Sphere>(raytracer::randomVector(0,165), 10, whiteMaterial);
+        auto sphere = std::make_shared<raytracer::Sphere>(RaytracingUtility::randomVector(0,165), 10, whiteMaterial);
         sphere->translate(glm::vec3(-100.f, 270.f, 395.f));
         world.add(sphere);
     }

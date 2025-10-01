@@ -27,7 +27,7 @@ public:
 
     /// @brief Determines if the ray scatters when it hits the object.
     /// @see Material::scatter
-    bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered) const override;
+    bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const override;
 private:
     std::shared_ptr<Texture> m_albedo;
     float m_roughness;
