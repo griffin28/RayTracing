@@ -176,4 +176,36 @@ void BVH::build(std::shared_ptr<BVHNode> node, const std::vector<std::shared_ptr
         build(std::static_pointer_cast<BVHNode>(node->m_right), objects, mid, end);
     }
 }
+
+//----------------------------------------------------------------------------------
+bool BVH::randomPointOnLight(glm::vec3 &point, float &surfaceArea) const
+{
+    if(m_sceneObjects.empty())
+    {
+        // throw std::runtime_error("No objects in the scene.");
+        return false;
+    }
+
+    // Find all light sources in the scene
+    std::vector<std::shared_ptr<Hittable>> lights;
+    for(const auto &obj : m_sceneObjects)
+    {
+        if(obj->isLight())
+        {
+            lights.push_back(obj);
+        }
+    }
+
+    if(lights.empty())
+    {
+        // throw std::runtime_error("No light sources found in the scene.");
+        return false;
+    }
+
+    // Randomly select a light source and return a random point on it
+    auto light = lights[RaytracingUtility::randomInt(0, lights.size() - 1)];
+    point = light->randomPointOnSurface(surfaceArea);
+
+    return true;
+}
 } // namespace raytracer

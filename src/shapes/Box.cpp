@@ -5,10 +5,10 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
-Box::Box(const glm::vec3 &a, const glm::vec3 &b, std::shared_ptr<Material> material)
-        : m_point1(a)
-        , m_point2(b)
-        , m_material(material) 
+Box::Box(const glm::vec3 &p1, const glm::vec3 &p2, std::shared_ptr<Material> material)
+        : m_point1(glm::vec3(std::min(p1.x, p2.x), std::min(p1.y, p2.y), std::min(p1.z, p2.z)))
+        , m_point2(glm::vec3(std::max(p1.x, p2.x), std::max(p1.y, p2.y), std::max(p1.z, p2.z)))
+        , m_material(material)
 {
     this->createSides();
 }
@@ -16,7 +16,13 @@ Box::Box(const glm::vec3 &a, const glm::vec3 &b, std::shared_ptr<Material> mater
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox Box::getBounds() const
 {
-    return AxisAlignedBoundingBox(getWorldPoint1(), getWorldPoint2(), 0.0001f);
+    return AxisAlignedBoundingBox(getWorldPoint1(), getWorldPoint2(), 0.0f);
+    // AxisAlignedBoundingBox bb;
+    // for(const auto &side : m_sides)
+    // {
+    //     bb = AxisAlignedBoundingBox::combine(bb, side.getBounds());
+    // }
+    // return bb;
 }
 
 //----------------------------------------------------------------------------------
@@ -68,13 +74,9 @@ void Box::createSides()
 {
     m_sides.clear(); 
     m_sides.reserve(6);
-    
-    // Get the world space points
-    auto point1 = this->getWorldPoint1();
-    auto point2 = this->getWorldPoint2();
 
-    auto min = glm::vec3(std::min(point1.x, point2.x), std::min(point1.y, point2.y), std::min(point1.z, point2.z));
-    auto max = glm::vec3(std::max(point1.x, point2.x), std::max(point1.y, point2.y), std::max(point1.z, point2.z));
+    auto min = m_point1;
+    auto max = m_point2;
 
     // Create the sides
     glm::vec3 dx = glm::vec3(max.x - min.x, 0, 0);
@@ -121,4 +123,23 @@ bool Box::hit(const Ray &ray, HitRecord &record) const
     
     return hit;
 }
+
+//----------------------------------------------------------------------------------
+glm::vec3 Box::randomPointOnSurface(float &surfaceArea) const
+{
+    // Pick random side and get random point on that side
+    if(m_sides.empty())
+    {
+        surfaceArea = 0.0f;
+        return glm::vec3(0.0f);
+    }
+
+    // Generate a random index for the side
+    int sideIndex = RaytracingUtility::randomInt(0, static_cast<int>(m_sides.size()) - 1);
+    const auto &side = m_sides[sideIndex];
+    auto randomPoint = side.randomPointOnSurface(surfaceArea);
+    surfaceArea *= static_cast<float>(m_sides.size());
+    return randomPoint;
+}
+
 } // namespace raytracer

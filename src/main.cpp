@@ -239,46 +239,16 @@ void cornell_box()
     // Walls
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), green));
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), red));
-    world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,0,555), white));
-    world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,555,555), glm::vec3(-555,0,0), glm::vec3(0,0,-555), white));
-    world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,555), glm::vec3(555,0,0), glm::vec3(0,555,0), white));
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,0,555), white)); // bottom 
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,555,555), glm::vec3(-555,0,0), glm::vec3(0,0,-555), white)); // top wall
+    world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,555,0), white)); // back wall
 
     // Boxes
-    // auto box1 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
-    // auto box1 = raytracer::Box(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
-    
-    auto box1 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
-    box1->rotate(15.f, glm::vec3(0.f, 1.f, 0.f));
-    box1->translate(glm::vec3(265.f, 0.f, 295.f));
-    // auto box1Sides = box1->getSides();
-    
-    // for(const auto &side : box1Sides)
-    // {
-    //     // Add the sides of the box to the world
-    //     world.add(std::make_shared<raytracer::Quad>(side));
-    // }
+    auto box1 = std::make_shared<raytracer::Box>(glm::vec3(130,0,65), glm::vec3(295,330,230), white);
     world.add(box1);
-    
+
+    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,165,460), white);
     // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(130,0,65), glm::vec3(295,165,230), white);
-    // auto box2 = raytracer::Box(glm::vec3(130,0,65), glm::vec3(295,165,230), white);
-    // auto box2Sides = box2.getSides();
-    // for(const auto &side : box2Sides)
-    // {
-    //     // Add the sides of the box to the world
-    //     world.add(std::make_shared<raytracer::Quad>(side));
-    // }
-    // Uncomment the following lines to add a second box
-    // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,330,460), white);
-    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
-    box2->rotate(-18, glm::vec3(0,1,0));
-    box2->translate(glm::vec3(130,0,65));
-    // auto box2Sides = box2->getSides();
-    
-    // for(const auto &side : box2Sides)
-    // {
-    //     // Add the sides of the box to the world
-    //     world.add(std::make_shared<raytracer::Quad>(side));
-    // }
     world.add(box2);
 
     // Build BVH
@@ -286,7 +256,7 @@ void cornell_box()
 
     // width, height, maxDepth, fovy
     PerspectiveCamera camera(600, 600, 40, 40);
-    camera.setPosition(glm::vec3(278, 278, -800));
+    camera.setPosition(glm::vec3(278, 278, 1200));
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setAperatureRadius(0);
 
@@ -319,7 +289,7 @@ void final_scene(const std::string &filename)
     }
     
     // Light
-    auto quad = std::make_shared<raytracer::Quad>(glm::vec3(123, 554, 147), glm::vec3(330,0,0), glm::vec3(0,0,265));
+    auto quad = std::make_shared<raytracer::Quad>(glm::vec3(123, 554, 100), glm::vec3(330,0,0), glm::vec3(0,0,265));
     auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3f(1.0f), 1.0f);
     world.add(quadLight);
     
@@ -327,26 +297,26 @@ void final_scene(const std::string &filename)
     auto sphere1 = std::make_shared<raytracer::Sphere>(glm::vec3(400, 400, 200), 50, std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.7f, 0.3f, 0.1f)));
     world.add(sphere1);
     
-    auto sphere2 = std::make_shared<raytracer::Sphere>(glm::vec3(260, 150, 45), 50, std::make_shared<raytracer::Dielectric>(1.5f));
+    auto sphere2 = std::make_shared<raytracer::Sphere>(glm::vec3(240, 150, 355), 50, std::make_shared<raytracer::Dielectric>(1.5f));
     world.add(sphere2);
     
-    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0, 150, 145), 50, std::make_shared<raytracer::Metal>(raytracer::Color3f(0.8f, 0.8f, 0.9f), 1.0f)));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0, 150, 255), 50, std::make_shared<raytracer::Metal>(raytracer::Color3f(0.8f, 0.8f, 0.9f), 1.0f)));
     
-    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(360,150,145), 70, std::make_shared<raytracer::Dielectric>(1.5f)));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(380,150,255), 70, std::make_shared<raytracer::Dielectric>(1.5f)));
     
     auto earthTexture = std::make_shared<raytracer::ImageTexture>(filename.c_str());
     auto earthMaterial = std::make_shared<raytracer::Lambertian>(earthTexture);
-    auto sphere3 = std::make_shared<raytracer::Sphere>(glm::vec3(400,200,400), 100, earthMaterial);
+    auto sphere3 = std::make_shared<raytracer::Sphere>(glm::vec3(500,200, 0), 100, earthMaterial);
     world.add(sphere3);
     
-    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(220,280,300), 80, std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.8f, 0.5f, 0.2f))));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(220,280,100), 80, std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.8f, 0.5f, 0.2f))));
     
     // Sphere Box
     auto whiteMaterial = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.73f, 0.73f, 0.73f));
     for(int i=0;i<1000; i++)
     {
         auto sphere = std::make_shared<raytracer::Sphere>(RaytracingUtility::randomVector(0,165), 10, whiteMaterial);
-        sphere->translate(glm::vec3(-100.f, 270.f, 395.f));
+        sphere->translate(glm::vec3(50.f, 270.f, -150.0f));
         world.add(sphere);
     }
     
@@ -355,7 +325,7 @@ void final_scene(const std::string &filename)
 
     // width, height, maxDepth, fovy
     PerspectiveCamera camera(800, 800, 40, 40);
-    camera.setPosition(glm::vec3(478, 278, -600));
+    camera.setPosition(glm::vec3(78, 278, 1200));
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setAperatureRadius(0);
 

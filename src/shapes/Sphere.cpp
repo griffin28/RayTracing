@@ -29,7 +29,7 @@ void Sphere::updateBounds()
 {
     m_bounds = AxisAlignedBoundingBox(m_center - glm::vec3(m_radius),
                                       m_center + glm::vec3(m_radius),
-                                      0.01f);
+                                      0.0f);
 }
 
 //----------------------------------------------------------------------------------
@@ -110,5 +110,24 @@ bool Sphere::hit(const Ray &ray, HitRecord &record) const
     }
 
     return false;
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 Sphere::randomPointOnSurface(float &surfaceArea) const
+{
+    // Generate two random numbers in the range [0, 1)
+    float u = static_cast<float>(RaytracingUtility::randomDouble());
+    float v = static_cast<float>(RaytracingUtility::randomDouble());
+
+    // Generate a random point on the surface of the sphere
+    float theta = 2.0f * glm::pi<float>() * u;
+    float phi = glm::acos(1.0f - 2.0f * v);
+    float x = m_radius * sin(phi) * cos(theta);
+    float y = m_radius * sin(phi) * sin(theta);
+    float z = m_radius * cos(phi);
+
+    surfaceArea = 4.0f * glm::pi<float>() * m_radius * m_radius;
+
+    return m_center + glm::vec3(x, y, z);
 }
 } // namespace raytracer

@@ -17,7 +17,7 @@ public:
         : m_origin()
         , m_direction()
         , m_tMin(0.0f)
-        , m_tMax(std::numeric_limits<float>::infinity()) {}
+        , m_tMax(std::numeric_limits<float>::max()) {}
 
     /// @brief Ray constructor
     /// @param origin ray origin
@@ -28,7 +28,7 @@ public:
     Ray(const glm::vec3 &origin,
         const glm::vec3 &direction,
         float tMin = 0.0f,
-        float tMax = std::numeric_limits<float>::infinity())
+        float tMax = std::numeric_limits<float>::max())
             : m_origin(origin)
             , m_direction(direction)
             , m_tMin(tMin)

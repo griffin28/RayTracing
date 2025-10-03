@@ -115,6 +115,19 @@ namespace raytracer
             m_modelMatrix = glm::scale(m_modelMatrix, scale);
         }
 
+        /// @brief Determine if the object is a light source
+        /// @return true if the object is a light source, false otherwise
+        virtual bool isLight() const { return false; }
+
+        /// @brief Get a random point on the surface of the object
+        /// @param surfaceArea the surface area of the object
+        /// @return a random point on the surface of the object
+        virtual glm::vec3 randomPointOnSurface(float &surfaceArea) const
+        {
+            surfaceArea = 0.0f;
+            return glm::vec3(0.0f);
+        }
+
         /// @brief get the model matrix for the object
         /// @return the model matrix for the object
         glm::mat4 getModelMatrix() const

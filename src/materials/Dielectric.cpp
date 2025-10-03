@@ -16,6 +16,12 @@ Dielectric::Dielectric(float indexOfRefraction)
 }
 
 //----------------------------------------------------------------------------------
+float Dielectric::scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const
+{
+    return 1.0f;
+}
+
+//----------------------------------------------------------------------------------
 bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
 {
     attenuation = glm::vec3(1.0, 1.0, 1.0);
@@ -38,7 +44,7 @@ bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &att
     }
 
     pdf = 1.0f;
-    scattered = Ray(record.point, glm::normalize(direction));
+    scattered = Ray(record.point, direction);
     return true;
 }
 

@@ -1,5 +1,4 @@
 #include "SphereLight.h"
-#include "Sphere.h"
 #include "Texture.h"
 #include "EmissiveMaterial.h"
 
@@ -41,5 +40,11 @@ AxisAlignedBoundingBox SphereLight::getBounds() const
 glm::vec3 SphereLight::center() const
 {
     return m_sphere->center();
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 SphereLight::randomPointOnSurface(float &surfaceArea) const
+{
+    return m_sphere->randomPointOnSurface(surfaceArea);
 }
 } // namespace raytracer

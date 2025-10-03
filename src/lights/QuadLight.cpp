@@ -42,4 +42,10 @@ glm::vec3 QuadLight::center() const
 {
     return m_quad->center();
 }
+
+//----------------------------------------------------------------------------------
+glm::vec3 QuadLight::randomPointOnSurface(float &surfaceArea) const
+{
+   return m_quad->randomPointOnSurface(surfaceArea);
+}
 } // namespace raytracer

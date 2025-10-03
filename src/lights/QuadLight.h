@@ -34,14 +34,20 @@ public:
     /// @brief the destructor for the quad light.
     virtual ~QuadLight() = default;
 
-    /// @see Shape::hit
+    /// @see Hittable::hit
     bool hit(const Ray &ray, HitRecord &record) const override;
 
-    /// @see Shape::getBounds
+    /// @see Hittable::getBounds
     AxisAlignedBoundingBox getBounds() const override;
 
-    /// @see Shape::center
+    /// @see Hittable::center
     glm::vec3 center() const override;
+
+    /// @see Hittable::isLight
+    bool isLight() const override { return true; }
+    
+    /// @see Hittable::randomPointOnSurface
+    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
 
 private:
     std::shared_ptr<Quad> m_quad;

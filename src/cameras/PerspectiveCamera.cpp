@@ -217,6 +217,7 @@ PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
 }
 
 //----------------------------------------------------------------------------------
+// TODO: Look at using the perspective matrix to generate the ray
 Ray *
 PerspectiveCamera::generateRay(const glm::vec2 &pixel)
 {
@@ -298,23 +299,43 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
         Color3f emitted = Color3f(0.0f);
         float pdfValue = 1.0f;
 
-        if(record.material)
-        {
-            emitted = record.material->emitted(record.u, record.v, record.point);
+        emitted = record.material->emitted(record.u, record.v, record.point);
 
-            if(!record.material->scatter(*ray, record, attenuation, scattered, pdfValue))
+        if(!record.material->scatter(*ray, record, attenuation, scattered, pdfValue))
+        {
+            return emitted;
+        }
+
+        // Light sampling test
+        glm::vec3 lightPoint;
+        float lightSurfaceArea = 0.0f;
+
+        if(world.randomPointOnLight(lightPoint, lightSurfaceArea))
+        {
+            glm::vec3 toLight = lightPoint - record.point;
+            float distanceSquared = glm::dot(toLight, toLight);
+            toLight = glm::normalize(toLight);
+
+            if(glm::dot(toLight, record.normal) < 0)
             {
                 return emitted;
             }
 
-            // Importance sampling using the material's scattering PDF
-            float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);
-            
-            auto colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world))  / pdfValue;
-            return emitted + colorFromScatter;
+            float cosineTheta = std::fabs(toLight.y); //glm::dot(record.normal, toLight);
+            if(cosineTheta < 0.000001f)
+            {
+                return emitted;
+            }
+
+            pdfValue = distanceSquared / (cosineTheta * lightSurfaceArea);
+            scattered = Ray(record.point, toLight);
         }
 
-        return emitted;
+        // Importance sampling using the material's scattering PDF
+        float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);
+        
+        auto colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world))  / pdfValue;
+        return emitted + colorFromScatter;
     }
 
     return this->getBackgroundColor();

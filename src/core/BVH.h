@@ -51,6 +51,12 @@ public:
     /// @see Hittable::center
     virtual glm::vec3 center() const override;
 
+    /// @brief Get a random point on a light source in the scene
+    /// @param point the point on a random light source in the scene
+    /// @param surfaceArea the surface area of the random light source in the scene
+    /// @return true if a point was found, false otherwise
+    bool randomPointOnLight(glm::vec3 &point, float &surfaceArea) const;
+
 private:
     void build(std::shared_ptr<BVHNode>, const std::vector<std::shared_ptr<Hittable>> &, std::size_t, std::size_t);
 

@@ -64,6 +64,9 @@ public:
     /// @see Hittable::scale
     void scale(const glm::vec3 &scale) override;
 
+    /// @see Hittable::randomPointOnSurface
+    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+
 private:
     void updateQ();
     void updateU();
@@ -80,6 +83,6 @@ private:
     
     glm::vec3 m_n;
     glm::vec3 m_w;
-    double m_D;
+    float m_D;
 };
 } // namespace raytracer

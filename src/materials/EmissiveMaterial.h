@@ -28,7 +28,7 @@ public:
     /// @see Material::scatter
     bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const override
     {
-        pdf = 0.0f;
+        pdf = 1.0f;
         return false;
     }
 

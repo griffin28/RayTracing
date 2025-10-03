@@ -41,4 +41,11 @@ bool Metal::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuat
     pdf = glm::dot(onb.w(), scattered.direction()) / glm::pi<float>();
     return (glm::dot(scattered.direction(), record.normal) > 0.0f);
 }
+
+//----------------------------------------------------------------------------------
+float Metal::scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const
+{
+    float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
+    return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
+}
 }   // namespace raytracer

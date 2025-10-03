@@ -82,6 +82,9 @@ public:
     /// @return the second point of the box
     glm::vec3 getWorldPoint2() const;    
 
+    /// @see Hittable::randomPointOnSurface
+    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+
 private:
     void createSides();
     

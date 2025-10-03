@@ -64,6 +64,9 @@ public:
     /// @see Hittable::scale
     void scale(const glm::vec3 &scale) override;
 
+    /// @see Hittable::randomPointOnSurface
+    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+
     /// @brief Get the texture coordinates of the sphere
     /// @param p the point on the sphere
     /// @param u the u texture coordinate
@@ -76,6 +79,10 @@ public:
         u = phi / (2.f * glm::pi<float>());
         v = theta / glm::pi<float>();
     }
+
+    /// @brief Get the radius of the sphere
+    /// @return the radius of the sphere
+    float radius() const { return m_radius; }
 
 private:
     void updateCenter();

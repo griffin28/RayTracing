@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Hittable.h"
+#include "Sphere.h"
 
 namespace raytracer
 {
-class Sphere;
 class Texture;
 class EmissiveMaterial;
 
@@ -42,6 +42,16 @@ public:
 
     /// @see Shape::center
     glm::vec3 center() const override;
+    
+    /// @see Hittable::randomPointOnSurface
+    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+
+    /// @see Hittable::isLight
+    bool isLight() const override { return true; }
+
+    /// @brief Get the radius of the sphere light
+    /// @return the radius of the sphere light
+    float radius() const { return m_sphere->radius(); }
 
 private:
     std::shared_ptr<Sphere> m_sphere;

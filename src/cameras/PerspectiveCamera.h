@@ -35,7 +35,7 @@ public:
                       int maxDepth=10,
                       float fovy=45.0,
                       float near=0.0,
-                      float far=1000.0);
+                      float far=10000.0);
 
     /// Default destructor.
     ~PerspectiveCamera() = default;
