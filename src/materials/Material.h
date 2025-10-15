@@ -36,11 +36,9 @@ public:
     virtual float scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const { return 0.0f; }
 
     /// @brief A light emitting material will emit light.
-    /// @param u the u coordinate of the hit point
-    /// @param v the v coordinate of the hit point
-    /// @param point the point of the hit
+    /// @param record the hit record that contains the intersection information
     /// @return the emitted color
-    virtual Color3f emitted(float u, float v, const glm::vec3 &point) const { return Color3f(0,0,0); }
+    virtual Color3f emitted(const HitRecord &record) const { return Color3f(0,0,0); }
 
     /// @brief Determines if the vector is close to zero in all dimensions.
     /// @param vec the vector to test

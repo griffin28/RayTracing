@@ -34,7 +34,7 @@ public:
 
     /// @brief Emits the light
     /// @see Material::emitted
-    Color3f emitted(float u, float v, const glm::vec3 &point) const override;
+    Color3f emitted(const HitRecord &record) const override;
 
 private:
     std::shared_ptr<Texture> m_texture;

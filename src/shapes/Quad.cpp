@@ -46,10 +46,10 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
     // Check if hit point is within the ray interval
     auto t = (m_D - glm::dot(normal, ray.origin())) / denom;
 
-    // if (!ray.contains(t))
-    // {
-    //     return false;
-    // }
+    if (!ray.contains(t))
+    {
+        return false;
+    }
     
     auto intersectionPoint = ray(t);
 
@@ -168,16 +168,10 @@ glm::vec3 Quad::randomPointOnSurface(float &surfaceArea) const
     float u = static_cast<float>(RaytracingUtility::randomDouble());
     float v = static_cast<float>(RaytracingUtility::randomDouble());
 
-    // Get the bounds of the quad
-    AxisAlignedBoundingBox bounds = this->getBounds();
+    // Compute the random point on the quad
+    glm::vec3 randomPoint = m_Q + u * m_u + v * m_v;
 
-    // Compute the random point on the surface of the quad
-    glm::vec3 min = bounds.m_pMin;
-    glm::vec3 max = bounds.m_pMax;
-    glm::vec3 size = max - min;
-    glm::vec3 randomPoint(min.x + u * size.x, min.y, min.z + v * size.z);
-
-    surfaceArea = size.x * size.z;
+    surfaceArea = glm::dot(m_u, m_u) * glm::dot(m_v, m_v);
 
     return randomPoint;
 }

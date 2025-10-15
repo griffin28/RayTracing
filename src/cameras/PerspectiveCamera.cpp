@@ -295,11 +295,9 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
     if(world.hit(*ray, record))
     {
         Ray scattered;
-        glm::vec3 attenuation(1.0f);
-        Color3f emitted = Color3f(0.0f);
+        glm::vec3 attenuation(1.f);
         float pdfValue = 1.0f;
-
-        emitted = record.material->emitted(record.u, record.v, record.point);
+        Color3f emitted = record.material->emitted(record);
 
         if(!record.material->scatter(*ray, record, attenuation, scattered, pdfValue))
         {
@@ -307,34 +305,34 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
         }
 
         // Light sampling test
-        glm::vec3 lightPoint;
-        float lightSurfaceArea = 0.0f;
+        // glm::vec3 lightPoint;
+        // float lightSurfaceArea = 0.0f;
 
-        if(world.randomPointOnLight(lightPoint, lightSurfaceArea))
-        {
-            glm::vec3 toLight = lightPoint - record.point;
-            float distanceSquared = glm::dot(toLight, toLight);
-            toLight = glm::normalize(toLight);
+        // if(world.randomPointOnLight(lightPoint, lightSurfaceArea))
+        // {
+        //     glm::vec3 toLight = lightPoint - record.point;
+        //     float distanceSquared = glm::dot(toLight, toLight);
+        //     toLight = glm::normalize(toLight);
 
-            if(glm::dot(toLight, record.normal) < 0)
-            {
-                return emitted;
-            }
+        //     if(glm::dot(toLight, record.normal) < 0)
+        //     {
+        //         return emitted;
+        //     }
 
-            float cosineTheta = std::fabs(toLight.y); //glm::dot(record.normal, toLight);
-            if(cosineTheta < 0.000001f)
-            {
-                return emitted;
-            }
+        //     float cosineTheta = std::fabs(toLight.y); //glm::dot(record.normal, toLight);
+        //     if(cosineTheta < 0.000001f)
+        //     {
+        //         return emitted;
+        //     }
 
-            pdfValue = distanceSquared / (cosineTheta * lightSurfaceArea);
-            scattered = Ray(record.point, toLight);
-        }
+        //     pdfValue = distanceSquared / (cosineTheta * lightSurfaceArea);
+        //     scattered = Ray(record.point, toLight);
+        // }
 
         // Importance sampling using the material's scattering PDF
-        float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);
-        
+        float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);        
         auto colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world))  / pdfValue;
+
         return emitted + colorFromScatter;
     }
 

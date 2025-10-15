@@ -18,9 +18,14 @@ EmissiveMaterial::EmissiveMaterial(const std::shared_ptr<Texture> &texture, floa
 }
 
 //----------------------------------------------------------------------------------
-Color3f EmissiveMaterial::emitted(float u, float v, const glm::vec3 &point) const
+Color3f EmissiveMaterial::emitted(const HitRecord &record) const
 {
-    return m_intensity * m_texture->value(u, v, point);
+    if(!record.frontFace)
+    {
+        return Color3f(0,0,0);
+    }
+
+    return m_intensity * m_texture->value(record.u, record.v, record.point);
 }
 
 } // namespace raytracer

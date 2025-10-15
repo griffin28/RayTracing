@@ -13,4 +13,5 @@ target_include_directories(materials
     PRIVATE
         ${GLM_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/../core
-        ${CMAKE_CURRENT_SOURCE_DIR}/../textures)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../textures
+        ${CMAKE_CURRENT_SOURCE_DIR}/../pdfs)

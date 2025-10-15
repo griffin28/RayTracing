@@ -16,7 +16,7 @@ Box::Box(const glm::vec3 &p1, const glm::vec3 &p2, std::shared_ptr<Material> mat
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox Box::getBounds() const
 {
-    return AxisAlignedBoundingBox(getWorldPoint1(), getWorldPoint2(), 0.0f);
+    return AxisAlignedBoundingBox(getWorldPoint1(), getWorldPoint2(), 0.000001f);
     // AxisAlignedBoundingBox bb;
     // for(const auto &side : m_sides)
     // {
@@ -75,8 +75,11 @@ void Box::createSides()
     m_sides.clear(); 
     m_sides.reserve(6);
 
-    auto min = m_point1;
-    auto max = m_point2;
+    auto point1 = this->getWorldPoint1();
+    auto point2 = this->getWorldPoint2();
+
+    auto min = glm::vec3(std::min(point1.x, point2.x), std::min(point1.y, point2.y), std::min(point1.z, point2.z));
+    auto max = glm::vec3(std::max(point1.x, point2.x), std::max(point1.y, point2.y), std::max(point1.z, point2.z));
 
     // Create the sides
     glm::vec3 dx = glm::vec3(max.x - min.x, 0, 0);
@@ -84,10 +87,10 @@ void Box::createSides()
     glm::vec3 dz = glm::vec3(0, 0, max.z - min.z);
 
     m_sides.push_back(Quad(glm::vec3(min.x, min.y, max.z), dx, dy, m_material));     // front
-    m_sides.push_back(Quad(glm::vec3(max.x, min.y, max.z), -dz, dy, m_material));    // right
-    m_sides.push_back(Quad(glm::vec3(max.x, min.y, min.z), -dx, dy, m_material));    // back
-    m_sides.push_back(Quad(glm::vec3(min.x, min.y, min.z), dz, dy, m_material));     // left
-    m_sides.push_back(Quad(glm::vec3(min.x, max.y, max.z), dx, -dz, m_material));    // top
+    m_sides.push_back(Quad(glm::vec3(max.x, min.y, min.z), dy, dz, m_material));    // right
+    m_sides.push_back(Quad(glm::vec3(min.x, min.y, min.z), dx, dy, m_material));    // back
+    m_sides.push_back(Quad(glm::vec3(min.x, min.y, min.z), dy, dz, m_material));     // left
+    m_sides.push_back(Quad(glm::vec3(max.x, max.y, max.z), -dx, -dz, m_material));    // top
     m_sides.push_back(Quad(glm::vec3(min.x, min.y, min.z), dx, dz, m_material));     // bottom
 }
 
@@ -95,12 +98,12 @@ void Box::createSides()
 bool Box::hit(const Ray &ray, HitRecord &record) const
 {
     // Check if ray hits the bounding box
-    auto bounds = this->getBounds();
+    // auto bounds = this->getBounds();
     
-    if(!bounds.intersect(ray))
-    {
-        return false;
-    }
+    // if(!bounds.intersect(ray))
+    // {
+    //     return false;
+    // }
     
     HitRecord tempRecord;
     bool hit = false;

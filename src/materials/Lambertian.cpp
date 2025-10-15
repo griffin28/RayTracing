@@ -1,7 +1,7 @@
 #include "Lambertian.h"
 #include "SolidColorTexture.h"
 #include "Hittable.h"
-#include "OrthoNormalBasis.h"
+#include "CosinePdf.h"
 
 namespace raytracer
 {
@@ -26,20 +26,22 @@ Lambertian::Lambertian(const std::shared_ptr<Texture> &albedo)
 //----------------------------------------------------------------------------------
 bool Lambertian::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
 {
-    OrthoNormalBasis onb(record.normal);
-    glm::vec3 scatterDirection = onb.localToWorld(RaytracingUtility::randomCosineDirection());
-
-    scattered = Ray(record.point, glm::normalize(scatterDirection));
     attenuation = m_albedo->value(record.u, record.v, record.point);
-    pdf = glm::dot(onb.w(), scattered.direction()) / glm::pi<float>();
+
+    CosinePdf cosinePdf(record.normal);
+    glm::vec3 direction = cosinePdf.generate();
+    scattered = Ray(record.point, direction);
+    pdf = cosinePdf.value(scattered.direction());
+    
     return true;
 }
 
 //----------------------------------------------------------------------------------
 float Lambertian::scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const
 {
-    float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
-    return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
+    // float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
+    // return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
+    return 1 / (4 * glm::pi<float>());
 }
 
 }   // namespace raytracer
