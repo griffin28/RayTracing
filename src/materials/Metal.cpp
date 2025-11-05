@@ -30,7 +30,7 @@ Metal::Metal(std::shared_ptr<Texture> albedo, float roughness)
 bool Metal::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
 {
     OrthoNormalBasis onb(record.normal);
-    glm::vec3 scatterDirection = onb.localToWorld(RaytracingUtility::randomCosineDirection());
+    glm::vec3 scatterDirection = onb.transform(RaytracingUtility::randomCosineDirection());
     
     glm::vec3 reflected = glm::reflect(glm::normalize(ray.direction()), record.normal);
     scattered = Ray(record.point, reflected + m_roughness * glm::normalize(scatterDirection));
@@ -45,7 +45,8 @@ bool Metal::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuat
 //----------------------------------------------------------------------------------
 float Metal::scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const
 {
-    float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
-    return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
+    // float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
+    // return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
+    return 1.0f;
 }
 }   // namespace raytracer

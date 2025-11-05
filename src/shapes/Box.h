@@ -85,6 +85,12 @@ public:
     /// @see Hittable::randomPointOnSurface
     glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
 
+    /// @see Hittable::pdfValue
+    float pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const override;
+
+    /// @see Hittable::random
+    glm::vec3 random(const glm::vec3 &origin) const override;
+
 private:
     void createSides();
     

@@ -128,6 +128,23 @@ namespace raytracer
             return glm::vec3(0.0f);
         }
 
+        /// @brief Get the PDF value for the given origin and direction
+        /// @param origin the origin of the ray
+        /// @param direction the direction of the ray
+        /// @return the PDF value
+        virtual float pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
+        {
+            return 0.0f;
+        }
+
+        /// @brief Get a random direction from the given origin
+        /// @param origin the origin of the ray
+        /// @return a random direction based on the PDF
+        virtual glm::vec3 random(const glm::vec3 &origin) const
+        {
+            return glm::vec3(1.0f, 0.0f, 0.0f);
+        }
+
         /// @brief get the model matrix for the object
         /// @return the model matrix for the object
         glm::mat4 getModelMatrix() const

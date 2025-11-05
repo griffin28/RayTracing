@@ -245,7 +245,7 @@ void cornell_box()
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,555,0), white)); // back wall
 
     // auto box2 = std::make_shared<raytracer::Box>(glm::vec3(265,0,295), glm::vec3(430,165,460), white);
-    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), blue);
+    auto box2 = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
     // box2->rotate(15, glm::vec3(0,1,0));
     box2->translate(glm::vec3(80,0,165));
     world.add(box2);
@@ -268,7 +268,7 @@ void cornell_box()
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setAperatureRadius(0);
 
-    camera.render(world, 4);
+    camera.render(world, 10);
 }
 
 //----------------------------------------------------------------------------------

@@ -208,4 +208,21 @@ bool BVH::randomPointOnLight(glm::vec3 &point, float &surfaceArea) const
 
     return true;
 }
+
+//----------------------------------------------------------------------------------
+std::vector<std::shared_ptr<Hittable>> BVH::getLightSources() const
+{
+    std::vector<std::shared_ptr<Hittable>> lights;
+
+    for(const auto &obj : m_sceneObjects)
+    {
+        if(obj->isLight())
+        {
+            lights.push_back(obj);
+        }
+    }
+
+    return lights;
+}
+
 } // namespace raytracer

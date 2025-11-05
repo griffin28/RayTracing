@@ -57,6 +57,10 @@ public:
     /// @return true if a point was found, false otherwise
     bool randomPointOnLight(glm::vec3 &point, float &surfaceArea) const;
 
+    /// @brief Get the light sources in the scene
+    /// @return a vector of shared pointers to the light sources in the scene
+    std::vector<std::shared_ptr<Hittable>> getLightSources() const;
+
 private:
     void build(std::shared_ptr<BVHNode>, const std::vector<std::shared_ptr<Hittable>> &, std::size_t, std::size_t);
 

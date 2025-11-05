@@ -33,7 +33,7 @@ public:
     /// @param record the hit record that contains the intersection information
     /// @param scattered the scattered ray
     /// @return the scattering PDF
-    virtual float scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const { return 0.0f; }
+    virtual float scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const { return 1.0f; }
 
     /// @brief A light emitting material will emit light.
     /// @param record the hit record that contains the intersection information

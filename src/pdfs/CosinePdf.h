@@ -6,7 +6,8 @@
 namespace raytracer
 {
 /// @class CosinePdf
-/// @brief A PDF that generates random directions towards a sphere.
+/// @brief A PDF that generates a random direction on the hemisphere with a cosine-weighted
+///        distribution.
 class CosinePdf : public Pdf
 {
 public:
@@ -28,7 +29,7 @@ public:
     /// @return a random direction based on the PDF
     glm::vec3 generate() const override
     {
-        return m_onb.localToWorld(RaytracingUtility::randomCosineDirection());
+        return m_onb.transform(RaytracingUtility::randomCosineDirection());
     }
 private:
     OrthoNormalBasis m_onb;

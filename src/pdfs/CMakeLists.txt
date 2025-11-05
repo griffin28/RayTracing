@@ -1,6 +1,7 @@
 set (PDF_SRCS
      SpherePdf.h
-     CosinePdf.h)
+     CosinePdf.h
+     HittablePdf.h)
 
 add_library(pdfs OBJECT ${PDF_SRCS})
 

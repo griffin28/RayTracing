@@ -10,6 +10,9 @@ Quad::Quad()
     , m_material(nullptr) 
 {
     // Need to update n first to get the correct d and w
+    this->updateQ();
+    this->updateU();
+    this->updateV();
     this->updateN();
     this->updateW();
     this->updateD();
@@ -26,6 +29,9 @@ Quad::Quad(const glm::vec3 &Q,
     , m_material(material) 
 {
     // Need to update n first to get the correct d and w
+    this->updateQ();
+    this->updateU();
+    this->updateV();
     this->updateN();
     this->updateW();
     this->updateD();
@@ -171,9 +177,35 @@ glm::vec3 Quad::randomPointOnSurface(float &surfaceArea) const
     // Compute the random point on the quad
     glm::vec3 randomPoint = m_Q + u * m_u + v * m_v;
 
-    surfaceArea = glm::dot(m_u, m_u) * glm::dot(m_v, m_v);
+    surfaceArea = glm::length(m_n);
 
     return randomPoint;
+}
+
+//----------------------------------------------------------------------------------
+float Quad::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
+{
+    HitRecord record;
+    Ray ray(origin, direction);
+
+    if(this->hit(ray, record))
+    {
+        float area = glm::length(m_n);
+        float distanceSquared = record.t * record.t * glm::dot(direction, direction);
+        float cosine = std::abs(glm::dot(direction, record.normal) / glm::length(direction));
+
+        return distanceSquared / (cosine * area);
+    }
+    
+    return 0.0f;
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 Quad::random(const glm::vec3 &origin) const
+{
+    float surfaceArea;
+    glm::vec3 randomPoint = this->randomPointOnSurface(surfaceArea);
+    return randomPoint - origin;
 }
 
 } // namespace raytracer

@@ -3,11 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "/home/kgriffin/Learning/RayTracing/Code/src/**",
-                "/home/kgriffin/Learning/RayTracing/Code/external/glm/**",
-                "/home/kgriffin/Learning/RayTracing/Code/external/stb_image/**",
                 "${workspaceFolder}/src/**",
-                "${workspaceFolder}/external/glm",
+                "${workspaceFolder}/external/glm/**",
+                "${workspaceFolder}/external/stb_image/**",
                 "${default}"
             ],
             "defines": [],

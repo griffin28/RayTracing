@@ -39,9 +39,8 @@ bool Lambertian::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &att
 //----------------------------------------------------------------------------------
 float Lambertian::scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const
 {
-    // float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
-    // return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
-    return 1 / (4 * glm::pi<float>());
+    float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
+    return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
 }
 
 }   // namespace raytracer

@@ -1,4 +1,5 @@
 #include "PerspectiveCamera.h"
+#include "HittablePdf.h"
 
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 
@@ -304,30 +305,14 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
             return emitted;
         }
 
-        // Light sampling test
-        // glm::vec3 lightPoint;
-        // float lightSurfaceArea = 0.0f;
+        auto lightSources = world.getLightSources();
 
-        // if(world.randomPointOnLight(lightPoint, lightSurfaceArea))
-        // {
-        //     glm::vec3 toLight = lightPoint - record.point;
-        //     float distanceSquared = glm::dot(toLight, toLight);
-        //     toLight = glm::normalize(toLight);
-
-        //     if(glm::dot(toLight, record.normal) < 0)
-        //     {
-        //         return emitted;
-        //     }
-
-        //     float cosineTheta = std::fabs(toLight.y); //glm::dot(record.normal, toLight);
-        //     if(cosineTheta < 0.000001f)
-        //     {
-        //         return emitted;
-        //     }
-
-        //     pdfValue = distanceSquared / (cosineTheta * lightSurfaceArea);
-        //     scattered = Ray(record.point, toLight);
-        // }
+        if(!lightSources.empty())
+        {
+            HittablePdf lightPdf(lightSources[0], record.point);
+            scattered = Ray(record.point, lightPdf.generate());
+            pdfValue = lightPdf.value(scattered.direction());
+        }
 
         // Importance sampling using the material's scattering PDF
         float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);        

@@ -38,18 +38,18 @@ public:
         m_u = glm::cross(m_w, m_v);
     }
 
-    /// @brief Transforms a vector from local space to world space.
-    /// @param a the vector in local space
-    /// @return the vector in world space
-    glm::vec3 localToWorld(const glm::vec3 &a) const
-    {
-        return a.x * m_u + a.y * m_v + a.z * m_w;
-    }   
+    // /// @brief Transforms a vector from local space to world space.
+    // /// @param a the vector in local space
+    // /// @return the vector in world space
+    // glm::vec3 localToWorld(const glm::vec3 &a) const
+    // {
+    //     return a.x * m_u + a.y * m_v + a.z * m_w;
+    // }   
 
-    /// @brief Transforms a vector from world space to local space.
-    /// @param a the vector in world space
+    /// @brief Transforms a vector from basis coordinates to local space.
+    /// @param a basis coordinates
     /// @return the vector in local space
-    glm::vec3 worldToLocal(const glm::vec3 &a) const
+    glm::vec3 transform(const glm::vec3 &a) const
     {
         return glm::vec3(glm::dot(a, m_u), glm::dot(a, m_v), glm::dot(a, m_w));
     }       

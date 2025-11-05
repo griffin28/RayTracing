@@ -48,4 +48,17 @@ glm::vec3 QuadLight::randomPointOnSurface(float &surfaceArea) const
 {
    return m_quad->randomPointOnSurface(surfaceArea);
 }
+
+//----------------------------------------------------------------------------------
+float QuadLight::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
+{
+    return m_quad->pdfValue(origin, direction);
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 QuadLight::random(const glm::vec3 &origin) const
+{
+    return m_quad->random(origin);
+}
+
 } // namespace raytracer

@@ -145,4 +145,32 @@ glm::vec3 Box::randomPointOnSurface(float &surfaceArea) const
     return randomPoint;
 }
 
+//----------------------------------------------------------------------------------
+float Box::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
+{
+    Ray ray(origin, direction);
+    HitRecord record;
+
+    if(this->hit(ray, record))
+    {
+        float area = 0.0f;
+        this->randomPointOnSurface(area);
+
+        const float distanceSquared = record.t * record.t * glm::dot(direction, direction);
+        const float cosine = std::fabs(glm::dot(direction, record.normal) / glm::length(direction));
+        
+        return distanceSquared / (cosine * area);
+    }
+
+    return 0.0f;
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 Box::random(const glm::vec3 &origin) const
+{
+    float surfaceArea;
+    glm::vec3 randomPoint = this->randomPointOnSurface(surfaceArea);
+    return randomPoint - origin;
+}
+
 } // namespace raytracer
