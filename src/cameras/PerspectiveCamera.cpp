@@ -1,5 +1,7 @@
 #include "PerspectiveCamera.h"
 #include "HittablePdf.h"
+#include "CosinePdf.h"
+#include "MixturePdf.h"
 
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 
@@ -305,13 +307,20 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
             return emitted;
         }
 
+        std::vector<std::shared_ptr<Pdf>> pdfs;
+        pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
         auto lightSources = world.getLightSources();
 
-        if(!lightSources.empty())
+        for(const auto &light : lightSources)
         {
-            HittablePdf lightPdf(lightSources[0], record.point);
-            scattered = Ray(record.point, lightPdf.generate());
-            pdfValue = lightPdf.value(scattered.direction());
+            pdfs.push_back(std::make_shared<HittablePdf>(light, record.point));
+        }
+
+        if(!pdfs.empty())
+        {
+            MixturePdf mixturePdf(pdfs);
+            scattered = Ray(record.point, mixturePdf.generate());
+            pdfValue = mixturePdf.value(scattered.direction());
         }
 
         // Importance sampling using the material's scattering PDF

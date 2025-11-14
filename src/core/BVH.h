@@ -31,7 +31,7 @@ public:
     BVH();
 
     /// @brief Destructor
-    ~BVH() = default;
+    ~BVH();
 
     /// @brief Build the BVH tree
     void build();
@@ -62,9 +62,7 @@ public:
     std::vector<std::shared_ptr<Hittable>> getLightSources() const;
 
 private:
-    void build(std::shared_ptr<BVHNode>, const std::vector<std::shared_ptr<Hittable>> &, std::size_t, std::size_t);
-
-    std::shared_ptr<BVHNode> m_root;
+    std::unique_ptr<BVHNode> m_root;
     std::vector<std::shared_ptr<Hittable>> m_sceneObjects;
 };
 } // namespace raytracer

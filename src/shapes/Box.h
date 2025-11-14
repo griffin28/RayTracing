@@ -70,7 +70,7 @@ public:
     
     /// @brief Get the sides of the box
     /// @return the sides of the box
-    const std::vector<Quad> &getSides() const { return m_sides; }
+    const std::vector<std::shared_ptr<Quad>> &getSides() const { return m_sides; }
     
     /// @brief Get the first point of the box in world space
     /// @note This function takes into account the model matrix of the box. 
@@ -98,6 +98,6 @@ private:
     glm::vec3 m_point2;
     std::shared_ptr<Material> m_material;
 
-    std::vector<Quad> m_sides;
+    std::vector<std::shared_ptr<Quad>> m_sides;
 };
 } // namespace raytracer

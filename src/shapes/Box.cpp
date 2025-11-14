@@ -85,25 +85,48 @@ void Box::createSides()
     glm::vec3 dx = glm::vec3(max.x - min.x, 0, 0);
     glm::vec3 dy = glm::vec3(0, max.y - min.y, 0);
     glm::vec3 dz = glm::vec3(0, 0, max.z - min.z);
+    
+    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, max.z), dx, dy, m_material));     // front
+    auto frontQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, max.z), dx, dy, m_material);
+    // frontQuad->setModelMatrix(this->getModelMatrix());
+    m_sides.push_back(frontQuad);
 
-    m_sides.push_back(Quad(glm::vec3(min.x, min.y, max.z), dx, dy, m_material));     // front
-    m_sides.push_back(Quad(glm::vec3(max.x, min.y, min.z), dy, dz, m_material));    // right
-    m_sides.push_back(Quad(glm::vec3(min.x, min.y, min.z), dx, dy, m_material));    // back
-    m_sides.push_back(Quad(glm::vec3(min.x, min.y, min.z), dy, dz, m_material));     // left
-    m_sides.push_back(Quad(glm::vec3(max.x, max.y, max.z), -dx, -dz, m_material));    // top
-    m_sides.push_back(Quad(glm::vec3(min.x, min.y, min.z), dx, dz, m_material));     // bottom
+    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(max.x, min.y, min.z), dy, dz, m_material));    // right
+    auto rightQuad = std::make_shared<Quad>(glm::vec3(max.x, min.y, min.z), dy, dz, m_material);
+    // rightQuad->setModelMatrix(this->getModelMatrix());
+    m_sides.push_back(rightQuad);
+
+    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dy, m_material));    // back
+    auto backQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dy, m_material);
+    // backQuad->setModelMatrix(this->getModelMatrix());
+    m_sides.push_back(backQuad);
+
+    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dy, dz, m_material));     // left
+    auto leftQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dy, dz, m_material);
+    // leftQuad->setModelMatrix(this->getModelMatrix());
+    m_sides.push_back(leftQuad);
+
+    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(max.x, max.y, max.z), -dx, -dz, m_material));    // top
+    auto topQuad = std::make_shared<Quad>(glm::vec3(max.x, max.y, max.z), -dx, -dz, m_material);
+    // topQuad->setModelMatrix(this->getModelMatrix());
+    m_sides.push_back(topQuad);
+
+    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dz, m_material));     // bottom
+    auto bottomQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dz, m_material);
+    // bottomQuad->setModelMatrix(this->getModelMatrix());
+    m_sides.push_back(bottomQuad);
 }
 
 //----------------------------------------------------------------------------------
 bool Box::hit(const Ray &ray, HitRecord &record) const
 {
     // Check if ray hits the bounding box
-    // auto bounds = this->getBounds();
+    auto bounds = this->getBounds();
     
-    // if(!bounds.intersect(ray))
-    // {
-    //     return false;
-    // }
+    if(!bounds.intersect(ray))
+    {
+        return false;
+    }
     
     HitRecord tempRecord;
     bool hit = false;
@@ -112,7 +135,7 @@ bool Box::hit(const Ray &ray, HitRecord &record) const
     // Check each side of the box for intersection
     for(const auto &side : m_sides)
     {
-        if(side.hit(ray, tempRecord))
+        if(side->hit(ray, tempRecord))
         {
             // If the hit is closer than the closest hit, update the record
             if(tempRecord.t < closestT)
@@ -140,7 +163,7 @@ glm::vec3 Box::randomPointOnSurface(float &surfaceArea) const
     // Generate a random index for the side
     int sideIndex = RaytracingUtility::randomInt(0, static_cast<int>(m_sides.size()) - 1);
     const auto &side = m_sides[sideIndex];
-    auto randomPoint = side.randomPointOnSurface(surfaceArea);
+    auto randomPoint = side->randomPointOnSurface(surfaceArea);
     surfaceArea *= static_cast<float>(m_sides.size());
     return randomPoint;
 }

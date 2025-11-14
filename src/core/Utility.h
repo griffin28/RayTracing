@@ -56,7 +56,18 @@ public:
     /// @return a random integer in the range [min,max]
     static int randomInt(int min, int max)
     {
-        return static_cast<int>(randomDouble(min, max + 1));
+        static std::uniform_int_distribution<int> distribution(min, max);
+        static std::mt19937 generator;
+        static std::random_device device;
+        generator.seed(device());
+        return distribution(generator);
+    }
+
+    /// @brief Generate a random integer in the range [0, max_int].
+    /// @return a random integer in the range [0, max_int]
+    static int randomInt()
+    {
+        return randomInt(0, std::numeric_limits<int>::max());
     }
 
     /// @brief Clamp a value to the range [min,max].
