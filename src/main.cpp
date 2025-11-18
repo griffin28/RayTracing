@@ -250,13 +250,14 @@ void cornell_box()
 
     // Tall Box
     auto tallBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
-    tallBox->translate(glm::vec3(130,0,65));
+    tallBox->rotate(15, glm::vec3(0,1,0));
+    tallBox->translate(glm::vec3(100,0,65));
     world.add(tallBox);
 
     // Boxes
     auto shortBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
-    // shortBox->rotate(18, glm::vec3(0,1,0));
-    shortBox->translate(glm::vec3(265,0,295));
+    shortBox->rotate(-18, glm::vec3(0,1,0));
+    shortBox->translate(glm::vec3(350,0,100));
     world.add(shortBox);
 
     // Build BVH
@@ -337,7 +338,7 @@ void final_scene(const std::string &filename)
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setAperatureRadius(0);
 
-    camera.render(world, 10);
+    camera.render(world, 1000);
 }
 
 //----------------------------------------------------------------------------------

@@ -24,6 +24,12 @@ public:
         const glm::vec3 &b,
         std::shared_ptr<Material> material = nullptr);
 
+    /// @brief a constructor to create a box with a set of points.
+    /// @param points the points defining the box
+    /// @param material the material of the box
+    Box(std::vector<glm::vec3> points,
+        std::shared_ptr<Material> material = nullptr);
+
     /// @brief the destructor for the box.
     virtual ~Box() = default;
 
@@ -71,16 +77,11 @@ public:
     /// @brief Get the sides of the box
     /// @return the sides of the box
     const std::vector<std::shared_ptr<Quad>> &getSides() const { return m_sides; }
-    
-    /// @brief Get the first point of the box in world space
-    /// @note This function takes into account the model matrix of the box. 
-    /// @return the first point of the box
-    glm::vec3 getWorldPoint1() const;
 
-    /// @brief Get the second point of the box in world space
-    /// @note This function takes into account the model matrix of the box.
-    /// @return the second point of the box
-    glm::vec3 getWorldPoint2() const;    
+    /// @brief Get the world space corner points of the box
+    /// @note Same ordering as VTK's hexahedron cell type.
+    /// @return the world space corner points of the box
+    std::vector<glm::vec3> getWorldPoints() const;
 
     /// @see Hittable::randomPointOnSurface
     glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
@@ -94,8 +95,7 @@ public:
 private:
     void createSides();
     
-    glm::vec3 m_point1;
-    glm::vec3 m_point2;
+    std::vector<glm::vec3> m_points;
     std::shared_ptr<Material> m_material;
 
     std::vector<std::shared_ptr<Quad>> m_sides;

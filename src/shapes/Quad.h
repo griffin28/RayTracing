@@ -12,6 +12,10 @@ public:
     /// @brief Default constructor for the quad.
     Quad();
 
+    /// @brief a constructor to create a quad with a set of corners.
+    /// @param corners the corners of the quad in counter-clockwise order
+    // TODO: Quad(const std::vector<glm::vec3> &corners);
+
     /// @brief a constructor to create a quad with a point and two vectors.
     /// @param Q the point on the quad
     /// @param u the first vector of the quad
@@ -90,5 +94,6 @@ private:
     glm::vec3 m_n;
     glm::vec3 m_w;
     float m_D;
+    // TODO: std::vector<glm::vec3> m_corners;
 };
 } // namespace raytracer

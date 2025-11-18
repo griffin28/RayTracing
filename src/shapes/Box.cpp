@@ -5,9 +5,25 @@
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
-Box::Box(const glm::vec3 &p1, const glm::vec3 &p2, std::shared_ptr<Material> material)
-        : m_point1(glm::vec3(std::min(p1.x, p2.x), std::min(p1.y, p2.y), std::min(p1.z, p2.z)))
-        , m_point2(glm::vec3(std::max(p1.x, p2.x), std::max(p1.y, p2.y), std::max(p1.z, p2.z)))
+Box::Box(const glm::vec3 &a,
+         const glm::vec3 &b,
+         std::shared_ptr<Material> material)
+        : m_points({glm::vec3(a.x, a.y, b.z),
+                    glm::vec3(b.x, a.y, b.z),
+                    glm::vec3(b.x, a.y, a.z),
+                    a,
+                    glm::vec3(a.x, b.y, b.z),
+                    b,
+                    glm::vec3(b.x, b.y, a.z),
+                    glm::vec3(a.x, b.y, a.z)})
+        , m_material(material)
+{
+    this->createSides();
+}
+
+//----------------------------------------------------------------------------------
+Box::Box(std::vector<glm::vec3> points, std::shared_ptr<Material> material)
+        : m_points(points)
         , m_material(material)
 {
     this->createSides();
@@ -16,57 +32,84 @@ Box::Box(const glm::vec3 &p1, const glm::vec3 &p2, std::shared_ptr<Material> mat
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox Box::getBounds() const
 {
-    return AxisAlignedBoundingBox(getWorldPoint1(), getWorldPoint2(), 0.000001f);
-    // AxisAlignedBoundingBox bb;
-    // for(const auto &side : m_sides)
-    // {
-    //     bb = AxisAlignedBoundingBox::combine(bb, side.getBounds());
-    // }
-    // return bb;
+    auto worldPoints = this->getWorldPoints();
+    glm::vec3 minPoint( std::numeric_limits<float>::max());
+    glm::vec3 maxPoint(-std::numeric_limits<float>::max());
+
+    for(const auto &point : worldPoints)
+    {
+        minPoint = glm::min(minPoint, point);
+        maxPoint = glm::max(maxPoint, point);
+    }
+
+    AxisAlignedBoundingBox bb(minPoint, maxPoint, 0.000001f);
+    return bb;
 }
 
 //----------------------------------------------------------------------------------
 void Box::translate(const glm::vec3 &translation)
 {
-    Hittable::translate(translation);
+    this->setModelMatrix(glm::translate(this->getModelMatrix(), translation));
     this->createSides();
 }
 
 //----------------------------------------------------------------------------------
 void Box::rotate(const float angle, const glm::vec3 &axis)
 {
-    Hittable::rotate(angle, axis);
+    const auto c = this->center();
+    const auto translationToOrigin = glm::translate(glm::mat4(1.0f), -c);
+    const auto rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
+    const auto translationBack = glm::translate(glm::mat4(1.0f), c);
+
+    this->setModelMatrix(translationBack * rotationMatrix * translationToOrigin * this->getModelMatrix());
     this->createSides();
 }
 
 //----------------------------------------------------------------------------------
 void Box::scale(const glm::vec3 &scale)
 {
-    Hittable::scale(scale);
+    const auto c = this->center();
+    const auto translationToOrigin = glm::translate(glm::mat4(1.0f), -c);
+    const auto scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+    const auto translationBack = glm::translate(glm::mat4(1.0f), c);
+
+    this->setModelMatrix(translationBack * scaleMatrix * translationToOrigin * this->getModelMatrix());
     this->createSides();
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Box::getWorldPoint1() const
+std::vector<glm::vec3> Box::getWorldPoints() const
 {
-    auto modelMatrix = this->getModelMatrix();
-    return glm::vec3(modelMatrix * glm::vec4(m_point1, 1.0f));
-}
+    std::vector<glm::vec3> worldPoints;
+    worldPoints.reserve(m_points.size());
 
-//----------------------------------------------------------------------------------
-glm::vec3 Box::getWorldPoint2() const
-{
     auto modelMatrix = this->getModelMatrix();
-    return glm::vec3(modelMatrix * glm::vec4(m_point2, 1.0f));
+
+    for(const auto &point : m_points)
+    {
+        auto homogeneousPoint = glm::vec4(point, 1.0f);
+        auto coord = modelMatrix * homogeneousPoint;
+        coord /= coord.w;
+        worldPoints.push_back(glm::vec3(coord));
+    }
+
+    return worldPoints;
 }
 
 //----------------------------------------------------------------------------------
 glm::vec3 Box::center() const
 {
-    auto point1 = this->getWorldPoint1();
-    auto point2 = this->getWorldPoint2();
+    auto worldPoints = this->getWorldPoints();
+    glm::vec3 minPoint( std::numeric_limits<float>::max());
+    glm::vec3 maxPoint(-std::numeric_limits<float>::max());
 
-    return 0.5f * (point1 + point2);
+    for(const auto &point : worldPoints)
+    {
+        minPoint = glm::min(minPoint, point);
+        maxPoint = glm::max(maxPoint, point);
+    }
+
+    return 0.5f * (minPoint + maxPoint);
 }
 
 //----------------------------------------------------------------------------------
@@ -75,46 +118,31 @@ void Box::createSides()
     m_sides.clear(); 
     m_sides.reserve(6);
 
-    auto point1 = this->getWorldPoint1();
-    auto point2 = this->getWorldPoint2();
+    if(m_points.size() < 8)
+    {
+        return;
+    }
 
-    auto min = glm::vec3(std::min(point1.x, point2.x), std::min(point1.y, point2.y), std::min(point1.z, point2.z));
-    auto max = glm::vec3(std::max(point1.x, point2.x), std::max(point1.y, point2.y), std::max(point1.z, point2.z));
+    auto worldPoints = this->getWorldPoints();
 
-    // Create the sides
-    glm::vec3 dx = glm::vec3(max.x - min.x, 0, 0);
-    glm::vec3 dy = glm::vec3(0, max.y - min.y, 0);
-    glm::vec3 dz = glm::vec3(0, 0, max.z - min.z);
-    
-    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, max.z), dx, dy, m_material));     // front
-    auto frontQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, max.z), dx, dy, m_material);
-    // frontQuad->setModelMatrix(this->getModelMatrix());
-    m_sides.push_back(frontQuad);
+    // Bottom vertices counter-clockwise
+    auto p0 = worldPoints[0];
+    auto p1 = worldPoints[1];
+    auto p2 = worldPoints[2];
+    auto p3 = worldPoints[3];
+    // Top vertices counter-clockwise
+    auto p4 = worldPoints[4];
+    auto p5 = worldPoints[5];
+    auto p6 = worldPoints[6];
+    auto p7 = worldPoints[7];
 
-    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(max.x, min.y, min.z), dy, dz, m_material));    // right
-    auto rightQuad = std::make_shared<Quad>(glm::vec3(max.x, min.y, min.z), dy, dz, m_material);
-    // rightQuad->setModelMatrix(this->getModelMatrix());
-    m_sides.push_back(rightQuad);
-
-    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dy, m_material));    // back
-    auto backQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dy, m_material);
-    // backQuad->setModelMatrix(this->getModelMatrix());
-    m_sides.push_back(backQuad);
-
-    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dy, dz, m_material));     // left
-    auto leftQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dy, dz, m_material);
-    // leftQuad->setModelMatrix(this->getModelMatrix());
-    m_sides.push_back(leftQuad);
-
-    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(max.x, max.y, max.z), -dx, -dz, m_material));    // top
-    auto topQuad = std::make_shared<Quad>(glm::vec3(max.x, max.y, max.z), -dx, -dz, m_material);
-    // topQuad->setModelMatrix(this->getModelMatrix());
-    m_sides.push_back(topQuad);
-
-    // m_sides.push_back(std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dz, m_material));     // bottom
-    auto bottomQuad = std::make_shared<Quad>(glm::vec3(min.x, min.y, min.z), dx, dz, m_material);
-    // bottomQuad->setModelMatrix(this->getModelMatrix());
-    m_sides.push_back(bottomQuad);
+    // Create the sides using the corner points
+    m_sides.push_back(std::make_shared<Quad>(p0, p1 - p0, p4 - p0, m_material)); // Front
+    m_sides.push_back(std::make_shared<Quad>(p1, p2 - p1, p5 - p1, m_material)); // Right
+    m_sides.push_back(std::make_shared<Quad>(p2, p3 - p2, p6 - p2, m_material)); // Back
+    m_sides.push_back(std::make_shared<Quad>(p3, p0 - p3, p7 - p3, m_material)); // Left
+    m_sides.push_back(std::make_shared<Quad>(p4, p5 - p4, p7 - p4, m_material)); // Top
+    m_sides.push_back(std::make_shared<Quad>(p0, p1 - p0, p3 - p0, m_material)); // Bottom
 }
 
 //----------------------------------------------------------------------------------

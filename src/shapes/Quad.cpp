@@ -9,10 +9,6 @@ Quad::Quad()
     , m_v(0.0f, 1.0f, 0.0f)
     , m_material(nullptr) 
 {
-    // Need to update n first to get the correct d and w
-    this->updateQ();
-    this->updateU();
-    this->updateV();
     this->updateN();
     this->updateW();
     this->updateD();
@@ -28,10 +24,6 @@ Quad::Quad(const glm::vec3 &Q,
     , m_v(v)
     , m_material(material) 
 {
-    // Need to update n first to get the correct d and w
-    this->updateQ();
-    this->updateU();
-    this->updateV();
     this->updateN();
     this->updateW();
     this->updateD();
@@ -97,55 +89,37 @@ AxisAlignedBoundingBox Quad::getBounds() const
 //----------------------------------------------------------------------------------
 void Quad::rotate(const float angle, const glm::vec3 &axis)
 {
-    Hittable::rotate(angle, axis);
-    this->updateQ();
-    this->updateU();
-    this->updateV();
-    this->updateN();
-    this->updateW();
-    this->updateD(); 
+    // TODO: Add corner points and rotate around center
 }
 
 //----------------------------------------------------------------------------------
 void Quad::translate(const glm::vec3 &translation)
 {
-    Hittable::translate(translation);
-    this->updateQ();
-    this->updateU();
-    this->updateV();
-    this->updateN();
-    this->updateW();
-    this->updateD();
+    // TODO
 }
 
 //----------------------------------------------------------------------------------
 void Quad::scale(const glm::vec3 &scale)
 {
-    Hittable::scale(scale);
-    this->updateQ();
-    this->updateU();
-    this->updateV();
-    this->updateN();
-    this->updateW();
-    this->updateD();
+    // TODO
 }
 
 //----------------------------------------------------------------------------------
 void Quad::updateQ()
 {
-    m_Q = glm::vec3(this->getModelMatrix() * glm::vec4(m_Q, 1.0f));
+    // TODO
 }
 
 //----------------------------------------------------------------------------------
 void Quad::updateU()
 {
-    m_u = glm::vec3(this->getModelMatrix() * glm::vec4(m_u, 1.0f));
+    // TODO
 }
 
 //----------------------------------------------------------------------------------
 void Quad::updateV()
 {
-    m_v = glm::vec3(this->getModelMatrix() * glm::vec4(m_v, 1.0f));
+    // TODO
 }
 
 //----------------------------------------------------------------------------------
