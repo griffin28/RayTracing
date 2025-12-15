@@ -36,8 +36,8 @@ public:
     Color3f value(float u, float v, const glm::vec3 &p) const override
     {
         // Clamp input texture coordinates to [0,1] x [1,0]
-        u = RaytracingUtility::clamp(u, 0.f, 1.f);
-        v = 1.f - RaytracingUtility::clamp(v, 0.f, 1.f); // Flip V to image coordinates
+        u = glm::clamp(u, 0.f, 1.f);
+        v = 1.f - glm::clamp(v, 0.f, 1.f); // Flip V to image coordinates
 
         int i = static_cast<int>(u * m_image->width());
         int j = static_cast<int>(v * m_image->height());

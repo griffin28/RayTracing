@@ -93,11 +93,11 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
                     }
 
                     pixelColor *= pixelSamplesScale;
-                    pixelColor = RaytracingUtility::gammaCorrect(pixelColor);
+                    pixelColor = glm::clamp(RaytracingUtility::gammaCorrect(pixelColor), 0.0f, 1.0f);
 
-                    image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0f * RaytracingUtility::clamp(pixelColor.r, 0.0f, 1.0f));
-                    image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0f * RaytracingUtility::clamp(pixelColor.g, 0.0f, 1.0f));
-                    image[(j * m_width + i) * 3 + 2] = static_cast<uint8_t>(255.0f * RaytracingUtility::clamp(pixelColor.b, 0.0f, 1.0f));
+                    image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0f * pixelColor.r);
+                    image[(j * m_width + i) * 3 + 1] = static_cast<uint8_t>(255.0f * pixelColor.g);
+                    image[(j * m_width + i) * 3 + 2] = static_cast<uint8_t>(255.0f * pixelColor.b);
                 }
             }
         }, t * m_height / numThreads, (t+1) == numThreads ? m_height : (t+1) * m_height / numThreads, t));

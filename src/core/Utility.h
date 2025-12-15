@@ -34,10 +34,8 @@ public:
     /// @return a random double in the range [0,1)
     static double randomDouble()
     {
-        static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-        static std::mt19937 generator;
-        static std::random_device device;
-        generator.seed(device());
+        thread_local std::uniform_real_distribution<double> distribution(0.0, 1.0);
+        thread_local std::mt19937 generator(std::random_device{}());  // seed once
         return distribution(generator);
     }
 
@@ -56,10 +54,8 @@ public:
     /// @return a random integer in the range [min,max]
     static int randomInt(int min, int max)
     {
-        static std::uniform_int_distribution<int> distribution(min, max);
-        static std::mt19937 generator;
-        static std::random_device device;
-        generator.seed(device());
+        std::uniform_int_distribution<int> distribution(min, max);
+        thread_local std::mt19937 generator(std::random_device{}());
         return distribution(generator);
     }
 
@@ -70,48 +66,12 @@ public:
         return randomInt(0, std::numeric_limits<int>::max());
     }
 
-    /// @brief Clamp a value to the range [min,max].
-    /// @param value the value to clamp
-    /// @param min the minimum value of the range
-    /// @param max the maximum value of the range
-    /// @return the clamped value
-    static double clamp(double value, double min, double max)
-    {
-        if (value < min)
-        {
-            return min;
-        }
-        if (value > max)
-        {
-            return max;
-        }
-        return value;
-    }
-
-    /// @brief Clamp a value to the range [min,max].
-    /// @param value the value to clamp
-    /// @param min the minimum value of the range
-    /// @param max the maximum value of the range
-    /// @return the clamped value
-    static float clampf(float value, float min, float max)
-    {
-        if (value < min)
-        {
-            return min;
-        }
-        if (value > max)
-        {
-            return max;
-        }
-        return value;
-    }
-
     /// @brief Convert a linear color to gamma-corrected color.
     /// @param color the linear color
     /// @return the gamma-corrected color
-    static Color3f gammaCorrect(Color3f &color)
+    static Color3f gammaCorrect(const Color3f &color)
     {
-        return Color3f(std::sqrt(color.x), std::sqrt(color.y), std::sqrt(color.z));
+        return Color3f(glm::sqrt(color.x), glm::sqrt(color.y), glm::sqrt(color.z));
     }
 
     /// @brief Generate a random vector in the range [0,1).
@@ -123,6 +83,8 @@ public:
 
     /// @brief Generate a random vector in the range [min,max).
     /// @param min the minimum value of the range
+    /// @param max the maximum value of the range
+    /// @return a random vector in the range [min,max)
     static glm::vec3 randomVector(const float min, const float max)
     {
         return glm::vec3(static_cast<float>(randomDouble(min, max)), 
@@ -135,10 +97,11 @@ public:
     /// The algorithm works by generating a random vector in the unit cube and rejecting it if it
     /// is not in the unit sphere. This process is repeated until a vector in the unit sphere is
     /// found.
+    /// @param maxAttempts the maximum number of attempts to generate a random vector in the unit sphere
     /// @return a random vector in the unit sphere
-    static glm::vec3 randomInUnitSphere()
+    static glm::vec3 randomInUnitSphere(const int maxAttempts = 10000)
     {
-        while (true)
+        for (int i = 0; i < maxAttempts; i++)
         {
             glm::vec3 p = randomVector(-1, 1);
 
@@ -147,6 +110,9 @@ public:
                 return p;
             }
         }
+
+        std::clog << "Failed to generate a random vector in the unit sphere after " << maxAttempts << " attempts" << std::endl;
+        return glm::vec3(1.0f, 1.0f, 1.0f);
     }
 
     /// @brief Generate a random cosine-weighted direction.
@@ -157,11 +123,11 @@ public:
     {
         float r1 = static_cast<float>(randomDouble());
         float r2 = static_cast<float>(randomDouble());
-        float z = std::sqrt(1 - r2);
+        float z = glm::sqrt(1 - r2);
 
         float phi = 2 * glm::pi<float>() * r1;
-        float x = std::cos(phi) * std::sqrt(r2);
-        float y = std::sin(phi) * std::sqrt(r2);
+        float x = glm::cos(phi) * glm::sqrt(r2);
+        float y = glm::sin(phi) * glm::sqrt(r2);
 
         return glm::vec3(x, y, z);
     }
@@ -170,10 +136,11 @@ public:
     /// This function uses rejection sampling to generate a random vector in the unit disk.
     /// The algorithm works by generating a random vector in the unit square and rejecting it if it
     /// is not in the unit disk. This process is repeated until a vector in the unit disk is found.
+    /// @param maxAttempts the maximum number of attempts to generate a random vector in the unit disk
     /// @return a random vector in the unit disk
-    static glm::vec3 randomInUnitDisk()
+    static glm::vec3 randomInUnitDisk(const int maxAttempts = 10000)
     {
-        while (true)
+        for (int i = 0; i < maxAttempts; i++)
         {
             glm::vec3 p(static_cast<float>(randomDouble(-1, 1)), static_cast<float>(randomDouble(-1, 1)), 0.0f);
 
@@ -182,6 +149,9 @@ public:
                 return p;
             }
         }
+
+        std::clog << "Failed to generate a random vector in the unit disk after " << maxAttempts << " attempts" << std::endl;
+        return glm::vec3(0.0f, 0.0f, 0.0f);
     }
 
     /// @brief Generate a random vector on the unit hemisphere.
