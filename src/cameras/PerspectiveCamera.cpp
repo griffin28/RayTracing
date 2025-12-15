@@ -55,6 +55,10 @@ void PerspectiveCamera::reset()
 void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std::ostream &out)
 {
     std::unique_ptr<uint8_t[]> image(new uint8_t[m_width * m_height * 3]);
+
+    const int sqrtspp = static_cast<int>(std::sqrt(samplesPerPixel));
+    const float pixelSamplesScale = 1.0f / (sqrtspp * sqrtspp);
+
     auto numThreads = std::thread::hardware_concurrency() * 4;
     numThreads = numThreads > m_height ? m_height : numThreads;
     std::clog << "Using " << numThreads << " threads\n";
@@ -76,14 +80,19 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
                 {
                     Color3f pixelColor(0.0f);
 
-                    for(int k=0; k < samplesPerPixel; ++k)
+                    for(int sj = 0; sj < sqrtspp; ++sj)
                     {
-                        auto pixel = glm::vec2(i + RaytracingUtility::randomDouble() - 0.5f, j + RaytracingUtility::randomDouble() - 0.5f);
-                        std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
-                        pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
+                        for(int si = 0; si < sqrtspp; ++si)
+                        {
+                            // auto pixel = glm::vec2(i + RaytracingUtility::randomDouble() - 0.5f, j + RaytracingUtility::randomDouble() - 0.5f);
+                            auto offset = this->sampleSquareStratified(si, sj, samplesPerPixel);
+                            auto pixel = glm::vec2(i + offset.x, j + offset.y);
+                            std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
+                            pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
+                        }
                     }
 
-                    pixelColor *= 1.0f / samplesPerPixel;
+                    pixelColor *= pixelSamplesScale;
                     pixelColor = RaytracingUtility::gammaCorrect(pixelColor);
 
                     image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0f * RaytracingUtility::clamp(pixelColor.r, 0.0f, 1.0f));
@@ -157,9 +166,9 @@ void PerspectiveCamera::setScreenSize(const int width, const int height)
 // PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
 // {
 //     Ray *pinholeRay = this->generateRay(pixel);
-//     const float aperatureRadius = this->getAperatureRadius();
+//     const float apertureRadius = this->getApertureRadius();
 
-//     if(aperatureRadius <= 0.0)
+//     if(apertureRadius <= 0.0f)
 //     {
 //         return pinholeRay;
 //     }
@@ -167,8 +176,8 @@ void PerspectiveCamera::setScreenSize(const int width, const int height)
 //     auto u = this->getHorizontalAxis();
 //     auto v = this->getVerticalAxis();
 
-//     auto defocusDiskU = u * aperatureRadius;
-//     auto defocusDiskV = v * aperatureRadius;
+//     auto defocusDiskU = u * apertureRadius;
+//     auto defocusDiskV = v * apertureRadius;
 
 //     glm::vec2 lensOffset = glm::vec2(randomInUnitDisk());
 
@@ -187,23 +196,23 @@ Ray *
 PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
 {
     Ray *pinholeRay = this->generateRay(pixel);
-    const float aperatureRadius = this->getAperatureRadius();
+    const float apertureRadius = this->getApertureRadius();
 
-    if(aperatureRadius <= 0.0)
+    if(apertureRadius <= 0.0f)
     {
         return pinholeRay;
     }
 
     glm::vec2 lensOffset = glm::vec2(RaytracingUtility::randomInUnitDisk());
 
-    const float focalDistance = 8; // glm::distance(this->getPosition(), this->getFocalPoint());
-    const float fstop = focalDistance / (aperatureRadius * 2.0f);
+    const float focalDistance = glm::distance(this->getWorldPosition(), this->getFocalPoint());
+    const float fstop = focalDistance / (apertureRadius * 2.0f);
 
-    float theta = lensOffset.x * aperatureRadius * 2.0f * M_PI;
+    float theta = lensOffset.x * apertureRadius * 2.0f * glm::pi<float>();
     float radius = lensOffset.y;
 
-    float u = static_cast<float>(cos(theta) * sqrt(radius));
-    float v = static_cast<float>(sin(theta) * sqrt(radius));
+    float u = glm::cos(theta) * glm::sqrt(radius);
+    float v = glm::sin(theta) * glm::sqrt(radius);
 
     glm::vec3 focusPoint = pinholeRay->direction() * (focalDistance / glm::dot(pinholeRay->direction(), this->getForwardAxis()));
     const float circleOfConfusionRadius = focalDistance / (2.0f * fstop);
@@ -215,7 +224,7 @@ PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
     // Clean-up
     delete pinholeRay;
 
-    Ray *lensRay = new Ray(origin, direction, RaytracingUtility::randomDouble());
+    Ray *lensRay = new Ray(origin, direction);
     return lensRay;
 }
 
@@ -224,8 +233,6 @@ PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
 Ray *
 PerspectiveCamera::generateRay(const glm::vec2 &pixel)
 {
-    const float scale = tan(glm::radians(m_fovy * 0.5f));
-
     // Raster Space -> Normalized Device Coordinate Space
     float pxNDC = pixel.x / static_cast<float>(m_width);
     float pyNDC = pixel.y / static_cast<float>(m_height);
@@ -235,15 +242,13 @@ PerspectiveCamera::generateRay(const glm::vec2 &pixel)
     float pyScreen = 1 - 2 * pyNDC;
 
     // Screen Space -> Camera Space
+    const float scale = tan(glm::radians(m_fovy * 0.5f));
     float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
     float pxCamera = pxScreen * aspect * scale;
     float pyCamera = pyScreen * scale;
 
-    // Camera Space -> World Space
-    glm::mat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
-
-    glm::vec3 rayOrigin = this->getPosition();
-    glm::vec3 rayOriginWorld = glm::vec3(cameraToWorldTransform * glm::vec4(rayOrigin, 1.0f));
+    // Camera Space -> World Space   
+    glm::vec3 rayOriginWorld = this->getWorldPosition();
 
     // Camera coordinate frame
     auto u = this->getHorizontalAxis();
@@ -251,7 +256,9 @@ PerspectiveCamera::generateRay(const glm::vec2 &pixel)
     auto w = this->getForwardAxis();
 
     glm::vec3 direction = (pxCamera * u) - (pyCamera * v) + w;
-    auto directionWorld = glm::normalize(glm::vec3(cameraToWorldTransform * glm::vec4(direction, 1.0f)));
+    glm::mat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
+    glm::vec4 directionWorldHomogeneous = cameraToWorldTransform * glm::vec4(direction, 0.0f);
+    glm::vec3 directionWorld = glm::normalize(glm::vec3(directionWorldHomogeneous));
 
     Ray *ray = new Ray(rayOriginWorld, directionWorld);
     return ray;
@@ -308,7 +315,7 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
         }
 
         std::vector<std::shared_ptr<Pdf>> pdfs;
-        // pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
+        pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
         auto lightSources = world.getLightSources();
 
         for(const auto &light : lightSources)
@@ -323,9 +330,14 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
             pdfValue = mixturePdf.value(scattered.direction());
         }
 
+        if(pdfValue < 1e-6f)
+        {
+            return emitted;
+        }
+
         // Importance sampling using the material's scattering PDF
-        float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);        
-        auto colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world))  / pdfValue;
+        float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);    
+        auto colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world))  / pdfValue;        
 
         return emitted + colorFromScatter;
     }

@@ -21,7 +21,10 @@ Sphere::Sphere(const glm::vec3 &center, const float radius, std::shared_ptr<Mate
 void Sphere::updateCenter()
 {
     auto modelMatrix = this->getModelMatrix();
-    m_center = glm::vec3(modelMatrix * glm::vec4(m_center, 1.0f));
+    glm::vec4 newCenter = modelMatrix * glm::vec4(m_center, 1.0f);
+    m_center = glm::vec3(newCenter.x / newCenter.w,
+                         newCenter.y / newCenter.w,
+                         newCenter.z / newCenter.w);
 }
 
 //----------------------------------------------------------------------------------
@@ -29,7 +32,7 @@ void Sphere::updateBounds()
 {
     m_bounds = AxisAlignedBoundingBox(m_center - glm::vec3(m_radius),
                                       m_center + glm::vec3(m_radius),
-                                      0.0f);
+                                      0.000001f);
 }
 
 //----------------------------------------------------------------------------------
@@ -51,7 +54,7 @@ void Sphere::rotate(const float angle, const glm::vec3 &axis)
 //----------------------------------------------------------------------------------
 void Sphere::scale(const glm::vec3 &scale)
 {
-    Hittable::scale(scale);
+    m_radius *= scale.x; // assuming uniform scaling
     this->updateCenter();
     this->updateBounds();
 }

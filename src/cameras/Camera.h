@@ -90,8 +90,8 @@ public:
     //@{
     /// @brief Set/Get the aperature radius of the camera.
     /// @param radius the aperature radius
-    void setAperatureRadius(const float radius) { m_aperatureRadius = radius; }
-    float getAperatureRadius() const { return m_aperatureRadius; }
+    void setApertureRadius(const float radius) { m_apertureRadius = radius; }
+    float getApertureRadius() const { return m_apertureRadius; }
     //@}
 
     /// @brief The viewing transformation for moving objects from world space to view space.
@@ -103,6 +103,12 @@ public:
     glm::mat4 getCameraToWorldMatrix() const { return m_modelMatrix; }
     void setCameraToWorldMatrix(const glm::mat4 &matrix);
     //@}
+
+    /// @brief Sample a stratified point in a unit square.
+    /// @param i the current sample index in x direction
+    /// @param j the current sample index in y direction
+    /// @param spp the number of samples per pixel
+    glm::vec2 sampleSquareStratified(const int i, const int j, const int spp) const;
 
     /// @brief Generate a Halton sequence of points in the range [0,1).
     /// @param N the number of points to generate
@@ -117,7 +123,7 @@ private:
 
     Color3f m_background;
 
-    float     m_aperatureRadius;
+    float     m_apertureRadius;
     glm::mat4 m_modelMatrix;
 };
 } // namespace raytracer

@@ -10,6 +10,9 @@ add_subdirectory(cameras)
 # Shapes (spheres)
 add_subdirectory(shapes)
 
+# PDFs
+add_subdirectory(pdfs)
+
 # Materials
 add_subdirectory(materials)
 
@@ -18,9 +21,6 @@ add_subdirectory(textures)
 
 # Lights
 add_subdirectory(lights)
-
-# PDFs
-add_subdirectory(pdfs)
 
 add_executable(${CMAKE_PROJECT_NAME} ${SRCS})
 
@@ -31,9 +31,9 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         core
         cameras
         shapes
+        pdfs
         materials
         textures
         lights
-        pdfs
         stb_image
         glm::glm)

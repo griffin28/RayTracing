@@ -40,7 +40,12 @@ public:
     /// @return a random direction based on the PDF
     glm::vec3 generate() const override
     {
-        int index = RaytracingUtility::randomInt(0, static_cast<int>(m_pdfs.size()) - 1);
+        int index = 0;
+        if(m_pdfs.size() > 1)
+        {
+            index = RaytracingUtility::randomInt(0, static_cast<int>(m_pdfs.size()) - 1);
+        }
+        
         return m_pdfs[index]->generate();
     }
 

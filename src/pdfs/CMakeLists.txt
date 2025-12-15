@@ -1,4 +1,5 @@
 set (PDF_SRCS
+     Pdf.h
      SpherePdf.h
      CosinePdf.h
      HittablePdf.h

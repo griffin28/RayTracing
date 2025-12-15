@@ -11,7 +11,7 @@ Camera::Camera()
     , m_focalPoint(glm::vec3(0.0, 0.0, -1.0))
     , m_viewUp(glm::vec3(0.0, 1.0, 0.0))
     , m_background(Color3d(0.0, 0.0, 0.0))
-    , m_aperatureRadius(0.0)
+    , m_apertureRadius(0.0)
     , m_modelMatrix(glm::mat4(1.0))
 {}
 
@@ -22,7 +22,7 @@ void Camera::reset()
     m_focalPoint = glm::vec3(0.0, 0.0, -1.0);
     m_viewUp = glm::vec3(0.0, 1.0, 0.0);
     m_background = Color3d(0.0, 0.0, 0.0);
-    m_aperatureRadius = 0.0;
+    m_apertureRadius = 0.0;
     m_modelMatrix = glm::mat4(1.0);
 }
 
@@ -81,8 +81,9 @@ void Camera::setPosition(const glm::vec3 &position)
 //----------------------------------------------------------------------------------
 glm::vec3 Camera::getWorldPosition() const
 {
-    auto worldPos = m_modelMatrix * glm::vec4(m_position, 1.0);
-    return glm::vec3(worldPos);
+    auto worldPosHomogeneous = m_modelMatrix * glm::vec4(m_position, 1.0);
+    auto worldPos = glm::vec3(worldPosHomogeneous) / worldPosHomogeneous.w;
+    return worldPos;
 }
 
 //----------------------------------------------------------------------------------
@@ -133,6 +134,19 @@ glm::mat4 Camera::getViewMatrix()
 }
 
 //----------------------------------------------------------------------------------
+glm::vec2 Camera::sampleSquareStratified(const int i, const int j, const int spp) const
+{
+    float invSqrtSpp = 1.0f / std::sqrt(static_cast<float>(spp));
+    float randX = static_cast<float>(RaytracingUtility::randomDouble());
+    float randY = static_cast<float>(RaytracingUtility::randomDouble());
+
+    auto px = ((i + randX) * invSqrtSpp) - 0.5f;
+    auto py = ((j + randY) * invSqrtSpp) - 0.5f;
+
+    return glm::vec2(px, py);
+}
+
+//----------------------------------------------------------------------------------
 void Camera::generateHaltonSequence(const int N, const int b, float *out)
 {
     for (int i = 0; i < N; ++i)
@@ -151,34 +165,4 @@ void Camera::generateHaltonSequence(const int N, const int b, float *out)
         out[i] = r;
     }
 }
-
-// void Camera::generateHaltonSequence(const int N, const int b, float *out)
-// {
-//     int n = 0;
-//     int d = 1;
-
-//     for (int i = 0; i < N; ++i)
-//     {
-//         int x = d - n;
-
-//         if(x == 1)
-//         {
-//             n = 1;
-//             d *= b;
-//         }
-//         else
-//         {
-//             auto y = d / b;
-
-//             while(x <= y)
-//             {
-//                 y /= b;
-//             }
-
-//             n = (b + 1) * y - x;
-//         }
-
-//         out[i] = static_cast<float>(n) / static_cast<float>(d);
-//     }
-// }
 } // namespace raytracer

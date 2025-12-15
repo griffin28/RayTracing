@@ -1,7 +1,7 @@
 #include "Metal.h"
 #include "SolidColorTexture.h"
-#include "Hittable.h"
 #include "OrthoNormalBasis.h"
+#include "Hittable.h"
 
 namespace raytracer
 {

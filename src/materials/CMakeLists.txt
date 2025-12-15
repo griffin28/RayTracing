@@ -1,5 +1,4 @@
 set (MATERIAL_SRCS
-    Material.h
     Lambertian.cpp
     Metal.cpp
     Dielectric.cpp

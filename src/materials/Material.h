@@ -2,8 +2,11 @@
 
 #include "Ray.h"
 #include "Utility.h"
+// #include "Hittable.h"
+// #include "Pdf.h"
 
 #include <cmath>
+#include <memory>
 
 #include <glm/vec3.hpp>
 #include <glm/glm.hpp>
@@ -11,6 +14,16 @@
 namespace raytracer
 {
 struct HitRecord;
+/// @class ScatterRecord
+/// @brief A record that contains information about a scattered ray.
+// class ScatterRecord
+// {
+// public:
+//     Color3f attenuation;
+//     std::shared_ptr<Pdf> pdfPtr;
+//     bool skipPdf;
+//     Ray skipPdfRay;
+// };
 
 /// @class Material
 /// @brief A material is an object that can scatter light.
