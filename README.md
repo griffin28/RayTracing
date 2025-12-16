@@ -158,14 +158,8 @@ This implementation is inspired by and extends concepts from:
 
 ## 📄 License
 
-This project is open source. See the repository for license details.
+This project is licensed under the [MIT License](LICENSE).
 
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
----
-
-<p align="center">
-  Made with ❤️ and lots of rays
-</p>
