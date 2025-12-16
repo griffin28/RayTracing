@@ -160,6 +160,6 @@ This implementation is inspired by and extends concepts from:
 
 This project is licensed under the [MIT License](LICENSE).
 
-## 🤝 Contributing
+## 🤝🏿 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
