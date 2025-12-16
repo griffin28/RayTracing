@@ -36,55 +36,50 @@ public:
 
     /// @brief Ray copy constructor
     /// @param other the ray to copy
-    Ray(const Ray &other)
-        : m_origin(other.m_origin)
-        , m_direction(other.m_direction)
-        , m_tMin(other.m_tMin)
-        , m_tMax(other.m_tMax) {}
+    Ray(const Ray &other) = default;
 
+    /// @brief Ray move constructor
+    /// @param other the ray to move
+    Ray(Ray &&other) noexcept = default;
+    
     /// @brief Ray destructor
     ~Ray() = default;
 
     /// @brief Get the ray origin
     /// @return the ray origin
-    glm::vec3 origin() const { return m_origin; }
+    glm::vec3 origin() const noexcept { return m_origin; }
 
     /// @brief Get the ray direction
     /// @return the ray direction
-    glm::vec3 direction() const { return m_direction; }
+    glm::vec3 direction() const noexcept { return m_direction; }
 
     /// @brief Get the minimum t-value to count as a hit
     /// @return the minimum t-value to count as a hit
-    float tMin() const { return m_tMin; }
+    float tMin() const noexcept { return m_tMin; }
 
     /// @brief Get the maximum t-value to count as a hit
     /// @return the maximum t-value to count as a hit
-    float tMax() const { return m_tMax; }
+    float tMax() const noexcept { return m_tMax; }
 
     /// @brief Check if a t-value is within the ray's bounds
     /// @param t the t-value to check
     /// @return true if the t-value is within the ray's bounds, false otherwise
-    bool contains(const float t) const { return t >= m_tMin && t <= m_tMax; }
+    bool contains(const float t) const noexcept { return t >= m_tMin && t <= m_tMax; }
 
     /// @brief The ray parametric equation
-    /// @param t the distance between the ray origin and the returned point
+    /// @param t the parameter along the ray
     /// @return the point at distance t from the ray origin
-    glm::vec3 operator()(const float t) const { return m_origin + m_direction * t; }
+    glm::vec3 operator()(const float t) const noexcept { return m_origin + m_direction * t; }
 
-    /// @brief Ray assignment operator
-    /// @param other the ray to assign to this
-    /// @return this ray
-    Ray &operator=(const Ray &other)
-    {
-        if (this != &other)
-        {
-            m_origin = other.m_origin;
-            m_direction = other.m_direction;
-            m_tMin = other.m_tMin;
-            m_tMax = other.m_tMax;
-        }
-        return *this;
-    }
+    /// @brief Ray copy assignment operator
+    /// @param other the ray to copy
+    /// @return reference to this ray
+    Ray &operator=(const Ray &other) = default;
+
+    /// @brief Ray move assignment operator
+    /// @param other the ray to move
+    /// @return reference to this ray
+    Ray &operator=(Ray &&other) noexcept = default;
 
     friend std::ostream &operator<<(std::ostream &os, const Ray &r)
     {
@@ -97,7 +92,7 @@ public:
 private:
     glm::vec3 m_origin;
     glm::vec3 m_direction;
-    mutable float m_tMin;   // abs(near) / m_direction.z
-    mutable float m_tMax;   // abs(zFar) / m_direction.z
+    float m_tMin;   // abs(near) / m_direction.z
+    float m_tMax;   // abs(zFar) / m_direction.z
 };
 } // namespace raytracer

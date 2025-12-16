@@ -270,7 +270,7 @@ void cornell_box()
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setApertureRadius(0);
 
-    camera.render(world, 25);
+    camera.render(world, 20);
 }
 
 //----------------------------------------------------------------------------------

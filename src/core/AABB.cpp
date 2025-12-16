@@ -1,6 +1,10 @@
 #include "AABB.h"
 #include "Ray.h"
 
+#include <stdexcept>
+#include <string>
+#include <limits>
+
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
@@ -15,8 +19,8 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox()
 AxisAlignedBoundingBox::AxisAlignedBoundingBox(const glm::vec3 &p1,
                                                const glm::vec3 &p2,
                                                float padding)
-    : m_pMin(glm::vec3(std::min(p1.x, p2.x), std::min(p1.y, p2.y), std::min(p1.z, p2.z)))
-    , m_pMax(glm::vec3(std::max(p1.x, p2.x), std::max(p1.y, p2.y), std::max(p1.z, p2.z)))
+    : m_pMin(glm::vec3(glm::min(p1.x, p2.x), glm::min(p1.y, p2.y), glm::min(p1.z, p2.z)))
+    , m_pMax(glm::vec3(glm::max(p1.x, p2.x), glm::max(p1.y, p2.y), glm::max(p1.z, p2.z)))
     , m_padding(padding)
 {
     padToMinExtent();
@@ -28,7 +32,7 @@ glm::vec3 AxisAlignedBoundingBox::corner(const int c) const
     if(c >= 8 || c < 0)
     {
         std::string msg = "Invalid corner index (";
-        msg += c;
+        msg += std::to_string(c);
         msg += "). Expecting index between 0-7 inclusive.";
         throw std::runtime_error(msg);
     }
@@ -55,8 +59,8 @@ bool AxisAlignedBoundingBox::intersect(const Ray &ray) const
     glm::vec4 tMins = glm::vec4(glm::min(tLower, tUpper), ray.tMin());
     glm::vec4 tMaxes = glm::vec4(glm::max(tLower, tUpper), ray.tMax());
 
-    auto tBoxMin = std::max(std::max(std::max(tMins[0], tMins[1]), tMins[2]), tMins[3]);
-    auto tBoxMax = std::min(std::min(std::min(tMaxes[0], tMaxes[1]), tMaxes[2]), tMaxes[3]);
+    auto tBoxMin = glm::max(glm::max(glm::max(tMins[0], tMins[1]), tMins[2]), tMins[3]);
+    auto tBoxMax = glm::min(glm::min(glm::min(tMaxes[0], tMaxes[1]), tMaxes[2]), tMaxes[3]);
 
     return tBoxMin <= tBoxMax;
 }
@@ -64,7 +68,7 @@ bool AxisAlignedBoundingBox::intersect(const Ray &ray) const
 //----------------------------------------------------------------------------------
 float AxisAlignedBoundingBox::surfaceArea() const
 {
-    glm::vec3 diagonal = m_pMax - m_pMin;
+    glm::vec3 diagonal = this->diagonal();
     auto retVal = 2 * (diagonal.x * diagonal.y + diagonal.x * diagonal.z + diagonal.y * diagonal.z);
     return retVal;
 }
@@ -72,7 +76,7 @@ float AxisAlignedBoundingBox::surfaceArea() const
 //----------------------------------------------------------------------------------
 float AxisAlignedBoundingBox::volume() const
 {
-    glm::vec3 diagonal = m_pMax - m_pMin;
+    glm::vec3 diagonal = this->diagonal();
     auto retVal = diagonal.x * diagonal.y * diagonal.z;
     return retVal;
 }
@@ -80,8 +84,8 @@ float AxisAlignedBoundingBox::volume() const
 //----------------------------------------------------------------------------------
 int AxisAlignedBoundingBox::maxExtent() const
 {
-    glm::vec3 diagonal = m_pMax - m_pMin;
-
+    glm::vec3 diagonal = this->diagonal();
+    
     if(diagonal.x > diagonal.y && diagonal.x > diagonal.z)
     {
         return 0;
@@ -100,24 +104,26 @@ int AxisAlignedBoundingBox::maxExtent() const
 AxisAlignedBoundingBox AxisAlignedBoundingBox::combine(const AxisAlignedBoundingBox &box1,
                                                        const AxisAlignedBoundingBox &box2)
 {
-    return AxisAlignedBoundingBox(glm::vec3(std::min(box1.m_pMin.x, box2.m_pMin.x),
-                                            std::min(box1.m_pMin.y, box2.m_pMin.y),
-                                            std::min(box1.m_pMin.z, box2.m_pMin.z)),
-                                  glm::vec3(std::max(box1.m_pMax.x, box2.m_pMax.x),
-                                            std::max(box1.m_pMax.y, box2.m_pMax.y),
-                                            std::max(box1.m_pMax.z, box2.m_pMax.z)));
+    return AxisAlignedBoundingBox(glm::vec3(glm::min(box1.m_pMin.x, box2.m_pMin.x),
+                                            glm::min(box1.m_pMin.y, box2.m_pMin.y),
+                                            glm::min(box1.m_pMin.z, box2.m_pMin.z)),
+                                  glm::vec3(glm::max(box1.m_pMax.x, box2.m_pMax.x),
+                                            glm::max(box1.m_pMax.y, box2.m_pMax.y),
+                                            glm::max(box1.m_pMax.z, box2.m_pMax.z)),
+                                  box1.m_padding > box2.m_padding ? box1.m_padding : box2.m_padding);
 }
 
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox AxisAlignedBoundingBox::combine(const AxisAlignedBoundingBox &box,
                                                        const glm::vec3 &point)
 {
-    return AxisAlignedBoundingBox(glm::vec3(std::min(box.m_pMin.x, point.x),
-                                            std::min(box.m_pMin.y, point.y),
-                                            std::min(box.m_pMin.z, point.z)),
-                                  glm::vec3(std::max(box.m_pMax.x, point.x),
-                                            std::max(box.m_pMax.y, point.y),
-                                            std::max(box.m_pMax.z, point.z)));
+    return AxisAlignedBoundingBox(glm::vec3(glm::min(box.m_pMin.x, point.x),
+                                            glm::min(box.m_pMin.y, point.y),
+                                            glm::min(box.m_pMin.z, point.z)),
+                                  glm::vec3(glm::max(box.m_pMax.x, point.x),
+                                            glm::max(box.m_pMax.y, point.y),
+                                            glm::max(box.m_pMax.z, point.z)),
+                                  box.m_padding);
 }
 
 //----------------------------------------------------------------------------------

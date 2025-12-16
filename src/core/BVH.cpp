@@ -36,7 +36,7 @@ public:
         }
         else if(objectSpan == 2)
         {
-            if(objs[start]->getBounds().m_pMin[bounds.maxExtent()] < objs[start + 1]->getBounds().m_pMin[bounds.maxExtent()])
+            if(objs[start]->getBounds().pMin()[bounds.maxExtent()] < objs[start + 1]->getBounds().pMin()[bounds.maxExtent()])
             {
                 m_left = objs[start];
                 m_right = objs[start + 1];
@@ -52,7 +52,7 @@ public:
             // Sort the primitives along the longest axis of the centroid
             std::sort(objs.begin() + start, objs.begin() + end, [bounds](const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b)
                       {
-                            return a->getBounds().m_pMin[bounds.maxExtent()] < b->getBounds().m_pMin[bounds.maxExtent()];
+                            return a->getBounds().pMin()[bounds.maxExtent()] < b->getBounds().pMin()[bounds.maxExtent()];
                       });
 
             // Recursively build the left and right subtrees
@@ -87,7 +87,7 @@ public:
     //----------------------------------------------------------------------------------
     glm::vec3 center() const override
     {
-        return 0.5f * m_bounds.m_pMin + 0.5f * m_bounds.m_pMax;
+        return 0.5f * m_bounds.pMin() + 0.5f * m_bounds.pMax();
     }
 
     /// @brief left child node
@@ -117,8 +117,8 @@ void BVH::build()
     // Print world bounds
     auto worldBounds = m_root->m_bounds;
     std::clog << "World Bounds" << std::endl;
-    std::clog << "pMin: [" << worldBounds.m_pMin[0] << " , " << worldBounds.m_pMin[1] << " , " << worldBounds.m_pMin[2] << "]\n"
-                 "pMax: [" << worldBounds.m_pMax[0] << " , " << worldBounds.m_pMax[1] << " , " << worldBounds.m_pMax[2] << "]\n";
+    std::clog << "pMin: [" << worldBounds.pMin()[0] << " , " << worldBounds.pMin()[1] << " , " << worldBounds.pMin()[2] << "]\n"
+                 "pMax: [" << worldBounds.pMax()[0] << " , " << worldBounds.pMax()[1] << " , " << worldBounds.pMax()[2] << "]\n";
 }
 
 //----------------------------------------------------------------------------------

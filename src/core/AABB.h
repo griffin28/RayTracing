@@ -54,6 +54,26 @@ public:
     /// @return the maximum extent
     int maxExtent() const;
 
+    /// @brief Get the padding of the bounding box
+    /// @return the padding
+    float padding() const noexcept { return m_padding; }
+
+    /// @brief Get the minimum point of the bounding box
+    /// @return the minimum point
+    glm::vec3 pMin() const noexcept { return m_pMin; }
+
+    /// @brief Get the maximum point of the bounding box
+    /// @return the maximum point
+    glm::vec3 pMax() const noexcept { return m_pMax; }
+
+    /// @brief Get the diagonal of the bounding box
+    /// @return the diagonal
+    glm::vec3 diagonal() const noexcept { return isValid() ? m_pMax - m_pMin : glm::vec3(0.0f); }
+
+    /// @brief Check if the bounding box is valid
+    /// @return true if the bounding box is valid, false otherwise
+    bool isValid() const noexcept { return m_pMin.x <= m_pMax.x && m_pMin.y <= m_pMax.y && m_pMin.z <= m_pMax.z; }
+
     /// @brief Construct a new bounding box that bounds the space encompassed by the two bounding boxes.
     /// @param box1 the first bounding box
     /// @param box2 the second bounding box
@@ -75,15 +95,12 @@ public:
         return os;
     }
 
-    /// @brief minimum point of the bounding box
-    glm::vec3 m_pMin;
-    /// @brief maximum point of the bounding box
-    glm::vec3 m_pMax;
-    /// @brief padding to ensure the bounding box handles grazing cases
-    float m_padding;
-
 private:
     void padToMinExtent();
+
+    glm::vec3 m_pMin;
+    glm::vec3 m_pMax;
+    float m_padding;
 };
 } // namespace raytracer
 
