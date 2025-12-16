@@ -46,24 +46,6 @@ namespace raytracer
             frontFace = glm::dot(ray.direction(), outwardNormal) < 0;
             normal = frontFace ? outwardNormal : -outwardNormal;
         }
-
-        /// @brief Assignment operator to copy another HitRecord.
-        /// @param other the other HitRecord to copy from
-        HitRecord& operator=(const HitRecord& other)
-        {
-            if (this != &other)
-            {
-                point = other.point;
-                normal = other.normal;
-                material = other.material;
-                t = other.t;
-                u = other.u;
-                v = other.v;
-                frontFace = other.frontFace;
-            }
-
-            return *this;
-        }
     };
 
     /// @class Hittable
@@ -72,7 +54,7 @@ namespace raytracer
     {
     public:
         /// @brief Default constructor
-        Hittable(): m_modelMatrix(1.0) {}
+        Hittable(): m_modelMatrix(1.0f) {}
 
         virtual ~Hittable() = default;
 
@@ -108,11 +90,11 @@ namespace raytracer
         }
 
         /// @brief scale the object in world space
-        /// @param scale ratio of scaling for each axis
+        /// @param scaleFactor ratio of scaling for each axis
         /// @note This function modifies the model matrix of the object.
-        virtual void scale(const glm::vec3& scale)
+        virtual void scale(const glm::vec3& scaleFactor)
         {
-            m_modelMatrix = glm::scale(m_modelMatrix, scale);
+            m_modelMatrix = glm::scale(m_modelMatrix, scaleFactor);
         }
 
         /// @brief Determine if the object is a light source
@@ -147,7 +129,7 @@ namespace raytracer
 
         /// @brief get the model matrix for the object
         /// @return the model matrix for the object
-        glm::mat4 getModelMatrix() const
+        glm::mat4 getModelMatrix() const noexcept
         {
             return m_modelMatrix;
         }
@@ -160,7 +142,7 @@ namespace raytracer
             m_modelMatrix = modelMatrix;
         }
 
-    private:
+    protected:
         glm::mat4 m_modelMatrix;
     };
 } // namespace raytracer

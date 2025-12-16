@@ -315,7 +315,7 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
         }
 
         std::vector<std::shared_ptr<Pdf>> pdfs;
-        pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
+        // pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
         auto lightSources = world.getLightSources();
 
         for(const auto &light : lightSources)

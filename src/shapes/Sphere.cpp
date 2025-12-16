@@ -100,7 +100,7 @@ bool Sphere::hit(const Ray &ray, HitRecord &record) const
             }
         }
 
-        if(ray.tMin() < t0 && t0 < ray.tMax())
+        if(ray.contains(t0))
         {
             record.t = t0;
             record.point = ray(t0);

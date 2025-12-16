@@ -2,7 +2,7 @@
 #include "AABB.h"
 
 #include <algorithm>
-#include <stack>
+#include <iostream>
 
 namespace raytracer
 {
@@ -19,46 +19,45 @@ public:
         
     BVHNode(std::vector<std::shared_ptr<Hittable>> &objects, size_t start, size_t end) 
     {
-        auto objs = objects; // Create a modifiable copy of the objects
         size_t objectSpan = end - start;
 
         // Compute bounds of all primitives in this node
         AxisAlignedBoundingBox bounds;
         for(size_t i = start; i < end; i++)
         {
-            bounds = AxisAlignedBoundingBox::combine(bounds, objs[i]->getBounds());
+            bounds = AxisAlignedBoundingBox::combine(bounds, objects[i]->getBounds());
         }
         m_bounds = bounds;
 
         if(objectSpan == 1)
         {
-            m_left = m_right = objs[start];
+            m_left = m_right = objects[start];
         }
         else if(objectSpan == 2)
         {
-            if(objs[start]->getBounds().pMin()[bounds.maxExtent()] < objs[start + 1]->getBounds().pMin()[bounds.maxExtent()])
+            if(objects[start]->getBounds().pMin()[bounds.maxExtent()] < objects[start + 1]->getBounds().pMin()[bounds.maxExtent()])
             {
-                m_left = objs[start];
-                m_right = objs[start + 1];
+                m_left = objects[start];
+                m_right = objects[start + 1];
             }
             else
             {
-                m_left = objs[start + 1];
-                m_right = objs[start];
+                m_left = objects[start + 1];
+                m_right = objects[start];
             }
         }
         else
         {
             // Sort the primitives along the longest axis of the centroid
-            std::sort(objs.begin() + start, objs.begin() + end, [bounds](const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b)
+            std::sort(objects.begin() + start, objects.begin() + end, [bounds](const std::shared_ptr<Hittable> &a, const std::shared_ptr<Hittable> &b)
                       {
-                            return a->getBounds().pMin()[bounds.maxExtent()] < b->getBounds().pMin()[bounds.maxExtent()];
+                            return a->center()[bounds.maxExtent()] < b->center()[bounds.maxExtent()];
                       });
 
             // Recursively build the left and right subtrees
             size_t mid = (start + end) / 2;
-            m_left = std::make_shared<BVHNode>(objs, start, mid);
-            m_right = std::make_shared<BVHNode>(objs, mid, end);
+            m_left = std::make_shared<BVHNode>(objects, start, mid);
+            m_right = std::make_shared<BVHNode>(objects, mid, end);
         }
     }
 
@@ -79,7 +78,11 @@ public:
         }
 
         const bool hitLeft = m_left->hit(ray, record);
-        const bool hitRight = m_right->hit(ray, record);
+
+        // Create narrowed ray for right child if left child was hit
+        Ray rightRay = hitLeft ? Ray(ray.origin(), ray.direction(), ray.tMin(), record.t)
+                               : ray;
+        const bool hitRight = m_right->hit(rightRay, record);
 
         return hitLeft || hitRight;
     }
@@ -87,7 +90,7 @@ public:
     //----------------------------------------------------------------------------------
     glm::vec3 center() const override
     {
-        return 0.5f * m_bounds.pMin() + 0.5f * m_bounds.pMax();
+        return 0.5f * (m_bounds.pMin() + m_bounds.pMax());
     }
 
     /// @brief left child node

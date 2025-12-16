@@ -121,13 +121,13 @@ public:
     /// @return a random cosine-weighted direction
     static glm::vec3 randomCosineDirection()
     {
-        float r1 = static_cast<float>(randomDouble());
-        float r2 = static_cast<float>(randomDouble());
-        float z = glm::sqrt(1 - r2);
+        auto r1 = randomDouble();
+        auto r2 = randomDouble();
+        auto phi = 2 * glm::pi<double>() * r1;
 
-        float phi = 2 * glm::pi<float>() * r1;
-        float x = glm::cos(phi) * glm::sqrt(r2);
-        float y = glm::sin(phi) * glm::sqrt(r2);
+        auto x = static_cast<float>(glm::cos(phi) * glm::sqrt(r2));
+        auto y = static_cast<float>(glm::sin(phi) * glm::sqrt(r2));
+        auto z = static_cast<float>(glm::sqrt(1 - r2));
 
         return glm::vec3(x, y, z);
     }

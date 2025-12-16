@@ -13,9 +13,9 @@ class Ray;
 class BVHNode;
 
 /// @class BVH
-/// @brief Bounding Volume Heirarchy
+/// @brief Bounding Volume Hierarchy
 ///
-/// Bounding volume heirarchy (BVH) is an approach for ray intersection acceleration based on
+/// Bounding volume hierarchy (BVH) is an approach for ray intersection acceleration based on
 /// primitive subdivision, where the primitives are partitioned into a hierarchy of disjoint sets.
 /// Primitives are stored in the leaves and each node stores a bounding box of the primitives
 /// in the nodes beneath it. Thus, as a ray traverses through the tree, any time it doesn't

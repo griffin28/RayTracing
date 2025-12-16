@@ -238,9 +238,9 @@ void cornell_box()
     auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3f(1.f), 5.f);
     world.add(quadLight);
 
-    // auto quad2 = std::make_shared<raytracer::Quad>(glm::vec3(25, 554, 127), glm::vec3(165,0,0), glm::vec3(0,0,305));
-    // auto quadLight2 = std::make_shared<raytracer::QuadLight>(quad2, raytracer::Color3f(1.f), 1.f);
-    // world.add(quadLight2);
+    auto quad2 = std::make_shared<raytracer::Quad>(glm::vec3(25, 554, 127), glm::vec3(165,0,0), glm::vec3(0,0,305));
+    auto quadLight2 = std::make_shared<raytracer::QuadLight>(quad2, raytracer::Color3f(1.f), 1.f);
+    world.add(quadLight2);
 
     // Walls
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), green));
@@ -270,7 +270,7 @@ void cornell_box()
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setApertureRadius(0);
 
-    camera.render(world, 20);
+    camera.render(world, 25);
 }
 
 //----------------------------------------------------------------------------------
@@ -339,7 +339,7 @@ void final_scene(const std::string &filename)
     camera.setFocalPoint(glm::vec3(278, 278, 0));
     camera.setApertureRadius(0);
 
-    camera.render(world, 1000);
+    camera.render(world, 10000);
 }
 
 //----------------------------------------------------------------------------------

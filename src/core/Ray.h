@@ -53,13 +53,15 @@ public:
     /// @return the ray direction
     glm::vec3 direction() const noexcept { return m_direction; }
 
-    /// @brief Get the minimum t-value to count as a hit
+    /// @brief Get/Set the minimum t-value to count as a hit
     /// @return the minimum t-value to count as a hit
     float tMin() const noexcept { return m_tMin; }
+    void setTMin(float tMin) noexcept { m_tMin = tMin; }
 
-    /// @brief Get the maximum t-value to count as a hit
+    /// @brief Get/Set the maximum t-value to count as a hit
     /// @return the maximum t-value to count as a hit
     float tMax() const noexcept { return m_tMax; }
+    void setTMax(float tMax) noexcept { m_tMax = tMax; }
 
     /// @brief Check if a t-value is within the ray's bounds
     /// @param t the t-value to check
