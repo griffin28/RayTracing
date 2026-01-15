@@ -102,12 +102,17 @@ namespace raytracer
         virtual bool isLight() const { return false; }
 
         /// @brief Get a random point on the surface of the object
-        /// @param surfaceArea the surface area of the object
         /// @return a random point on the surface of the object
-        virtual glm::vec3 randomPointOnSurface(float &surfaceArea) const
+        virtual glm::vec3 randomPointOnSurface() const
         {
-            surfaceArea = 0.0f;
             return glm::vec3(0.0f);
+        }
+
+        /// @brief Get surface area of the object
+        /// @return the surface area of the object
+        virtual float getSurfaceArea() const
+        {
+            return 0.0f;
         }
 
         /// @brief Get the PDF value for the given origin and direction
@@ -117,6 +122,15 @@ namespace raytracer
         virtual float pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
         {
             return 0.0f;
+        }
+
+        /// @brief Get the geometric factor for the given origin and direction
+        /// @param origin the origin of the ray
+        /// @param direction the direction of the ray
+        /// @return the geometric factor
+        virtual float getGeometricFactor(const glm::vec3 &origin, const glm::vec3 &direction) const
+        {
+            return 1.0f;
         }
 
         /// @brief Get a random direction from the given origin

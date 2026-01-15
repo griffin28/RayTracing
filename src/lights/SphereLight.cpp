@@ -2,6 +2,8 @@
 #include "Texture.h"
 #include "EmissiveMaterial.h"
 
+#include <glm/gtx/norm.hpp>
+
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
@@ -43,8 +45,37 @@ glm::vec3 SphereLight::center() const
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 SphereLight::randomPointOnSurface(float &surfaceArea) const
+glm::vec3 SphereLight::randomPointOnSurface() const
 {
-    return m_sphere->randomPointOnSurface(surfaceArea);
+    return m_sphere->randomPointOnSurface();
 }
+
+//----------------------------------------------------------------------------------
+float SphereLight::getGeometricFactor(const glm::vec3 &origin, const glm::vec3 &direction) const
+{
+    HitRecord record;
+    Ray ray(origin, direction);
+
+    if(this->hit(ray, record))
+    {
+        const float distanceSquared = glm::length2(record.point - origin);
+        auto dir = glm::normalize(record.point - origin);
+        return std::abs(-glm::dot(dir, record.normal)) / distanceSquared;
+    }
+
+    return 0.0f;
+}
+
+//----------------------------------------------------------------------------------
+float SphereLight::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
+{
+    return m_sphere->pdfValue(origin, direction);
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 SphereLight::random(const glm::vec3 &origin) const
+{
+    return m_sphere->random(origin);
+}
+
 } // namespace raytracer

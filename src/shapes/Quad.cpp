@@ -1,5 +1,7 @@
 #include "Quad.h"
 
+#include <glm/gtx/norm.hpp>
+
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
@@ -50,6 +52,10 @@ bool Quad::hit(const Ray &ray, HitRecord &record) const
     }
     
     auto intersectionPoint = ray(t);
+    if(glm::length2(intersectionPoint - ray.origin()) < 1e-8)
+    {
+        return false;
+    }
 
     // Check if the hit point is within the quad
     auto p = intersectionPoint - m_Q;
@@ -83,7 +89,7 @@ glm::vec3 Quad::center() const
 //----------------------------------------------------------------------------------
 AxisAlignedBoundingBox Quad::getBounds() const
 {
-    return AxisAlignedBoundingBox(m_Q, m_Q + m_u + m_v, 0.0000001f);
+    return AxisAlignedBoundingBox(m_Q, m_Q + m_u + m_v);
 }
 
 //----------------------------------------------------------------------------------
@@ -142,7 +148,7 @@ void Quad::updateW()
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Quad::randomPointOnSurface(float &surfaceArea) const
+glm::vec3 Quad::randomPointOnSurface() const
 {
     // Generate two random numbers in the range [0, 1)
     float u = static_cast<float>(RaytracingUtility::randomDouble());
@@ -150,9 +156,6 @@ glm::vec3 Quad::randomPointOnSurface(float &surfaceArea) const
 
     // Compute the random point on the quad
     glm::vec3 randomPoint = m_Q + u * m_u + v * m_v;
-
-    surfaceArea = glm::length(m_n);
-
     return randomPoint;
 }
 
@@ -164,11 +167,13 @@ float Quad::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
 
     if(this->hit(ray, record))
     {
-        float area = glm::length(m_n);
-        float distanceSquared = record.t * record.t * glm::dot(direction, direction);
-        float cosine = std::abs(glm::dot(direction, record.normal) / glm::length(direction));
+        auto dir = glm::normalize(record.point - origin);
+        const float dist2 = record.t * record.t * glm::length2(direction);
+        const float cosine = std::abs(glm::dot(dir, record.normal));
+        const float surfaceArea = this->getSurfaceArea();
 
-        return distanceSquared / (cosine * area);
+        return dist2 / (cosine * surfaceArea);
+        // return cosine / (dist2 * surfaceArea);
     }
     
     return 0.0f;
@@ -177,8 +182,7 @@ float Quad::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
 //----------------------------------------------------------------------------------
 glm::vec3 Quad::random(const glm::vec3 &origin) const
 {
-    float surfaceArea;
-    glm::vec3 randomPoint = this->randomPointOnSurface(surfaceArea);
+    glm::vec3 randomPoint = this->randomPointOnSurface();
     return randomPoint - origin;
 }
 

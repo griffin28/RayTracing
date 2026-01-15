@@ -3,6 +3,8 @@
 #include "Texture.h"
 #include "EmissiveMaterial.h"
 
+#include <glm/gtx/norm.hpp>
+
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
@@ -44,15 +46,39 @@ glm::vec3 QuadLight::center() const
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 QuadLight::randomPointOnSurface(float &surfaceArea) const
+glm::vec3 QuadLight::randomPointOnSurface() const
 {
-   return m_quad->randomPointOnSurface(surfaceArea);
+   return m_quad->randomPointOnSurface();
+}
+
+//----------------------------------------------------------------------------------
+float QuadLight::getSurfaceArea() const
+{
+    return m_quad->getSurfaceArea();
 }
 
 //----------------------------------------------------------------------------------
 float QuadLight::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
 {
     return m_quad->pdfValue(origin, direction);
+}
+
+//----------------------------------------------------------------------------------
+float QuadLight::getGeometricFactor(const glm::vec3 &origin, const glm::vec3 &direction) const
+{
+    HitRecord record;
+    Ray ray(origin, direction);
+
+    if(this->hit(ray, record))
+    {
+        auto dir = glm::normalize(record.point - origin);
+        const float dist2 = glm::length2(record.point - origin);
+        const float cosine = std::abs(glm::dot(dir, record.normal));
+
+        return cosine / dist2;
+    }
+
+    return 0.0f;
 }
 
 //----------------------------------------------------------------------------------

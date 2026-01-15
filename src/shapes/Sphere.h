@@ -65,7 +65,16 @@ public:
     void scale(const glm::vec3 &scale) override;
 
     /// @see Hittable::randomPointOnSurface
-    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+    glm::vec3 randomPointOnSurface() const override;
+
+    /// @see Hittable::getSurfaceArea
+    float getSurfaceArea() const override { return 4.0f * glm::pi<float>() * m_radius * m_radius; }
+
+    /// @see Hittable::pdfValue
+    float pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const override;
+
+    
+    glm::vec3 random(const glm::vec3 &origin) const override;
 
     /// @brief Get the texture coordinates of the sphere
     /// @param p the point on the sphere

@@ -53,9 +53,8 @@ public:
 
     /// @brief Get a random point on a light source in the scene
     /// @param point the point on a random light source in the scene
-    /// @param surfaceArea the surface area of the random light source in the scene
     /// @return true if a point was found, false otherwise
-    bool randomPointOnLight(glm::vec3 &point, float &surfaceArea) const;
+    bool randomPointOnLight(glm::vec3 &point) const;
 
     /// @brief Get the light sources in the scene
     /// @return a vector of shared pointers to the light sources in the scene

@@ -24,13 +24,13 @@ Lambertian::Lambertian(const std::shared_ptr<Texture> &albedo)
 }
 
 //----------------------------------------------------------------------------------
-bool Lambertian::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
+bool Lambertian::scatter(const Ray &ray, const HitRecord &record, Color3f &attenuation, Ray &scattered, float &pdf) const
 {
     attenuation = m_albedo->value(record.u, record.v, record.point);
 
     CosinePdf cosinePdf(record.normal);
-    glm::vec3 direction = cosinePdf.generate();
-    scattered = Ray(record.point, direction);
+    glm::vec3 scatterDirection = RaytracingUtility::randomOnHemisphere(record.normal); // cosinePdf.generate();
+    scattered = Ray(record.point, glm::normalize(scatterDirection));
     pdf = cosinePdf.value(scattered.direction());
     
     return true;

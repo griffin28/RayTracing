@@ -11,8 +11,11 @@ namespace raytracer
 class CosinePdf : public Pdf
 {
 public:
-    CosinePdf(const glm::vec3 &w)
-        : m_onb(w)
+    /// @brief Constructor
+    /// @param n the normal vector defining the hemisphere
+    explicit
+    CosinePdf(const glm::vec3 &n)
+        : m_onb(n)
     {
     }
 

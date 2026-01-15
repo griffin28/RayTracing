@@ -148,7 +148,7 @@ bool BVH::hit(const Ray& ray, HitRecord& record) const
 }
 
 //----------------------------------------------------------------------------------
-bool BVH::randomPointOnLight(glm::vec3 &point, float &surfaceArea) const
+bool BVH::randomPointOnLight(glm::vec3 &point) const
 {
     if(m_sceneObjects.empty())
     {
@@ -174,7 +174,7 @@ bool BVH::randomPointOnLight(glm::vec3 &point, float &surfaceArea) const
 
     // Randomly select a light source and return a random point on it
     auto light = lights[RaytracingUtility::randomInt(0, lights.size() - 1)];
-    point = light->randomPointOnSurface(surfaceArea);
+    point = light->randomPointOnSurface();
 
     return true;
 }

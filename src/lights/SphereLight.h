@@ -44,7 +44,13 @@ public:
     glm::vec3 center() const override;
     
     /// @see Hittable::randomPointOnSurface
-    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+    glm::vec3 randomPointOnSurface() const override;
+
+    /// @see Hittable::getSurfaceArea
+    float getSurfaceArea() const { return m_sphere->getSurfaceArea(); }  
+
+    /// @see Hittable::getGeometricFactor
+    float getGeometricFactor(const glm::vec3 &origin, const glm::vec3 &direction) const;
 
     /// @see Hittable::isLight
     bool isLight() const override { return true; }
@@ -52,6 +58,12 @@ public:
     /// @brief Get the radius of the sphere light
     /// @return the radius of the sphere light
     float radius() const { return m_sphere->radius(); }
+
+    /// @see Hittable::pdfValue
+    float pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const override;
+
+    /// @see Hittable::random
+    glm::vec3 random(const glm::vec3 &origin) const override;
 
 private:
     std::shared_ptr<Sphere> m_sphere;

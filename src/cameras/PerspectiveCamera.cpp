@@ -12,7 +12,7 @@ namespace raytracer
 {
 //----------------------------------------------------------------------------------
 PerspectiveCamera::PerspectiveCamera()
-    : PerspectiveCamera(800, 600)
+    : PerspectiveCamera(800, 600, 10)
 {
 }
 
@@ -87,7 +87,9 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
                             // auto pixel = glm::vec2(i + RaytracingUtility::randomDouble() - 0.5f, j + RaytracingUtility::randomDouble() - 0.5f);
                             auto offset = this->sampleSquareStratified(si, sj, samplesPerPixel);
                             auto pixel = glm::vec2(i + offset.x, j + offset.y);
+                            pixel += glm::vec2(0.5f, 0.5f); // Center of the pixel
                             std::unique_ptr<Ray> ray(this->generateThinLensRay(pixel));
+                            // std::clog << "Generated Ray: " << *ray << "\n";
                             pixelColor += this->rayColor(ray.get(), m_maxDepth, world);
                         }
                     }
@@ -229,38 +231,35 @@ PerspectiveCamera::generateThinLensRay(const glm::vec2 &pixel)
 }
 
 //----------------------------------------------------------------------------------
-// TODO: Look at using the perspective matrix to generate the ray
 Ray *
 PerspectiveCamera::generateRay(const glm::vec2 &pixel)
 {
-    // Raster Space -> Normalized Device Coordinate Space
-    float pxNDC = pixel.x / static_cast<float>(m_width);
-    float pyNDC = pixel.y / static_cast<float>(m_height);
+    // Raster Space -> Normalized Device Coordinate Space [-1,1]
+    float pxN = pixel.x / static_cast<float>(m_width-1);
+    float pyN = pixel.y / static_cast<float>(m_height-1);
 
-    // NDC Space -> Screen Space
-    float pxScreen = 2 * pxNDC - 1;
-    float pyScreen = 1 - 2 * pyNDC;
+    float pxNDC = 2 * pxN - 1;
+    float pyNDC = 1 - 2 * pyN;
 
-    // Screen Space -> Camera Space
-    const float scale = tan(glm::radians(m_fovy * 0.5f));
+    // NDC Space -> Viewport Plane Coordinates in Camera Space   
+    const float verticalHalfSize = tan(glm::radians(m_fovy * 0.5f));
     float aspect = static_cast<float>(m_width) / static_cast<float>(m_height);
-    float pxCamera = pxScreen * aspect * scale;
-    float pyCamera = pyScreen * scale;
+    const float horizontalHalfSize = aspect * verticalHalfSize;
 
-    // Camera Space -> World Space   
-    glm::vec3 rayOriginWorld = this->getWorldPosition();
+    float pxView = pxNDC * horizontalHalfSize * m_near;
+    float pyView = pyNDC * verticalHalfSize * m_near;
+    float pzView = m_near;
 
     // Camera coordinate frame
     auto u = this->getHorizontalAxis();
-    auto v = glm::vec3(-1) * this->getVerticalAxis();
+    auto v = this->getVerticalAxis();
     auto w = this->getForwardAxis();
 
-    glm::vec3 direction = (pxCamera * u) - (pyCamera * v) + w;
-    glm::mat4 cameraToWorldTransform = this->getCameraToWorldMatrix();
-    glm::vec4 directionWorldHomogeneous = cameraToWorldTransform * glm::vec4(direction, 0.0f);
-    glm::vec3 directionWorld = glm::normalize(glm::vec3(directionWorldHomogeneous));
+    // Camera Space -> World Space    
+    glm::vec3 cameraOriginWorld = this->getWorldPosition();
+    glm::vec3 cameraDirectionWorld = glm::normalize((pxView * u) + (pyView * v) + (pzView * w));
 
-    Ray *ray = new Ray(rayOriginWorld, directionWorld);
+    Ray *ray = new Ray(cameraOriginWorld, cameraDirectionWorld);
     return ray;
 }
 
@@ -297,26 +296,54 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
 {
     if(depth <= 0)
     {
+        // std::clog << "Max ray depth reached\n";
         return Color3f(0.0f);
     }
 
     HitRecord record;
 
     if(world.hit(*ray, record))
-    {
-        Ray scattered;
-        glm::vec3 attenuation(1.f);
-        float pdfValue = 1.0f;
+    {        
         Color3f emitted = record.material->emitted(record);
+
+        Color3f attenuation(1.f);
+        Ray scattered;
+        float pdfValue;
 
         if(!record.material->scatter(*ray, record, attenuation, scattered, pdfValue))
         {
             return emitted;
         }
+        
+        // auto lightSources = world.getLightSources();
+        // auto lightPos = lightSources[0]->center();  // lightSources[0]->randomPointOnSurface();
+        // auto lightDir = lightPos - record.point;
+        // scattered = Ray(record.point, glm::normalize(lightDir));
 
-        std::vector<std::shared_ptr<Pdf>> pdfs;
-        // pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
+        // if(glm::dot(scattered.direction(), record.normal) < 0.0f) // Light is below the surface
+        // {
+        //     // std::clog << "Ray:" << *ray << "\n";
+        //     // std::clog << "recordPoint: (" << record.point.x << ", " << record.point.y << ", " << record.point.z << ")\n";
+        //     // std::clog << "record.normal: (" << record.normal.x << ", " << record.normal.y << ", " << record.normal.z << ")\n";
+        //     // std::clog << "lightPos: (" << lightPos.x << ", " << lightPos.y << ", " << lightPos.z << ")\n";
+        //     // std::clog << "lightDir: (" << lightDir.x << ", " << lightDir.y << ", " << lightDir.z << ")\n";
+            
+        //     return emitted;
+        // }
+
+        // auto distanceSquared = glm::dot(lightDir, lightDir);
+        // auto lightArea = lightSources[0]->getSurfaceArea();
+        // auto lightCosine = glm::abs(scattered.direction().y);
+
+        // if(lightCosine < 0.000001f) // Light is edge-on to the surface
+        // {
+        //     return emitted;
+        // }
+
         auto lightSources = world.getLightSources();
+        std::vector<std::shared_ptr<Pdf>> pdfs;
+        // CosinePdf cosinePdf(record.normal);
+        // pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
 
         for(const auto &light : lightSources)
         {
@@ -326,22 +353,17 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
         if(!pdfs.empty())
         {
             MixturePdf mixturePdf(pdfs);
-            scattered = Ray(record.point, mixturePdf.generate());
+            scattered = Ray(record.point, glm::normalize(mixturePdf.generate()));
             pdfValue = mixturePdf.value(scattered.direction());
         }
-
-        if(pdfValue < 1e-6f)
-        {
-            return emitted;
-        }
-
-        // Importance sampling using the material's scattering PDF
-        float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);    
-        auto colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world))  / pdfValue;        
-
+        
+        float scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);
+        Color3f colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world)) / pdfValue;
+        
         return emitted + colorFromScatter;
     }
 
+    std::clog << "Ray miss - returning background color\n";
     return this->getBackgroundColor();
 }
 

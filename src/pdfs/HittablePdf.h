@@ -31,7 +31,7 @@ public:
     /// @param direction the direction to evaluate the PDF for
     /// @return the PDF value
     float value(const glm::vec3 &direction) const override
-    {
+    { 
         return m_hittable->pdfValue(m_origin, direction);
     }
 

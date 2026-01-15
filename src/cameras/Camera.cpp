@@ -110,6 +110,7 @@ glm::vec3 Camera::getHorizontalAxis()
 {
     auto forwardAxis = this->getForwardAxis();
     return glm::cross(forwardAxis, m_viewUp);
+    // return glm::cross(m_viewUp, forwardAxis);
 }
 
 //----------------------------------------------------------------------------------

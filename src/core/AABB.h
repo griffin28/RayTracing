@@ -26,7 +26,7 @@ public:
     /// @param p1 Minimum point of the bounding box
     /// @param p2 Maximum point of the bounding box
     /// @param padding the amount of padding to add to the bounding box
-    AxisAlignedBoundingBox(const glm::vec3 &p1, const glm::vec3 &p2, float padding = 0.0001f);
+    AxisAlignedBoundingBox(const glm::vec3 &p1, const glm::vec3 &p2, float padding = 0.000001f);
 
     /// Default destructor
     ~AxisAlignedBoundingBox() = default;

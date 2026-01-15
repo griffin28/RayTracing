@@ -1,5 +1,7 @@
 #include "Sphere.h"
 
+#include <glm/gtx/norm.hpp>
+
 namespace raytracer
 {
 //----------------------------------------------------------------------------------
@@ -116,7 +118,7 @@ bool Sphere::hit(const Ray &ray, HitRecord &record) const
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Sphere::randomPointOnSurface(float &surfaceArea) const
+glm::vec3 Sphere::randomPointOnSurface() const
 {
     // Generate two random numbers in the range [0, 1)
     float u = static_cast<float>(RaytracingUtility::randomDouble());
@@ -129,8 +131,32 @@ glm::vec3 Sphere::randomPointOnSurface(float &surfaceArea) const
     float y = m_radius * sin(phi) * sin(theta);
     float z = m_radius * cos(phi);
 
-    surfaceArea = 4.0f * glm::pi<float>() * m_radius * m_radius;
-
     return m_center + glm::vec3(x, y, z);
 }
+
+//----------------------------------------------------------------------------------
+float Sphere::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
+{
+    HitRecord record;
+    Ray ray(origin, direction);
+    if(this->hit(ray, record))
+    {
+        auto dir = glm::normalize(record.point - origin);
+        const float area = this->getSurfaceArea();
+        const float dist2 = glm::length2(record.point - origin);
+        const float cosine = std::abs(glm::dot(dir, record.normal));
+
+        return dist2 / (cosine * area);
+    }
+
+    return 0.0f;
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 Sphere::random(const glm::vec3 &origin) const
+{
+    glm::vec3 randomPoint = this->randomPointOnSurface();
+    return randomPoint - origin;
+}
+
 } // namespace raytracer

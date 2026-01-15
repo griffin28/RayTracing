@@ -69,13 +69,16 @@ public:
     void scale(const glm::vec3 &scale) override;
 
     /// @see Hittable::randomPointOnSurface
-    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+    glm::vec3 randomPointOnSurface() const override;
 
     /// @see Hittable::pdfValue
     float pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const override;
 
     /// @see Hittable::random
     glm::vec3 random(const glm::vec3 &origin) const override;
+
+    /// @see Hittable::getSurfaceArea
+    float getSurfaceArea() const override { return glm::length(m_n); }
 
 private:
     void updateQ();

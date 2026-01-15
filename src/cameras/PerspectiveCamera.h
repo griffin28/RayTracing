@@ -32,9 +32,9 @@ public:
     /// @throw std::invalid_argument if the screen size is invalid
     PerspectiveCamera(int width,
                       int height,
-                      int maxDepth=10,
+                      int maxDepth,
                       float fovy=45.0,
-                      float near=0.0,
+                      float near=1.0,
                       float far=10000.0);
 
     /// Default destructor.

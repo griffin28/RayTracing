@@ -39,7 +39,7 @@ public:
     /// @param attenuation the color attenuation
     /// @param scattered the scattered ray if the ray scatters
     /// @return true if the ray scatters, false otherwise
-    virtual bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const = 0;
+    virtual bool scatter(const Ray &ray, const HitRecord &record, Color3f &attenuation, Ray &scattered, float &pdf) const = 0;
 
     /// @brief Computes the scattering PDF for the material.
     /// @param ray the ray that hit the object

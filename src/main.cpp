@@ -234,13 +234,13 @@ void cornell_box()
     // Light
     // auto quad = std::make_shared<raytracer::Quad>(glm::vec3(210,554,127), glm::vec3(310,0,0), glm::vec3(0,0,305));
     // auto quad = std::make_shared<raytracer::Quad>(glm::vec3(223, 554, 227), glm::vec3(130,0,0), glm::vec3(0,0,205));
-    auto quad = std::make_shared<raytracer::Quad>(glm::vec3(343, 554, 332), glm::vec3(-130,0,0), glm::vec3(0,0,-105));
+    auto quad = std::make_shared<raytracer::Quad>(glm::vec3(213, 554, 227), glm::vec3(130,0,0), glm::vec3(0,0,105));
     auto quadLight = std::make_shared<raytracer::QuadLight>(quad, raytracer::Color3f(1.f), 5.f);
     world.add(quadLight);
 
-    auto quad2 = std::make_shared<raytracer::Quad>(glm::vec3(25, 554, 127), glm::vec3(165,0,0), glm::vec3(0,0,305));
-    auto quadLight2 = std::make_shared<raytracer::QuadLight>(quad2, raytracer::Color3f(1.f), 1.f);
-    world.add(quadLight2);
+    // auto quad2 = std::make_shared<raytracer::Quad>(glm::vec3(25, 554, 127), glm::vec3(165,0,0), glm::vec3(0,0,305));
+    // auto quadLight2 = std::make_shared<raytracer::QuadLight>(quad2, raytracer::Color3f(1.f), 1.f);
+    // world.add(quadLight2);
 
     // Walls
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), green));
@@ -248,6 +248,13 @@ void cornell_box()
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,0,555), white)); // bottom 
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,555,555), glm::vec3(-555,0,0), glm::vec3(0,0,-555), white)); // top wall
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,555,0), white)); // back wall
+
+    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), green));
+    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), red));
+    // // world.add(std::make_shared<raytracer::Quad>(glm::vec3(343, 554, 332), glm::vec3(-130,0,0), glm::vec3(0,0,-105), light));
+    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,0,555), white));
+    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,555,555), glm::vec3(-555,0,0), glm::vec3(0,0,-555), white));
+    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,555), glm::vec3(555,0,0), glm::vec3(0,555,0), white));
 
     // Tall Box
     auto tallBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
@@ -265,12 +272,15 @@ void cornell_box()
     world.build();
 
     // width, height, maxDepth, fovy
-    PerspectiveCamera camera(600, 600, 40, 40);
+    PerspectiveCamera camera(600, 600, 50.f, 40.f);
+    // camera.setPosition(glm::vec3(278, 278, -800));
     camera.setPosition(glm::vec3(278, 278, 1200));
-    camera.setFocalPoint(glm::vec3(278, 278, 0));
+    camera.setFocalPoint(glm::vec3(278, 278, -1));
     camera.setApertureRadius(0);
+    // Set background to purple to indicate no environment lighting
+    camera.setBackgroundColor(raytracer::Color3f(0.5f, 0.f, 0.5f));
 
-    camera.render(world, 25);
+    camera.render(world, 10);
 }
 
 //----------------------------------------------------------------------------------
@@ -336,7 +346,7 @@ void final_scene(const std::string &filename)
     // width, height, maxDepth, fovy
     PerspectiveCamera camera(800, 800, 40, 40);
     camera.setPosition(glm::vec3(78, 278, 1200));
-    camera.setFocalPoint(glm::vec3(278, 278, 0));
+    camera.setFocalPoint(glm::vec3(278, 278, -1));
     camera.setApertureRadius(0);
 
     camera.render(world, 10000);

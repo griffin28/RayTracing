@@ -28,25 +28,20 @@ Metal::Metal(std::shared_ptr<Texture> albedo, float roughness)
 
 //----------------------------------------------------------------------------------
 bool Metal::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
-{
-    OrthoNormalBasis onb(record.normal);
-    glm::vec3 scatterDirection = onb.transform(RaytracingUtility::randomCosineDirection());
-    
-    glm::vec3 reflected = glm::reflect(glm::normalize(ray.direction()), record.normal);
-    scattered = Ray(record.point, reflected + m_roughness * glm::normalize(scatterDirection));
+{    
+    glm::vec3 reflected = glm::reflect(ray.direction(), record.normal);
+    scattered = Ray(record.point, glm::normalize(reflected) + (m_roughness * RaytracingUtility::randomUnitVector()));
     attenuation = m_albedo->value(record.u, record.v, record.point);
 
     // The scattered ray is reflected if the dot product of the scattered ray and the normal is greater than zero.
     // This way can absorbed rays that scatter below the surface of the object.
-    pdf = glm::dot(onb.w(), scattered.direction()) / glm::pi<float>();
+    pdf = 1.0f;
     return (glm::dot(scattered.direction(), record.normal) > 0.0f);
 }
 
 //----------------------------------------------------------------------------------
 float Metal::scatteringPDF(const Ray &ray, const HitRecord &record, const Ray &scattered) const
 {
-    // float cosineTheta = glm::dot(record.normal, glm::normalize(scattered.direction()));
-    // return (cosineTheta < 0) ? 0 : cosineTheta / glm::pi<float>();
     return 1.0f;
 }
 }   // namespace raytracer

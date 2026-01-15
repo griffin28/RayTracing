@@ -7,6 +7,7 @@
 #include <glm/vec3.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp> // glm::pi
+#include <glm/gtx/norm.hpp>    // glm::length2
 
 namespace raytracer
 {
@@ -80,7 +81,7 @@ public:
     {
         return glm::vec3(static_cast<float>(randomDouble()), static_cast<float>(randomDouble()), static_cast<float>(randomDouble()));
     }
-
+    
     /// @brief Generate a random vector in the range [min,max).
     /// @param min the minimum value of the range
     /// @param max the maximum value of the range
@@ -90,6 +91,22 @@ public:
         return glm::vec3(static_cast<float>(randomDouble(min, max)), 
                          static_cast<float>(randomDouble(min, max)),
                          static_cast<float>(randomDouble(min, max)));
+    }
+
+    /// @brief Generate a random unit vector.
+    /// @return a random unit vector
+    static glm::vec3 randomUnitVector()
+    {
+        while (true)
+        {
+            auto randVec = randomVector(-1.f, 1.f);
+            auto len2 = glm::length2(randVec);
+
+            if(len2 > 1e-160 && len2 <= 1.0f)
+            {
+                return glm::normalize(randVec);
+            }
+        }
     }
 
     /// @brief Generate a random vector in the unit sphere.

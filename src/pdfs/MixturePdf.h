@@ -1,10 +1,14 @@
 #pragma once
 
 #include "Pdf.h"
+#include "CosinePdf.h"
+#include "HittablePdf.h"
 #include "Utility.h"
 
 #include <memory>
 #include <vector>
+
+
 
 namespace raytracer
 {
@@ -21,7 +25,7 @@ public:
     }
 
     /// @brief Evaluate the PDF for a given direction.
-    /// @param direction the direction to evaluate the PDF for
+    /// @param direction direction to evaluate the PDF for
     /// @return the PDF value
     float value(const glm::vec3 &direction) const override
     {
@@ -30,7 +34,7 @@ public:
 
         for(std::size_t i = 0; i < m_pdfs.size(); ++i)
         {
-            pdfValue += weight * m_pdfs[i]->value(direction);
+            pdfValue += m_pdfs[i]->value(direction) * weight;
         }
 
         return pdfValue;
@@ -52,6 +56,5 @@ public:
 
 private:
     std::vector<std::shared_ptr<Pdf>> m_pdfs;
-
 };
 } // namespace raytracer

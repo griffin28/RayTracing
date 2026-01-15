@@ -47,7 +47,13 @@ public:
     bool isLight() const override { return true; }
     
     /// @see Hittable::randomPointOnSurface
-    glm::vec3 randomPointOnSurface(float &surfaceArea) const override;
+    glm::vec3 randomPointOnSurface() const override;
+
+    /// @see Hittable::getSurfaceArea
+    float getSurfaceArea() const override;
+
+    /// @see Hittable::getGeometricFactor
+    float getGeometricFactor(const glm::vec3 &origin, const glm::vec3 &direction) const override;
 
     /// @see Hittable::pdfValue
     float pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const override;

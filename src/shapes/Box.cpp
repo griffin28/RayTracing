@@ -1,6 +1,7 @@
 #include "Box.h"
 #include "Quad.h"
 
+#include <glm/gtx/norm.hpp>
 
 namespace raytracer
 {
@@ -42,7 +43,7 @@ AxisAlignedBoundingBox Box::getBounds() const
         maxPoint = glm::max(maxPoint, point);
     }
 
-    AxisAlignedBoundingBox bb(minPoint, maxPoint, 0.000001f);
+    AxisAlignedBoundingBox bb(minPoint, maxPoint);
     return bb;
 }
 
@@ -179,21 +180,30 @@ bool Box::hit(const Ray &ray, HitRecord &record) const
 }
 
 //----------------------------------------------------------------------------------
-glm::vec3 Box::randomPointOnSurface(float &surfaceArea) const
+glm::vec3 Box::randomPointOnSurface() const
 {
     // Pick random side and get random point on that side
     if(m_sides.empty())
     {
-        surfaceArea = 0.0f;
         return glm::vec3(0.0f);
     }
 
     // Generate a random index for the side
     int sideIndex = RaytracingUtility::randomInt(0, static_cast<int>(m_sides.size()) - 1);
     const auto &side = m_sides[sideIndex];
-    auto randomPoint = side->randomPointOnSurface(surfaceArea);
-    surfaceArea *= static_cast<float>(m_sides.size());
+    auto randomPoint = side->randomPointOnSurface();
     return randomPoint;
+}
+
+//----------------------------------------------------------------------------------
+float Box::getSurfaceArea() const
+{
+    float totalArea = 0.0f;
+    for(const auto &side : m_sides)
+    {
+        totalArea += side->getSurfaceArea();
+    }
+    return totalArea;
 }
 
 //----------------------------------------------------------------------------------
@@ -204,13 +214,15 @@ float Box::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
 
     if(this->hit(ray, record))
     {
-        float area = 0.0f;
-        this->randomPointOnSurface(area);
-
-        const float distanceSquared = record.t * record.t * glm::dot(direction, direction);
-        const float cosine = std::fabs(glm::dot(direction, record.normal) / glm::length(direction));
+        auto dir = glm::normalize(record.point - origin);
+        const float dist2 = glm::length2(record.point - origin);
+        const float cosine = std::abs(glm::dot(dir, record.normal));
+        const float surfaceArea = this->getSurfaceArea();
+        // return dist2 / (cosine * surfaceArea);
+        // const float distanceSquared = record.t * record.t * glm::dot(direction, direction);
+        // const float cosine = std::fabs(glm::dot(direction, record.normal) / glm::length(direction));
         
-        return distanceSquared / (cosine * area);
+        return cosine / (dist2 * surfaceArea);
     }
 
     return 0.0f;
@@ -219,8 +231,7 @@ float Box::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) const
 //----------------------------------------------------------------------------------
 glm::vec3 Box::random(const glm::vec3 &origin) const
 {
-    float surfaceArea;
-    glm::vec3 randomPoint = this->randomPointOnSurface(surfaceArea);
+    glm::vec3 randomPoint = this->randomPointOnSurface();
     return randomPoint - origin;
 }
 
