@@ -7,6 +7,12 @@
 A feature-rich, physically-based ray tracer written in modern C++14. This project implements advanced rendering techniques including BVH acceleration, importance sampling, and various material models for realistic image synthesis.
 
 ## ✨ Features
+### Ray Path Visualization
+<p align="center">
+ <img width="800" alt="Screenshot from 2026-01-15 17-59-36" src="https://github.com/user-attachments/assets/a6c52290-768b-477d-8f06-154de483e104" />
+</p>
+
+Comprehensive ray path visualization system to export camera rays and scene geometry as 3D OBJ files for debugging and analysis.
 
 ### Rendering
 - **Path Tracing** with configurable bounce depth and samples per pixel
