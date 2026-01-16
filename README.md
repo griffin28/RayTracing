@@ -10,10 +10,10 @@ A feature-rich, physically-based ray tracer written in modern C++14. This projec
 
 ### 🔍 Ray Path Visualization
 <p align="center">
- <img width="800" alt="Ray Path Visualization" src="https://github.com/user-attachments/assets/a6c52290-768b-477d-8f06-154de483e104" />
+ <img width="800" alt="Screenshot from 2026-01-15 13-09-27" src="https://github.com/user-attachments/assets/a6ef2453-4761-4515-870a-71e053785a9e" />
 </p>
 
-**New!** Comprehensive ray path visualization system to export camera rays and scene geometry as 3D OBJ files for debugging and analysis.
+**New!** Comprehensive ray path visualization system to export camera rays and scene geometry as 3D OBJ files for debugging and analysis (EX: Light importance sampling).
 
 **Features:**
 - Export full ray paths including all bounces through the scene
