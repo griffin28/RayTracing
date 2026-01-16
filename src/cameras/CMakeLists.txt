@@ -12,4 +12,6 @@ target_include_directories(cameras
         ${GLM_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/../core
         ${CMAKE_CURRENT_SOURCE_DIR}/../materials
-        ${CMAKE_CURRENT_SOURCE_DIR}/../pdfs)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../pdfs
+        ${CMAKE_CURRENT_SOURCE_DIR}/../shapes
+        ${CMAKE_CURRENT_SOURCE_DIR}/../lights)

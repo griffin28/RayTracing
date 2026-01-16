@@ -32,7 +32,8 @@ public:
     /// @return a random direction based on the PDF
     glm::vec3 generate() const override
     {
-        return m_onb.transform(RaytracingUtility::randomCosineDirection());
+        return RaytracingUtility::randomOnHemisphere(m_onb.w());
+        // return m_onb.transform(RaytracingUtility::randomCosineDirection());
     }
 private:
     OrthoNormalBasis m_onb;

@@ -60,6 +60,10 @@ public:
     /// @return a vector of shared pointers to the light sources in the scene
     std::vector<std::shared_ptr<Hittable>> getLightSources() const;
 
+    /// @brief Get all scene objects
+    /// @return a vector of shared pointers to all objects in the scene
+    const std::vector<std::shared_ptr<Hittable>>& getSceneObjects() const { return m_sceneObjects; }
+
 private:
     std::unique_ptr<BVHNode> m_root;
     std::vector<std::shared_ptr<Hittable>> m_sceneObjects;

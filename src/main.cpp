@@ -220,7 +220,7 @@ void simple_light(const std::string &filename)
 }
 
 //----------------------------------------------------------------------------------
-void cornell_box()
+void cornell_box(const bool debug, int gridResolution=10)
 {
     std::clog << "Rendering Scene 6: Cornell Box" << std::endl;
     BVH world;
@@ -249,13 +249,6 @@ void cornell_box()
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,555,555), glm::vec3(-555,0,0), glm::vec3(0,0,-555), white)); // top wall
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,555,0), white)); // back wall
 
-    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), green));
-    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(0,555,0), glm::vec3(0,0,555), red));
-    // // world.add(std::make_shared<raytracer::Quad>(glm::vec3(343, 554, 332), glm::vec3(-130,0,0), glm::vec3(0,0,-105), light));
-    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,0,555), white));
-    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(555,555,555), glm::vec3(-555,0,0), glm::vec3(0,0,-555), white));
-    // world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,555), glm::vec3(555,0,0), glm::vec3(0,555,0), white));
-
     // Tall Box
     auto tallBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
     tallBox->rotate(15, glm::vec3(0,1,0));
@@ -278,9 +271,18 @@ void cornell_box()
     camera.setFocalPoint(glm::vec3(278, 278, -1));
     camera.setApertureRadius(0);
     // Set background to purple to indicate no environment lighting
-    camera.setBackgroundColor(raytracer::Color3f(0.5f, 0.f, 0.5f));
+    // camera.setBackgroundColor(raytracer::Color3f(0.5f, 0.f, 0.5f));
+    camera.setBackgroundColor(raytracer::Color3f(0.f, 0.f, 0.f));
 
-    camera.render(world, 10);
+    if(debug)
+    {
+        // Trace and save ray paths through the scene for debugging
+        camera.visualizeRayPaths("cornell_box_rays.obj", world, gridResolution, false, 600.0f);
+    }
+    else
+    {
+        camera.render(world, 20);
+    }
 }
 
 //----------------------------------------------------------------------------------
@@ -355,14 +357,14 @@ void final_scene(const std::string &filename)
 //----------------------------------------------------------------------------------
 void print_usage()
 {
-    std::clog << "Usage: raytracing <-s scene_number> [-h] [-f filename]" << std::endl;
+    std::clog << "Usage: raytracing <-s scene_number> [-h] [-f filename] [-d grid_resolution]" << std::endl;
     std::clog << "-h --help: show help" << std::endl;
     std::clog << "-s 1: random_spheres" << std::endl;
     std::clog << "-s 2: two_spheres" << std::endl;
     std::clog << "-s 3 -f filename: earth" << std::endl;
     std::clog << "-s 4: quads" << std::endl;
     std::clog << "-s 5 -f filename: quad and sphere lights" << std::endl;
-    std::clog << "-s 6: cornell box" << std::endl;
+    std::clog << "-s 6 -d grid_resolution: cornell box" << std::endl;
     std::clog << "-s 7 -f filename: final scene" << std::endl;
 }
 
@@ -415,8 +417,23 @@ int main(int argc, char *argv[])
             }
             break;
         case 6:
-            cornell_box();
+        {
+            bool debug = false;
+            int gridResolution = 10;
+
+            if(argc == 5)
+            {
+                std::string flag(argv[3]);
+                if(flag == "-d")
+                {
+                    gridResolution = std::stoi(argv[4]);
+                    debug = true;
+                }
+            }
+
+            cornell_box(debug, gridResolution);
             break;
+        }
         case 7:
             if((argc == 5) && std::string(argv[3]) == "-f")
             {

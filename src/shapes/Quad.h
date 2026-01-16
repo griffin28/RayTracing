@@ -80,6 +80,11 @@ public:
     /// @see Hittable::getSurfaceArea
     float getSurfaceArea() const override { return glm::length(m_n); }
 
+    /// @brief Get world point of quad corners
+    /// @param index the corner index (0-3)
+    /// @return the world coordinates of the specified corner
+    glm::vec3 getCorner(int index) const;
+
 private:
     void updateQ();
     void updateU();

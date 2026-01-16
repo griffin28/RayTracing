@@ -61,6 +61,11 @@ public:
     /// @see Hittable::random
     glm::vec3 random(const glm::vec3 &origin) const override;
 
+    /// @brief Get world point of quad corners
+    /// @param index the corner index (0-3)
+    /// @return the world coordinates of the specified corner
+    glm::vec3 getCorner(int index) const;
+
 private:
     std::shared_ptr<Quad> m_quad;
     std::shared_ptr<EmissiveMaterial> m_material;

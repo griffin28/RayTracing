@@ -7,20 +7,41 @@
 A feature-rich, physically-based ray tracer written in modern C++14. This project implements advanced rendering techniques including BVH acceleration, importance sampling, and various material models for realistic image synthesis.
 
 ## ✨ Features
-### Ray Path Visualization
+
+### 🔍 Ray Path Visualization
 <p align="center">
- <img width="800" alt="Screenshot from 2026-01-15 17-59-36" src="https://github.com/user-attachments/assets/a6c52290-768b-477d-8f06-154de483e104" />
+ <img width="800" alt="Ray Path Visualization" src="https://github.com/user-attachments/assets/a6c52290-768b-477d-8f06-154de483e104" />
 </p>
 
-Comprehensive ray path visualization system to export camera rays and scene geometry as 3D OBJ files for debugging and analysis.
+**New!** Comprehensive ray path visualization system to export camera rays and scene geometry as 3D OBJ files for debugging and analysis.
 
-### Rendering
+**Features:**
+- Export full ray paths including all bounces through the scene
+- Rays rendered as cylindrical geometry for better visibility in 3D viewers
+- Scene objects (spheres, boxes, quads) exported with proper mesh geometry
+- Material-based coloring system:
+  - **Red cylinders** - Ray path segments
+  - **White objects** - Scene geometry (walls, boxes)
+  - **Yellow emissive** - Light sources (QuadLights)
+- Generates companion MTL (material) file for proper rendering
+- Configurable grid resolution for ray density control
+- Compatible with Blender, MeshLab, and other 3D visualization tools
+
+**Usage:**
+```bash
+# Visualize Cornell Box with 50x50 ray grid
+bin/raytracing -s 6 -d 50
+
+# Output: cornell_box_rays.obj and cornell_box_rays.mtl
+```
+
+### 🎨 Rendering
 - **Path Tracing** with configurable bounce depth and samples per pixel
 - **BVH Acceleration** - Bounding Volume Hierarchy for efficient ray-scene intersection
 - **Importance Sampling** with multiple PDF strategies (Cosine, Hittable, Mixture, Sphere)
-- **Stratified & Halton Sequence Sampling** for reduced noise
-- **Depth of Field** via thin lens camera model
-- **Multi-threaded Rendering** for improved performance
+- **Stratified Sampling** for reduced noise and better convergence
+- **Depth of Field** via thin lens camera model with aperture control
+- **Multi-threaded Rendering** for improved performance (auto-detects CPU cores)
 
 ### Materials
 | Material | Description |
@@ -45,10 +66,12 @@ Comprehensive ray path visualization system to export camera rays and scene geom
 - **Sphere Lights** - Spherical area lights
 - **Environment Lighting** - Configurable background color
 
-### Camera System
-- **Perspective Camera** with adjustable FOV and aspect ratio
-- **Orthographic Camera** for parallel projection
-- Camera controls: roll, tilt, pan, dolly, boom, zoom
+### 📷 Camera System
+- **Perspective Camera** with adjustable FOV, aspect ratio, and near/far clipping planes
+- **Orthographic Camera** for parallel projection (technical/architectural rendering)
+- **Camera Controls**: roll, tilt, pan, dolly, boom, zoom
+- **Thin Lens Model** for realistic depth of field effects
+- **Ray Visualization API** for debugging and analysis
 
 ## 🛠️ Dependencies
 
@@ -86,6 +109,7 @@ bin/raytracing -s <scene_number> [-f <filename>] [-h]
 | `-h, --help` | Show help message |
 | `-s <num>` | Select scene to render (1-7) |
 | `-f <file>` | Specify texture image file (required for some scenes) |
+| `-d <grid>` | Debug mode: export ray paths with specified grid resolution (scene 6 only) |
 
 ### Available Scenes
 
@@ -97,17 +121,30 @@ bin/raytracing -s <scene_number> [-f <filename>] [-h]
 | 4 | `-s 4` | Colorful quads demonstration |
 | 5 | `-s 5 -f earth.jpg` | Quad and sphere lights demo |
 | 6 | `-s 6` | Classic Cornell Box |
+| 6 (debug) | `-s 6 -d 50` | Cornell Box with ray path visualization (50x50 grid) |
 | 7 | `-s 7 -f earth.jpg` | Final scene with 1000+ objects |
 
 ### Example
 
 ```bash
 # Render the Cornell Box scene
-bin/raytracing -s 6
+bin/raytracing -s 6 > cornell_box.ppm
 
 # Render Earth with custom texture
-bin/raytracing -s 3 -f /path/to/earth_8k.jpg
+bin/raytracing -s 3 -f /path/to/earth_8k.jpg > earth.ppm
+
+# Export Cornell Box ray paths for visualization (10x10 grid)
+bin/raytracing -s 6 -d 10
+# Output: cornell_box_rays.obj and cornell_box_rays.mtl
+
+# Export with higher resolution (50x50 grid)
+bin/raytracing -s 6 -d 50
 ```
+
+**Ray Visualization Output:**
+- `.obj` file - Contains ray cylinders and scene geometry
+- `.mtl` file - Material definitions for proper coloring
+- Open in Blender/MeshLab to visualize ray paths through the scene
 
 Output is written to `stdout` in PPM format. Redirect to save:
 
@@ -123,32 +160,38 @@ RayTracing/
 ├── external/              # Third-party libraries (GLM, stb_image)
 ├── src/
 │   ├── cameras/           # Camera implementations
-│   │   ├── Camera.h/cpp
-│   │   ├── PerspectiveCamera.h/cpp
-│   │   └── OrthographicCamera.h/cpp
+│   │   ├── Camera.h/cpp              # Base camera class
+│   │   ├── PerspectiveCamera.h/cpp   # Perspective projection + ray visualization
+│   │   └── OrthographicCamera.h/cpp  # Orthographic projection
 │   ├── core/              # Core ray tracing infrastructure
-│   │   ├── AABB.h/cpp     # Axis-Aligned Bounding Box
-│   │   ├── BVH.h/cpp      # Bounding Volume Hierarchy
-│   │   ├── Ray.h          # Ray representation
-│   │   └── Hittable.h     # Abstract hittable interface
+│   │   ├── AABB.h/cpp                # Axis-Aligned Bounding Box
+│   │   ├── BVH.h/cpp                 # Bounding Volume Hierarchy
+│   │   ├── Ray.h                     # Ray representation
+│   │   ├── Hittable.h                # Abstract hittable interface
+│   │   └── Utility.h                 # Utility functions and random sampling
 │   ├── materials/         # Material models
-│   │   ├── Lambertian.h/cpp
-│   │   ├── Metal.h/cpp
-│   │   └── Dielectric.h/cpp
+│   │   ├── Lambertian.h/cpp          # Diffuse materials
+│   │   ├── Metal.h/cpp               # Reflective materials
+│   │   ├── Dielectric.h/cpp          # Glass/transparent materials
+│   │   └── EmissiveMaterial.h/cpp    # Light-emitting materials
 │   ├── shapes/            # Geometric primitives
-│   │   ├── Sphere.h/cpp
-│   │   ├── Quad.h/cpp
-│   │   └── Box.h/cpp
+│   │   ├── Sphere.h/cpp              # Sphere geometry
+│   │   ├── Quad.h/cpp                # Quadrilateral primitives
+│   │   └── Box.h/cpp                 # Box geometry (6 quads)
 │   ├── textures/          # Texture implementations
-│   │   ├── ImageTexture.h
-│   │   └── CheckerTexture.h
+│   │   ├── Texture.h                 # Abstract texture interface
+│   │   ├── SolidColorTexture.h       # Constant color
+│   │   ├── ImageTexture.h            # Image-based textures
+│   │   └── CheckerTexture.h          # Procedural checker pattern
 │   ├── lights/            # Light sources
-│   │   ├── QuadLight.h/cpp
-│   │   └── SphereLight.h/cpp
-│   ├── pdfs/              # Probability Density Functions
-│   │   ├── CosinePdf.h
-│   │   ├── HittablePdf.h
-│   │   └── MixturePdf.h
+│   │   ├── QuadLight.h/cpp           # Rectangular area lights
+│   │   └── SphereLight.h/cpp         # Spherical area lights
+│   ├── pdfs/              # Probability Density Functions for importance sampling
+│   │   ├── Pdf.h                     # Abstract PDF interface
+│   │   ├── CosinePdf.h               # Cosine-weighted hemisphere sampling
+│   │   ├── HittablePdf.h             # Sampling toward light sources
+│   │   ├── MixturePdf.h              # Weighted mixture of PDFs
+│   │   └── SpherePdf.h               # Uniform sphere sampling
 │   └── main.cpp           # Entry point with scene definitions
 └── CMakeLists.txt
 ```

@@ -99,6 +99,19 @@ public:
     /// @see ProjectionCamera::copy
     void copy(const ProjectionCamera * const camera) override;
 
+    /// @brief Visualize full ray paths (with bounces) through the scene and save to an OBJ file.
+    ///        Each segment between interactions is written as a line element.
+    /// @param filename the output filename (should end with .obj)
+    /// @param world BVH of the scene to trace against
+    /// @param gridResolution the number of primary rays to generate along each axis
+    /// @param useThinLens whether to use thin lens rays (true) or pinhole rays (false)
+    /// @param missRayLength how far to draw a ray when it misses the scene
+    void visualizeRayPaths(const std::string &filename,
+                           const BVH &world,
+                           int gridResolution = 10,
+                           bool useThinLens = false,
+                           float missRayLength = 50.0f);
+
 private:
     /// @brief Compute the color of a ray.
     /// @param ray the ray to compute the color for
@@ -112,6 +125,14 @@ private:
     /// @param height the height of the image
     /// @param out the output stream
     void writePPMImage(uint8_t *image, const int width, const int height, std::ostream &out);
+
+    bool scatterRay(Ray * const ray, 
+                    const BVH &world, 
+                    const HitRecord &record, 
+                    Color3f &attenuation, 
+                    Ray &scattered, 
+                    float &pdf, 
+                    float &scatteringPDF);
 
     int m_width;
     int m_height;

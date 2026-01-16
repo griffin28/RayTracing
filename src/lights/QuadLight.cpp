@@ -87,4 +87,10 @@ glm::vec3 QuadLight::random(const glm::vec3 &origin) const
     return m_quad->random(origin);
 }
 
+//----------------------------------------------------------------------------------
+glm::vec3 QuadLight::getCorner(int index) const
+{
+    return m_quad->getCorner(index);
+}
+
 } // namespace raytracer

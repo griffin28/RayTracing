@@ -93,6 +93,19 @@ AxisAlignedBoundingBox Quad::getBounds() const
 }
 
 //----------------------------------------------------------------------------------
+glm::vec3 Quad::getCorner(int index) const
+{
+    switch(index)
+    {
+        case 0: return m_Q;
+        case 1: return m_Q + m_u;
+        case 2: return m_Q + m_u + m_v;
+        case 3: return m_Q + m_v;
+        default: throw std::runtime_error("Quad::getCorner: index out of range");
+    }
+}
+
+//----------------------------------------------------------------------------------
 void Quad::rotate(const float angle, const glm::vec3 &axis)
 {
     // TODO: Add corner points and rotate around center
