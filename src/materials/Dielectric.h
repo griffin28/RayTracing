@@ -16,7 +16,7 @@ public:
 
     /// @brief Determines if the ray scatters when it hits the object.
     /// @see Material::scatter
-    bool scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const override;
+    bool scatter(const Ray &ray, const HitRecord &record, ScatterRecord &scatterRecord) const override;
 
     /// @brief Computes the scattering PDF for the material.
     /// @see Material::scatteringPDF

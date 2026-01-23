@@ -15,7 +15,7 @@ public:
     /// @param n the normal vector defining the hemisphere
     explicit
     CosinePdf(const glm::vec3 &n)
-        : m_onb(n)
+        : m_normal(n)
     {
     }
 
@@ -24,7 +24,7 @@ public:
     /// @return the value of the PDF for the given direction
     float value(const glm::vec3 &direction) const override
     {
-        const float cosineTheta = glm::dot(glm::normalize(direction), m_onb.w());
+        const float cosineTheta = glm::dot(glm::normalize(direction), m_normal);
         return std::max(cosineTheta / glm::pi<float>(), 0.0f);
     }
 
@@ -32,10 +32,9 @@ public:
     /// @return a random direction based on the PDF
     glm::vec3 generate() const override
     {
-        return RaytracingUtility::randomOnHemisphere(m_onb.w());
-        // return m_onb.transform(RaytracingUtility::randomCosineDirection());
+        return RaytracingUtility::randomOnHemisphere(m_normal);
     }
 private:
-    OrthoNormalBasis m_onb;
+    glm::vec3 m_normal;
 };
 } // namespace raytracer

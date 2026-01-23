@@ -230,6 +230,7 @@ void cornell_box(const bool debug, int gridResolution=10)
     auto white = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.73f, 0.73f, 0.73f));
     auto green = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.f, 1.f, 0.f));
     auto blue = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.f, 0.f, 1.f));
+    auto aluminum = std::make_shared<raytracer::Metal>(raytracer::Color3f(0.8f, 0.85f, 0.88f), 0.0f);
 
     // Light
     // auto quad = std::make_shared<raytracer::Quad>(glm::vec3(210,554,127), glm::vec3(310,0,0), glm::vec3(0,0,305));
@@ -250,10 +251,14 @@ void cornell_box(const bool debug, int gridResolution=10)
     world.add(std::make_shared<raytracer::Quad>(glm::vec3(0,0,0), glm::vec3(555,0,0), glm::vec3(0,555,0), white)); // back wall
 
     // Tall Box
-    auto tallBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
-    tallBox->rotate(15, glm::vec3(0,1,0));
-    tallBox->translate(glm::vec3(100,0,65));
-    world.add(tallBox);
+    auto tallMetalBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), aluminum);
+    tallMetalBox->rotate(15, glm::vec3(0,1,0));
+    tallMetalBox->translate(glm::vec3(100,0,65));
+    world.add(tallMetalBox);
+    // auto tallBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,330,165), white);
+    // tallBox->rotate(15, glm::vec3(0,1,0));
+    // tallBox->translate(glm::vec3(100,0,65));
+    // world.add(tallBox);
 
     // Boxes
     auto shortBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);

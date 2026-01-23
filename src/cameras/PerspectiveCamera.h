@@ -126,12 +126,12 @@ private:
     /// @param out the output stream
     void writePPMImage(uint8_t *image, const int width, const int height, std::ostream &out);
 
-    bool scatterRay(Ray * const ray, 
+    void scatterRay(Ray * const ray, 
                     const BVH &world, 
-                    const HitRecord &record, 
-                    Color3f &attenuation, 
-                    Ray &scattered, 
-                    float &pdf, 
+                    const HitRecord &record,
+                    ScatterRecord &scatterRecord,
+                    Ray &scattered,
+                    float &pdf,
                     float &scatteringPDF);
 
     int m_width;

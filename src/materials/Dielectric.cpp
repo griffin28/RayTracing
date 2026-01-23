@@ -22,9 +22,12 @@ float Dielectric::scatteringPDF(const Ray &ray, const HitRecord &record, const R
 }
 
 //----------------------------------------------------------------------------------
-bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
+bool Dielectric::scatter(const Ray &ray, const HitRecord &record, ScatterRecord &scatterRecord) const
 {
-    attenuation = glm::vec3(1.0, 1.0, 1.0);
+    scatterRecord.attenuation = glm::vec3(1.0, 1.0, 1.0);
+    scatterRecord.pdfPtr = nullptr;
+    scatterRecord.skipPdf = true;
+    
     auto refractionRatio = record.frontFace ? (1.0 / m_ir) : m_ir;
     auto unitDirection = glm::normalize(ray.direction());
     auto cosTheta = fmin(glm::dot(-unitDirection, record.normal), 1.0);
@@ -43,8 +46,7 @@ bool Dielectric::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &att
         direction = refract(unitDirection, record.normal, refractionRatio);
     }
 
-    pdf = 1.0f;
-    scattered = Ray(record.point, direction);
+    scatterRecord.skipPdfRay = Ray(record.point, direction);
     return true;
 }
 

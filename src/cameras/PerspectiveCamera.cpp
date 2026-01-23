@@ -311,18 +311,24 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
     if(world.hit(*ray, record))
     {        
         Color3f emitted = record.material->emitted(record);
-
-        Color3f attenuation(1.f);
+        ScatterRecord scatterRecord;
         Ray scattered;
-        float pdfValue;
-        float scatteringPDF;
+        float pdfValue = 1.0f;
+        float scatteringPDF = 1.0f;
 
-        if(!this->scatterRay(ray, world, record, attenuation, scattered, pdfValue, scatteringPDF))
+        if(!record.material->scatter(*ray, record, scatterRecord))
         {
             return emitted;
         }
+
+        if(scatterRecord.skipPdf)
+        {
+            return scatterRecord.attenuation * rayColor(&scatterRecord.skipPdfRay, depth-1, world);
+        }
+
+        this->scatterRay(ray, world, record, scatterRecord, scattered, pdfValue, scatteringPDF);
         
-        Color3f colorFromScatter = (attenuation * scatteringPDF * rayColor(&scattered, depth-1, world)) / pdfValue;        
+        Color3f colorFromScatter = (scatterRecord.attenuation * scatteringPDF * rayColor(&scattered, depth-1, world)) / pdfValue;        
         return emitted + colorFromScatter;
     }
 
@@ -331,38 +337,30 @@ Color3f PerspectiveCamera::rayColor(Ray * const ray, int depth, const BVH &world
 }
 
 //----------------------------------------------------------------------------------
-bool PerspectiveCamera::scatterRay(Ray * const ray, 
+void PerspectiveCamera::scatterRay(Ray * const ray, 
                                    const BVH &world, 
-                                   const HitRecord &record, 
-                                   Color3f &attenuation, 
-                                   Ray &scattered, 
-                                   float &pdf, 
+                                   const HitRecord &record,
+                                   ScatterRecord &scatterRecord,
+                                   Ray &scattered,
+                                   float &pdf,
                                    float &scatteringPDF)
 {
-    if(!record.material->scatter(*ray, record, attenuation, scattered, pdf))
-    {
-        return false;
-    }
+    
+
+    
+    std::vector<std::shared_ptr<Pdf>> pdfs;
+    pdfs.push_back(scatterRecord.pdfPtr);
 
     auto lightSources = world.getLightSources();
-    std::vector<std::shared_ptr<Pdf>> pdfs;
-    CosinePdf cosinePdf(record.normal);
-    pdfs.push_back(std::make_shared<CosinePdf>(record.normal));
-
     for(const auto &light : lightSources)
     {
         pdfs.push_back(std::make_shared<HittablePdf>(light, record.point));
     }
 
-    if(!pdfs.empty())
-    {
-        MixturePdf mixturePdf(pdfs);
-        scattered = Ray(record.point, glm::normalize(mixturePdf.generate()));
-        pdf = mixturePdf.value(scattered.direction());
-    }
-
+    MixturePdf mixturePdf(pdfs);
+    scattered = Ray(record.point, glm::normalize(mixturePdf.generate()));
+    pdf = mixturePdf.value(scattered.direction());
     scatteringPDF = record.material->scatteringPDF(*ray, record, scattered);
-    return true;
 }
 
 //----------------------------------------------------------------------------------
@@ -516,14 +514,23 @@ void PerspectiveCamera::visualizeRayPaths(const std::string &filename,
                 createCylinder(currentOrigin, record.point, vertexIndex);
 
                 // Generate scattered ray to continue path
-                Color3f attenuation(1.f);
+                ScatterRecord scatterRecord;
                 Ray scattered;
                 float pdfValue = 1.0f;
                 float scatteringPDF = 1.0f;
 
-                if(!this->scatterRay(ray.get(), world, record, attenuation, scattered, pdfValue, scatteringPDF))
+                if(!record.material->scatter(*ray, record, scatterRecord))
                 {
                     break; // absorption or emission-only material
+                }
+
+                if(scatterRecord.skipPdf)
+                {
+                    scattered = scatterRecord.skipPdfRay;
+                }
+                else
+                {   
+                    this->scatterRay(ray.get(), world, record, scatterRecord, scattered, pdfValue, scatteringPDF);
                 }
 
                 currentOrigin = record.point;

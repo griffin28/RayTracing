@@ -27,16 +27,18 @@ Metal::Metal(std::shared_ptr<Texture> albedo, float roughness)
 }
 
 //----------------------------------------------------------------------------------
-bool Metal::scatter(const Ray &ray, const HitRecord &record, glm::vec3 &attenuation, Ray &scattered, float &pdf) const
+bool Metal::scatter(const Ray &ray, const HitRecord &record, ScatterRecord &scatterRecord) const
 {    
     glm::vec3 reflected = glm::reflect(ray.direction(), record.normal);
-    scattered = Ray(record.point, glm::normalize(reflected) + (m_roughness * RaytracingUtility::randomUnitVector()));
-    attenuation = m_albedo->value(record.u, record.v, record.point);
-
+    reflected = glm::normalize(reflected) + (m_roughness * RaytracingUtility::randomUnitVector());
+    
+    scatterRecord.attenuation = m_albedo->value(record.u, record.v, record.point);
+    scatterRecord.skipPdf = true;
+    scatterRecord.pdfPtr = nullptr;
+    scatterRecord.skipPdfRay = Ray(record.point, reflected);
     // The scattered ray is reflected if the dot product of the scattered ray and the normal is greater than zero.
-    // This way can absorbed rays that scatter below the surface of the object.
-    pdf = 1.0f;
-    return (glm::dot(scattered.direction(), record.normal) > 0.0f);
+    // This way can absorb rays that scatter below the surface of the object.
+    return (glm::dot(scatterRecord.skipPdfRay.direction(), record.normal) > 0.0f);
 }
 
 //----------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 #include "Lambertian.h"
 #include "SolidColorTexture.h"
 #include "CosinePdf.h"
-#include "Hittable.h"
+// #include "Hittable.h"
 
 namespace raytracer
 {
@@ -24,14 +24,11 @@ Lambertian::Lambertian(const std::shared_ptr<Texture> &albedo)
 }
 
 //----------------------------------------------------------------------------------
-bool Lambertian::scatter(const Ray &ray, const HitRecord &record, Color3f &attenuation, Ray &scattered, float &pdf) const
+bool Lambertian::scatter(const Ray &ray, const HitRecord &record, ScatterRecord &scatterRecord) const
 {
-    attenuation = m_albedo->value(record.u, record.v, record.point);
-
-    CosinePdf cosinePdf(record.normal);
-    glm::vec3 scatterDirection = RaytracingUtility::randomOnHemisphere(record.normal); // cosinePdf.generate();
-    scattered = Ray(record.point, glm::normalize(scatterDirection));
-    pdf = cosinePdf.value(scattered.direction());
+    scatterRecord.attenuation = m_albedo->value(record.u, record.v, record.point);
+    scatterRecord.pdfPtr = std::make_shared<CosinePdf>(record.normal);
+    scatterRecord.skipPdf = false;
     
     return true;
 }

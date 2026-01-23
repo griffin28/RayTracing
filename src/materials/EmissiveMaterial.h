@@ -25,7 +25,7 @@ public:
 
     /// @brief Scatters the ray
     /// @see Material::scatter
-    bool scatter(const Ray &ray, const HitRecord &record, Color3f &attenuation, Ray &scattered, float &pdf) const override
+    bool scatter(const Ray &ray, const HitRecord &record, ScatterRecord &scatterRecord) const override
     {
         return false;
     }

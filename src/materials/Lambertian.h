@@ -2,6 +2,9 @@
 
 #include "Material.h"
 #include "Texture.h"
+#include "Hittable.h"
+#include "CosinePdf.h"
+
 #include <memory>
 
 namespace raytracer
@@ -26,7 +29,7 @@ public:
 
     /// @brief  Determines if the ray scatters when it hits the object.
     /// @see Material::scatter
-    bool scatter(const Ray &ray, const HitRecord &record, Color3f &attenuation, Ray &scattered, float &pdf) const override;
+    bool scatter(const Ray &ray, const HitRecord &record, ScatterRecord &scatterRecord) const override;
 
     /// @brief Computes the scattering PDF for the material.
     /// @see Material::scatteringPDF

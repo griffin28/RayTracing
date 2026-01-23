@@ -2,8 +2,6 @@
 
 #include "Ray.h"
 #include "Utility.h"
-// #include "Hittable.h"
-// #include "Pdf.h"
 
 #include <cmath>
 #include <memory>
@@ -14,16 +12,18 @@
 namespace raytracer
 {
 struct HitRecord;
+class Pdf;
+
 /// @class ScatterRecord
 /// @brief A record that contains information about a scattered ray.
-// class ScatterRecord
-// {
-// public:
-//     Color3f attenuation;
-//     std::shared_ptr<Pdf> pdfPtr;
-//     bool skipPdf;
-//     Ray skipPdfRay;
-// };
+class ScatterRecord
+{
+public:
+    Color3f attenuation;
+    std::shared_ptr<Pdf> pdfPtr;
+    bool skipPdf;
+    Ray skipPdfRay;
+};
 
 /// @class Material
 /// @brief A material is an object that can scatter light.
@@ -36,10 +36,9 @@ public:
     /// @brief Determines if the ray scatters when it hits the object.
     /// @param ray the ray that hit the object
     /// @param record the hit record that contains the intersection information
-    /// @param attenuation the color attenuation
-    /// @param scattered the scattered ray if the ray scatters
+    /// @param scatterRecord the scatter record to fill with scattering information
     /// @return true if the ray scatters, false otherwise
-    virtual bool scatter(const Ray &ray, const HitRecord &record, Color3f &attenuation, Ray &scattered, float &pdf) const = 0;
+    virtual bool scatter(const Ray &ray, const HitRecord &record, ScatterRecord &scatterRecord) const = 0;
 
     /// @brief Computes the scattering PDF for the material.
     /// @param ray the ray that hit the object
