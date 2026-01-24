@@ -95,7 +95,8 @@ public:
 
 private:
     void updateCenter();
-    void updateBounds(); 
+    void updateBounds();
+    glm::vec3 randomToSphere(const float radius, const float distanceSquared) const; 
 
     glm::vec3 m_center;
     float m_radius;

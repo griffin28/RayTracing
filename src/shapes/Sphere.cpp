@@ -1,4 +1,5 @@
 #include "Sphere.h"
+#include "OrthoNormalBasis.h"
 
 #include <glm/gtx/norm.hpp>
 
@@ -139,14 +140,14 @@ float Sphere::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) cons
 {
     HitRecord record;
     Ray ray(origin, direction);
+
     if(this->hit(ray, record))
     {
-        auto dir = glm::normalize(record.point - origin);
-        const float area = this->getSurfaceArea();
-        const float dist2 = glm::length2(record.point - origin);
-        const float cosine = std::abs(glm::dot(dir, record.normal));
+        auto dist2 = glm::length2(m_center - origin);
+        auto cosThetaMax = glm::sqrt(1.0f - m_radius * m_radius / dist2);
+        auto solidAngle = 2.0f * glm::pi<float>() * (1.0f - cosThetaMax);
 
-        return dist2 / (cosine * area);
+        return 1.0f / solidAngle;
     }
 
     return 0.0f;
@@ -155,8 +156,24 @@ float Sphere::pdfValue(const glm::vec3 &origin, const glm::vec3 &direction) cons
 //----------------------------------------------------------------------------------
 glm::vec3 Sphere::random(const glm::vec3 &origin) const
 {
-    glm::vec3 randomPoint = this->randomPointOnSurface();
-    return randomPoint - origin;
+    auto direction = m_center - origin;
+    auto dist2 = glm::length2(direction);
+    OrthoNormalBasis uvw(direction);
+    return uvw.transform(this->randomToSphere(m_radius, dist2));
+}
+
+//----------------------------------------------------------------------------------
+glm::vec3 Sphere::randomToSphere(const float radius, const float distanceSquared) const 
+{
+    float r1 = RaytracingUtility::randomDouble();
+    float r2 = RaytracingUtility::randomDouble();
+    float z = 1.0f + r2 * (glm::sqrt(1.0f - radius * radius / distanceSquared) - 1.0f);
+
+    float phi = 2.0f * glm::pi<float>() * r1;
+    float x = glm::cos(phi) * glm::sqrt(1.0f - z * z);
+    float y = glm::sin(phi) * glm::sqrt(1.0f - z * z);
+    
+    return glm::vec3(x, y, z);
 }
 
 } // namespace raytracer

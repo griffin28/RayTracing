@@ -231,6 +231,7 @@ void cornell_box(const bool debug, int gridResolution=10)
     auto green = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.f, 1.f, 0.f));
     auto blue = std::make_shared<raytracer::Lambertian>(raytracer::Color3f(0.f, 0.f, 1.f));
     auto aluminum = std::make_shared<raytracer::Metal>(raytracer::Color3f(0.8f, 0.85f, 0.88f), 0.0f);
+    auto glass =  std::make_shared<raytracer::Dielectric>(1.5f);
 
     // Light
     // auto quad = std::make_shared<raytracer::Quad>(glm::vec3(210,554,127), glm::vec3(310,0,0), glm::vec3(0,0,305));
@@ -260,11 +261,15 @@ void cornell_box(const bool debug, int gridResolution=10)
     // tallBox->translate(glm::vec3(100,0,65));
     // world.add(tallBox);
 
+    // Glass Sphere
+    auto glassSphere = std::make_shared<raytracer::Sphere>(glm::vec3(365, 90, 365), 90, glass);
+    world.add(glassSphere);
+
     // Boxes
-    auto shortBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
-    shortBox->rotate(-18, glm::vec3(0,1,0));
-    shortBox->translate(glm::vec3(350,0,100));
-    world.add(shortBox);
+    // auto shortBox = std::make_shared<raytracer::Box>(glm::vec3(0,0,0), glm::vec3(165,165,165), white);
+    // shortBox->rotate(-18, glm::vec3(0,1,0));
+    // shortBox->translate(glm::vec3(350,0,100));
+    // world.add(shortBox);
 
     // Build BVH
     world.build();
@@ -327,7 +332,7 @@ void final_scene(const std::string &filename)
     auto sphere2 = std::make_shared<raytracer::Sphere>(glm::vec3(240, 150, 355), 50, std::make_shared<raytracer::Dielectric>(1.5f));
     world.add(sphere2);
     
-    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0, 150, 255), 50, std::make_shared<raytracer::Metal>(raytracer::Color3f(0.8f, 0.8f, 0.9f), 1.0f)));
+    world.add(std::make_shared<raytracer::Sphere>(glm::vec3(0, 150, 255), 50, std::make_shared<raytracer::Metal>(raytracer::Color3f(0.8f, 0.8f, 0.9f), 0.3f)));
     
     world.add(std::make_shared<raytracer::Sphere>(glm::vec3(380,150,255), 70, std::make_shared<raytracer::Dielectric>(1.5f)));
     
@@ -356,7 +361,7 @@ void final_scene(const std::string &filename)
     camera.setFocalPoint(glm::vec3(278, 278, -1));
     camera.setApertureRadius(0);
 
-    camera.render(world, 10000);
+    camera.render(world, 140);
 }
 
 //----------------------------------------------------------------------------------

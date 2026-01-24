@@ -101,6 +101,11 @@ void PerspectiveCamera::render(const BVH &world, const int samplesPerPixel, std:
                     }
 
                     pixelColor *= pixelSamplesScale;
+                    // Replace nan components with zero
+                    if(std::isnan(pixelColor.r)) pixelColor.r = 0.0f;
+                    if(std::isnan(pixelColor.g)) pixelColor.g = 0.0f;
+                    if(std::isnan(pixelColor.b)) pixelColor.b = 0.0f;
+
                     pixelColor = glm::clamp(RaytracingUtility::gammaCorrect(pixelColor), 0.0f, 1.0f);
 
                     image[(j * m_width + i) * 3 + 0] = static_cast<uint8_t>(255.0f * pixelColor.r);
